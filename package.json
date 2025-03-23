@@ -60,7 +60,7 @@
   "lint-staged": {
     "*.ts": [
       "eslint --fix",
-      "npm run typecheck"
+      "tsc-alias && tsc -p tsconfig.json"
     ]
   }
 }
