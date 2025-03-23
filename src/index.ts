@@ -1,16 +1,9 @@
-import cors from 'cors';
-import express, { Express, Request, Response } from 'express';
-import helmet from 'helmet';
-import morgan from 'morgan';
+import { createServer } from '@/config/server';
+import { logger } from '@/utils/logger';
+import { Request, Response } from 'express';
 
-const app: Express = express();
+const app = createServer();
 const port = process.env.PORT || 3000;
-
-// Middleware
-app.use(cors());
-app.use(helmet());
-app.use(morgan('dev'));
-app.use(express.json());
 
 // Basic route for testing
 app.get('/', (_req: Request, res: Response): void => {
@@ -19,5 +12,5 @@ app.get('/', (_req: Request, res: Response): void => {
 
 // Start server
 app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  logger.info(`Server is running at http://localhost:${port}`);
 });
