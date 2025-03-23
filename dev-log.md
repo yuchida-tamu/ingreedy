@@ -17,6 +17,7 @@ Ingreedy is an inventory & recipe management application that helps users track 
 ### Phase 1: Initial Setup (Current)
 
 - [x] Create development log
+- [x] Establish coding guidelines and standards
 - [ ] Set up basic project structure
 - [ ] Choose and configure database
 - [ ] Set up basic server configuration
@@ -84,18 +85,17 @@ Ingreedy is an inventory & recipe management application that helps users track 
 - jest: Testing framework
 - eslint & prettier: Code quality and formatting
 
-## Daily Log
+## Project Structure
 
-### [Current Date]
+### Documentation
 
-- Created initial project structure
-- Set up development log to track progress
-- Decided on tech stack:
-  - Node.js + Express.js for backend
-  - PostgreSQL for database
-  - JWT for authentication
-  - Swagger for API documentation
-- Next steps: Initialize Node.js project and set up basic Express server
+- `/docs`: Project documentation
+  - `/guidelines`: Coding standards and guidelines
+  - `/logs`: Daily development logs
+  - `/api`: API documentation
+
+For detailed daily progress, please refer to the logs in `/docs/logs/`.
+Latest log: [2024-03-26](docs/logs/2024-03-26.md)
 
 ## Notes & Ideas
 
@@ -110,4 +110,4 @@ Ingreedy is an inventory & recipe management application that helps users track 
 
 ---
 
-Last Updated: [Current Date]
+Last Updated: March 26, 2024
