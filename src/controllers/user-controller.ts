@@ -35,13 +35,13 @@ export class UserController {
       const result = await this.userService.createUser(validationResult.data);
       if (!result.success) {
         const status = errorStatusMap[result.error.code] || 500;
-        const response: TApiResponse<never> = {
+        const response = {
           success: false,
           error: {
             message: result.error.message,
             code: result.error.code,
           },
-        };
+        } as const satisfies TApiResponse<never>;
         res.status(status).json(response);
         return;
       }
@@ -52,14 +52,14 @@ export class UserController {
       };
       res.status(201).json(response);
     } catch (error) {
-      const response: TApiResponse<never> = {
+      const response = {
         success: false,
         error: {
           message: 'Internal server error',
           code: 'INTERNAL_SERVER_ERROR',
           details: error instanceof Error ? { message: error.message } : undefined,
         },
-      };
+      } as const satisfies TApiResponse<never>;
       res.status(500).json(response);
     }
   }
