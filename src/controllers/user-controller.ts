@@ -17,7 +17,7 @@ export class UserController {
     try {
       const validationResult = newUserDtoSchema.safeParse(req.body);
       if (!validationResult.success) {
-        const response: TApiResponse<never> = {
+        const response = {
           success: false,
           error: {
             message: 'Invalid request body',
@@ -27,7 +27,7 @@ export class UserController {
               return acc;
             }, {} as Record<string, string>),
           },
-        };
+        } as const satisfies TApiResponse<never>;
         res.status(errorStatusMap.VALIDATION_ERROR).json(response);
         return;
       }
