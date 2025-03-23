@@ -1,3 +1,4 @@
+import { createUserRouter } from '@/routes/user-routes';
 import cors from 'cors';
 import express, { type Express, type NextFunction, type Request, type Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
@@ -28,10 +29,10 @@ export function createApp(): Express {
     res.json({ status: 'healthy' });
   });
 
-  // API routes will be added here
-  app.use(`${process.env.API_PREFIX || '/api'}/${process.env.API_VERSION || 'v1'}`, (_req: Request, res: Response) => {
-    res.json({ message: 'API is working' });
-  });
+  // API routes
+  const apiRouter = express.Router();
+  apiRouter.use('/users', createUserRouter());
+  app.use(`${process.env.API_PREFIX || '/api'}/${process.env.API_VERSION || 'v1'}`, apiRouter);
 
   // Error handling middleware
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
