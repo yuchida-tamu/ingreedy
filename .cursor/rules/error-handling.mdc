@@ -1,0 +1,123 @@
+---
+description: Guidlines for error handling.
+globs: 
+alwaysApply: false
+---
+# Error Handling Guidelines
+Use Result type instead of throwing errors for expected cases
+
+## Result Pattern
+
+### Core Type Definition
+
+```typescript
+type TResult<T, E = Error> = { success: true; data: T } | { success: false; error: E };
+```
+
+### Error Types
+
+```typescript
+type TValidationError = {
+  code: 'VALIDATION_ERROR';
+  fields: Record<string, string>;
+};
+
+type TNotFoundError = {
+  code: 'NOT_FOUND';
+  resource: string;
+  id: string;
+};
+
+type TUnauthorizedError = {
+  code: 'UNAUTHORIZED';
+  message: string;
+};
+
+type TApplicationError = TValidationError | TNotFoundError | TUnauthorizedError;
+```
+
+## Usage Examples
+
+### Service Layer
+
+```typescript
+type TCreateUserDTO = {
+  email: string;
+  password: string;
+  name: string;
+};
+
+async function createUser(data: TCreateUserDTO): Promise<TResult<TUser, TValidationError>> {
+  const validation = validateUser(data);
+  if (!validation.success) {
+    return { success: false, error: validation.error };
+  }
+
+  const user = await userRepository.create(data);
+  return { success: true, data: user };
+}
+```
+
+### Controller Layer
+
+```typescript
+async function handleCreateUser(req: Request, res: Response): Promise<void> {
+  const result = await userService.createUser(req.body);
+
+  if (!result.success) {
+    res.status(getStatusCode(result.error)).json({
+      success: false,
+      error: result.error,
+    });
+    return;
+  }
+
+  res.status(201).json({
+    success: true,
+    data: result.data,
+  });
+}
+```
+
+## Error Status Code Mapping
+
+```typescript
+function getStatusCode(error: TApplicationError): number {
+  switch (error.code) {
+    case 'VALIDATION_ERROR':
+      return 400;
+    case 'NOT_FOUND':
+      return 404;
+    case 'UNAUTHORIZED':
+      return 401;
+    default:
+      return 500;
+  }
+}
+```
+
+## Guidelines
+
+### Error Types
+
+- Create specific error types for different scenarios
+- Include all relevant error details in the error object
+- Use discriminated unions with a 'code' field
+- Keep error types focused and single-purpose
+
+### Error Handling
+
+- Use Result type instead of throwing errors for expected cases
+- Handle errors at the appropriate layer
+- Log errors with appropriate severity levels
+- Maintain consistent error response structure
+- Map internal errors to appropriate HTTP status codes
+
+### Benefits
+
+- Type-safe error handling
+- Explicit error cases in function signatures
+- Better error tracking and debugging
+- Consistent error responses across the application
+- No try-catch blocks needed for expected errors
+- Clear separation of concerns in error handling

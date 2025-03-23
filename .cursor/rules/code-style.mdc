@@ -1,0 +1,287 @@
+---
+description: Coding style guidelines. It covers things like naming convention and code styles
+globs: *.ts, *.tsx, *.js, *.jsx, src/**/*
+alwaysApply: false
+---
+# Code Style Guidelines
+
+## General Formatting
+
+### Indentation and Spacing
+
+- Use 2 spaces for indentation
+- No trailing whitespace
+- One space after keywords
+- One space before opening braces
+- No space between function name and parentheses
+- One space around operators
+
+```typescript
+// ✅ Good
+function calculateTotal(items: TItem[]): number {
+  return items.reduce((sum, item) => {
+    return sum + item.price;
+  }, 0);
+}
+
+// ❌ Bad
+function calculateTotal(items: TItem[]): number {
+  return items.reduce((sum, item) => {
+    return sum + item.price;
+  }, 0);
+}
+```
+
+### Line Length and Wrapping
+
+- Maximum line length: 100 characters
+- Break long lines at logical points
+- Indent continued lines one level
+- Keep related items together when wrapping
+
+```typescript
+// ✅ Good
+const longFunctionCall = someFunction(firstArgument, secondArgument, {
+  option1: 'value1',
+  option2: 'value2',
+});
+
+// ❌ Bad
+const longFunctionCall = someFunction(firstArgument, secondArgument, {
+  option1: 'value1',
+  option2: 'value2',
+});
+```
+
+## Naming Conventions
+
+### Variables and Functions
+
+- Use camelCase for variables and functions
+- Use PascalCase for classes and types
+- Use UPPER_SNAKE_CASE for constants
+- Use descriptive names that reveal intent
+
+```typescript
+// ✅ Good
+const maxRetryAttempts = 3;
+function calculateTotalPrice(items: TItem[]): number;
+class UserService;
+const DEFAULT_TIMEOUT = 5000;
+
+// ❌ Bad
+const x = 3;
+function calc(i: TItem[]): number;
+class userservice;
+const timeout = 5000;
+```
+
+### File Names
+
+- Use kebab-case for file names
+- Use descriptive names that match exports
+- Group related files with common prefixes
+- Add appropriate extensions
+
+```
+✅ Good:
+user-service.ts
+recipe-repository.ts
+auth-middleware.ts
+
+❌ Bad:
+UserService.ts
+Recipe_Repo.ts
+auth.ts
+```
+
+## Code Organization
+
+### File Structure
+
+- One concept per file
+- Related code should be close
+- Organize by feature/module
+- Keep files focused and manageable
+
+### Import/Export
+
+- Group imports by type/source
+- Sort imports alphabetically
+- Use named exports
+- Export types separately
+
+```typescript
+// ✅ Good
+import { Request, Response } from 'express';
+import { TUser } from '@/types/user';
+import { validateUser } from '@/utils/validation';
+import { userService } from './user-service';
+
+export const userController = { ... };
+export type { TUserResponse };
+
+// ❌ Bad
+import { userService } from './user-service';
+import {validateUser} from '../../../utils/validation'
+import {Request,Response} from 'express'
+import {TUser} from '@/types/user'
+
+export default userController;
+```
+
+## Functions
+
+### Function Design
+
+- Keep functions small and focused
+- Single responsibility principle
+- Maximum 3 parameters
+- Use object parameters for many arguments
+- Return early for guard clauses
+
+```typescript
+// ✅ Good
+function createUser(data: TCreateUserDTO): Promise<TResult<TUser, TError>> {
+  if (!data.email) {
+    return { success: false, error: { message: 'Email required' } };
+  }
+
+  // Process valid data...
+}
+
+// ❌ Bad
+function createUser(
+  email: string,
+  password: string,
+  name: string,
+  age: number,
+  role: string,
+): Promise<any> {
+  // Too many parameters
+}
+```
+
+### Async Functions
+
+- Always use async/await
+- Handle errors appropriately
+- Return consistent types
+- Chain promises carefully
+
+```typescript
+// ✅ Good
+async function fetchUserData(id: string): Promise<TResult<TUser, TError>> {
+  try {
+    const user = await userRepository.findById(id);
+    return { success: true, data: user };
+  } catch (error) {
+    return { success: false, error };
+  }
+}
+
+// ❌ Bad
+function fetchUserData(id: string) {
+  return userRepository
+    .findById(id)
+    .then((user) => user)
+    .catch((error) => error);
+}
+```
+
+## Comments and Documentation
+
+### Code Comments
+
+- Write comments for complex logic
+- Explain why, not what
+- Keep comments up to date
+- Use JSDoc for public APIs
+
+```typescript
+// ✅ Good
+/**
+ * Calculates the total price including discounts and tax
+ * @param items - Array of items to calculate
+ * @param taxRate - Current tax rate (decimal)
+ * @returns Total price with tax
+ */
+function calculateTotal(items: TItem[], taxRate: number): number {
+  // Apply bulk discount for orders over 10 items
+  const discount = items.length > 10 ? 0.1 : 0;
+
+  // Calculate subtotal with discount
+  const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+  const discountedTotal = subtotal * (1 - discount);
+
+  return discountedTotal * (1 + taxRate);
+}
+
+// ❌ Bad
+// Calculate total
+function calc(i: TItem[], t: number): number {
+  const d = i.length > 10 ? 0.1 : 0;
+  const s = i.reduce((s, item) => s + item.price, 0);
+  return s * (1 - d) * (1 + t);
+}
+```
+
+### TODO Comments
+
+- Use TODO for temporary solutions
+- Include ticket/issue reference
+- Add context for the TODO
+- Review and update regularly
+
+```typescript
+// ✅ Good
+// TODO(TICKET-123): Implement proper error handling
+// Current implementation only logs errors
+function processPayment(amount: number): void {
+  try {
+    // Process payment...
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// ❌ Bad
+// TODO: fix this
+function processPayment(amount: number): void {
+  // ...
+}
+```
+
+## Error Handling
+
+### Error Patterns
+
+- Use Result type for expected errors
+- Use try/catch for unexpected errors
+- Include error context
+- Log errors appropriately
+
+```typescript
+// ✅ Good
+async function processOrder(data: TOrderData): Promise<TResult<TOrder, TValidationError>> {
+  const validation = validateOrder(data);
+  if (!validation.success) {
+    logger.warn('Order validation failed', { data, errors: validation.error });
+    return validation;
+  }
+
+  try {
+    const order = await orderRepository.create(data);
+    return { success: true, data: order };
+  } catch (error) {
+    logger.error('Failed to create order', { error, data });
+    throw error;
+  }
+}
+
+// ❌ Bad
+async function processOrder(data: any): Promise<any> {
+  if (!data.items) throw new Error('Invalid order');
+  return await orderRepository.create(data);
+}
+```

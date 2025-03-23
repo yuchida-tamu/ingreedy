@@ -1,0 +1,204 @@
+---
+description: Typescript guidelines
+globs: 
+alwaysApply: false
+---
+# Type System Guidelines
+
+## Core Principles
+
+- Use type aliases for most type definitions
+- Use interfaces when defining contracts that will be implemented
+- Prefix types with 'T' and interfaces with 'I' for clarity
+- Use type composition with '&' for extending types
+- Keep types and interfaces focused and single-purpose
+
+## Type Definition Guidelines
+
+### When to Use Type Aliases
+
+Use type aliases for:
+
+- Union types
+- Intersection types
+- Simple object types that won't be implemented/extended
+- Function types
+- Mapped types
+- Utility type combinations
+
+```typescript
+// ✅ Good: Union types
+type TUserStatus = 'active' | 'inactive' | 'pending';
+
+// ✅ Good: Function types
+type TUserHandler = (user: TUser) => Promise<void>;
+
+// ✅ Good: Simple object types
+type TUserProfile = {
+  name: string;
+  email: string;
+  avatar: string;
+};
+
+// ✅ Good: Mapped types
+type TReadonly<T> = {
+  readonly [P in keyof T]: T[P];
+};
+```
+
+### When to Use Interfaces
+
+Use interfaces for:
+
+- Defining contracts that will be implemented by classes
+- API contracts and response types
+- Extending existing interfaces
+- Public APIs where extensibility is desired
+
+```typescript
+// ✅ Good: Service contracts
+interface IUserService {
+  findById(id: string): Promise<TUser>;
+  create(data: TCreateUserDTO): Promise<TUser>;
+  update(id: string, data: TUpdateUserDTO): Promise<TUser>;
+  delete(id: string): Promise<void>;
+}
+
+// ✅ Good: Repository contracts
+interface IUserRepository {
+  findOne(id: string): Promise<TUser | null>;
+  save(user: TUser): Promise<TUser>;
+  remove(id: string): Promise<void>;
+}
+
+// ✅ Good: API response contracts
+interface IAPIResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
+// ✅ Good: Class implementation contracts
+interface ILogger {
+  log(level: string, message: string, context?: Record<string, unknown>): void;
+  error(message: string, error?: Error): void;
+  warn(message: string, context?: Record<string, unknown>): void;
+  info(message: string, context?: Record<string, unknown>): void;
+}
+```
+
+### Type Composition
+
+```typescript
+// ✅ Good: Building complex types through composition
+type TTimestamp = {
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// Using type alias for composition
+type TUser = TTimestamp & {
+  id: string;
+  name: string;
+};
+
+// Using interface for extendable contract
+interface IEntity {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface IUser extends IEntity {
+  name: string;
+  email: string;
+}
+```
+
+### Generic Types
+
+```typescript
+// ✅ Good: Generic type definitions
+type TResult<T, E = Error> = { success: true; data: T } | { success: false; error: E };
+
+// ✅ Good: Generic interface for repository pattern
+interface IRepository<T extends IEntity> {
+  findById(id: string): Promise<T | null>;
+  findAll(): Promise<T[]>;
+  create(data: Omit<T, keyof IEntity>): Promise<T>;
+  update(id: string, data: Partial<T>): Promise<T>;
+  delete(id: string): Promise<void>;
+}
+```
+
+## Constant Types and Immutability
+
+### Using 'as const satisfies'
+
+Always use 'as const satisfies T' pattern for object literals and arrays that should be immutable:
+
+```typescript
+// ✅ Good: Using 'as const satisfies' pattern
+type TStatus = {
+  ACTIVE: 'active';
+  INACTIVE: 'inactive';
+  PENDING: 'pending';
+};
+
+const STATUS = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+  PENDING: 'pending',
+} as const satisfies TStatus;
+
+// ✅ Good: With array literals
+type TRole = 'admin' | 'user' | 'guest';
+const ROLES = ['admin', 'user', 'guest'] as const satisfies readonly TRole[];
+```
+
+## Utility Type Usage Guidelines
+
+### Pick and Omit
+
+- Use Pick and Omit only for simple, one-level transformations
+- Create intermediate types for complex transformations
+- Keep type transformations explicit and readable
+
+```typescript
+// ✅ Good: Simple transformation
+type TUserProfile = Pick<TUser, 'name' | 'email'>;
+
+// ✅ Better: Break down complex transformations
+type TUserBasic = Omit<TUser, 'password'>;
+type TUserWithAvatar = TUserBasic & Pick<TProfile, 'avatar'>;
+type TPublicProfile = Pick<TUserWithAvatar, 'name' | 'email' | 'avatar'>;
+```
+
+### Union Types
+
+- Use union types for clearly defined variants
+- Include discriminator fields for object unions
+- Keep union members simple and focused
+
+```typescript
+// ✅ Good: Union type with discriminator
+type TUserEvent =
+  | { type: 'created'; user: TUser }
+  | { type: 'updated'; user: TUser; changes: string[] }
+  | { type: 'deleted'; userId: string };
+
+// ❌ Avoid: Ambiguous unions without discriminators
+type TBadEvent = { user: TUser } | { userId: string };
+```
+
+## Benefits
+
+- Clear distinction between contract definitions and type definitions
+- Better type composition and reuse
+- Clearer type relationships and hierarchies
+- Improved type inference and IDE support
+- Type safety at compile time
+- Appropriate use of both interfaces and type aliases for their intended purposes

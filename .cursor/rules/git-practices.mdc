@@ -1,0 +1,226 @@
+---
+description: Git operation practice guidlines
+globs: 
+alwaysApply: false
+---
+# Git Practices Guidelines
+
+- Make sure to commit in a small and meaningful size.
+- Make sure to test that changes do not any code before creating a commit.
+
+## Branch Management
+
+### Branch Naming
+
+- Use descriptive, kebab-case names
+- Include ticket/issue reference
+- Use prefixes to indicate branch type
+- Keep names concise but meaningful
+
+```
+✅ Good:
+feature/TICKET-123-add-recipe-search
+fix/TICKET-456-handle-auth-timeout
+refactor/TICKET-789-optimize-queries
+
+❌ Bad:
+new-feature
+bug-fix
+john-branch
+```
+
+### Branch Types
+
+- `main`: Production-ready code
+- `develop`: Integration branch for features
+- `feature/*`: New features or enhancements
+- `fix/*`: Bug fixes
+- `refactor/*`: Code improvements
+- `release/*`: Release preparation
+
+## Commit Guidelines
+
+### Commit Messages
+
+- Use conventional commits format
+- Write clear, descriptive messages
+- Reference tickets/issues
+- Separate subject from body
+
+```
+✅ Good:
+feat(recipe): add search by ingredients
+
+- Implements fuzzy search for recipes by ingredient list
+- Adds ingredient normalization for better matches
+- Updates API documentation
+
+TICKET-123
+
+❌ Bad:
+fixed stuff
+update code
+WIP
+```
+
+### Commit Structure
+
+- One logical change per commit
+- Keep commits small and focused
+- Separate refactoring from features
+- Include tests with changes
+
+```bash
+# ✅ Good: Logical commits
+git commit -m "feat(auth): add password reset endpoint"
+git commit -m "test(auth): add password reset tests"
+git commit -m "docs(auth): update API docs for password reset"
+
+# ❌ Bad: Mixed concerns
+git commit -m "add password reset and fix bugs and update docs"
+```
+
+## Pull Request Guidelines
+
+### PR Creation
+
+- Create draft PR early
+- Use PR template
+- Link related issues
+- Add meaningful description
+
+```markdown
+# ✅ Good PR Description
+
+## Changes
+
+- Added recipe search endpoint
+- Implemented fuzzy matching algorithm
+- Added unit tests for search logic
+
+## Testing
+
+- Unit tests added: 15 new tests
+- Manual testing completed
+- Performance tested with 1000 recipes
+
+## Related
+
+- Closes #123
+- Depends on #456
+
+# ❌ Bad PR Description
+
+Fixed the search
+```
+
+### PR Size
+
+- Maximum 500 lines changed
+- Split large changes into smaller PRs
+- Focus on one feature/fix
+- Keep refactoring separate
+
+### PR Review
+
+- Request relevant reviewers
+- Address all comments
+- Explain complex changes
+- Update based on feedback
+
+## Git Workflow
+
+### Feature Development
+
+1. Create feature branch from develop
+2. Make small, focused commits
+3. Keep branch up to date with develop
+4. Create PR when ready
+
+```bash
+# Start new feature
+git checkout develop
+git pull origin develop
+git checkout -b feature/TICKET-123-add-search
+
+# Keep branch updated
+git fetch origin
+git rebase origin/develop
+
+# Push changes
+git push origin feature/TICKET-123-add-search
+```
+
+### Code Review Process
+
+1. Create draft PR early
+2. Update PR description
+3. Request reviews
+4. Address feedback
+5. Get approvals
+6. Merge when ready
+
+### Merge Strategy
+
+- Use squash and merge
+- Write clear squash commit message
+- Delete branch after merge
+- Keep linear history
+
+```bash
+# ✅ Good: Squash and merge
+git checkout develop
+git merge --squash feature/TICKET-123-add-search
+git commit -m "feat(recipe): add search functionality
+
+- Implements fuzzy search
+- Adds test coverage
+- Updates documentation
+
+TICKET-123"
+
+# ❌ Bad: Merge commit with mixed history
+git merge feature/TICKET-123-add-search
+```
+
+## Git Best Practices
+
+### Repository Hygiene
+
+- Regular cleanup of old branches
+- Maintain .gitignore
+- Document branch strategy
+- Archive old releases
+
+### Security
+
+- Never commit secrets
+- Use .gitignore for sensitive files
+- Sign commits
+- Protect main branches
+
+```bash
+# ✅ Good: Sign commits
+git config --global commit.gpgsign true
+git commit -S -m "feat: add secure feature"
+
+# ❌ Bad: Commit sensitive data
+git add .env
+git commit -m "update configuration"
+```
+
+### Troubleshooting
+
+- Use git log for history
+- Check git blame for changes
+- Use git bisect for bugs
+- Document common issues
+
+```bash
+# Investigating changes
+git log --oneline --graph
+git blame file.ts
+git bisect start
+git bisect bad HEAD
+git bisect good develop
+```

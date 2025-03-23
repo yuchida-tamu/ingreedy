@@ -1,0 +1,185 @@
+---
+description: These are guidelines for API design
+globs: 
+alwaysApply: false
+---
+# API Design Guidelines
+
+## RESTful Conventions
+
+### URL Structure
+
+- Use plural nouns for resources: `/users`, `/recipes`
+- Version APIs in the URL: `/api/v1/users`
+- Use kebab-case for multi-word resources: `/recipe-categories`
+- Nest related resources: `/users/{userId}/recipes`
+
+### HTTP Methods
+
+```typescript
+// ✅ Good: RESTful endpoint usage
+GET / recipes; // List recipes
+POST / recipes; // Create a recipe
+GET / recipes / { id }; // Get a specific recipe
+PUT / recipes / { id }; // Update a recipe
+DELETE / recipes / { id }; // Delete a recipe
+
+// ❌ Avoid: Non-RESTful endpoints
+POST / recipes / search; // Use GET with query parameters instead
+POST / deleteRecipe; // Use DELETE /recipes/{id} instead
+```
+
+## Request/Response Structure
+
+### Request DTOs
+
+```typescript
+type TCreateRecipeDTO = {
+  title: string;
+  description: string;
+  ingredients: Array<{
+    name: string;
+    amount: number;
+    unit: string;
+  }>;
+  instructions: string[];
+};
+
+type TUpdateRecipeDTO = Partial<TCreateRecipeDTO>;
+```
+
+### Response Format
+
+```typescript
+type TApiResponse<T> = {
+  success: boolean;
+  data?: T;
+  error?: {
+    code: string;
+    message: string;
+    details?: unknown;
+  };
+};
+```
+
+## Query Parameters
+
+### Pagination
+
+```typescript
+type TPaginationParams = {
+  page?: number; // 1-based page number
+  limit?: number; // Items per page
+  cursor?: string; // For cursor-based pagination
+};
+
+type TPaginatedResponse<T> = {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+};
+```
+
+### Filtering and Sorting
+
+```typescript
+type TFilterParams = {
+  search?: string;
+  category?: string;
+  tags?: string[];
+  [key: string]: unknown;
+};
+
+type TSortParams = {
+  sortBy: string;
+  order: 'asc' | 'desc';
+};
+```
+
+## Validation
+
+### Input Validation
+
+- Validate request bodies using middleware
+- Use strong typing for request parameters
+- Provide clear validation error messages
+- Return appropriate HTTP status codes
+
+```typescript
+type TValidationError = {
+  code: 'VALIDATION_ERROR';
+  message: string;
+  fields: Record<string, string>;
+};
+```
+
+## API Documentation
+
+### OpenAPI/Swagger
+
+- Document all endpoints using OpenAPI specifications
+- Include request/response examples
+- Document error responses
+- Keep documentation up to date with code changes
+
+## Best Practices
+
+### Security
+
+- Use HTTPS for all endpoints
+- Implement proper authentication/authorization
+- Validate and sanitize all inputs
+- Set appropriate CORS policies
+
+### Performance
+
+- Implement rate limiting
+- Use pagination for list endpoints
+- Cache responses where appropriate
+- Optimize payload size
+
+### Versioning
+
+- Use semantic versioning for API versions
+- Maintain backward compatibility
+- Document breaking changes
+- Provide migration guides
+
+### Error Handling
+
+- Use consistent error response format
+- Include helpful error messages
+- Add error codes for automated handling
+- Log errors appropriately
+
+## Examples
+
+### Complete Endpoint Example
+
+```typescript
+// Route definition
+router.post('/recipes', validateRecipe, handleCreateRecipe);
+
+// Controller implementation
+async function handleCreateRecipe(
+  req: Request<{}, {}, TCreateRecipeDTO>,
+  res: Response,
+): Promise<void> {
+  const result = await recipeService.createRecipe(req.body);
+
+  if (!result.success) {
+    res.status(getStatusCode(result.error)).json({
+      success: false,
+      error: result.error,
+    });
+    return;
+  }
+
+  res.status(201).json({
+    success: true,
+    data: result.data,
+  });
+}
+```

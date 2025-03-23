@@ -1,0 +1,120 @@
+---
+description: The overview of the Project structure, and each section has guidlines
+globs: 
+alwaysApply: false
+---
+# Project Structure Guidelines
+
+## Directory Organization
+
+```
+src/
+├── config/         # Configuration files and environment setup
+├── controllers/    # Request handlers
+├── models/         # Database models and types
+├── repositories/   # Data access layer and database queries
+├── services/      # Business logic and use cases
+├── routes/        # API route definitions
+├── middleware/    # Custom middleware functions
+├── utils/         # Utility functions and helpers
+└── types/         # TypeScript type definitions and DTOs
+```
+
+## Layer Responsibilities
+
+### Controllers
+
+- Handle HTTP requests and responses
+- Input validation and sanitization
+- Call appropriate services
+- Format API responses
+- Keep business logic out of controllers
+
+### Services
+
+- Implement business logic and use cases
+- Orchestrate data operations
+- Handle complex operations involving multiple repositories
+- Implement business rules and validations
+- Maintain separation of concerns
+
+### Repositories
+
+- Handle all database operations
+- Implement data access patterns
+- Abstract database queries and operations
+- Return domain models/entities
+- Keep SQL queries and database specifics isolated
+
+### Types
+
+- Define shared type definitions
+- Create DTOs for API requests/responses
+- Define domain models
+- Keep type definitions close to their usage
+
+### Utils
+
+- Implement reusable helper functions
+- Create shared utilities
+- Keep utilities focused and well-documented
+- Avoid business logic in utilities
+
+### Middleware
+
+- Implement request preprocessing
+- Handle authentication/authorization
+- Perform logging and monitoring
+- Manage request context
+
+## Best Practices
+
+### File Organization
+
+- Group related files together
+- Use consistent file naming
+- Keep files focused and single-purpose
+- Use index files for cleaner imports
+
+### Module Dependencies
+
+- Maintain clear dependency hierarchy
+- Avoid circular dependencies
+- Use dependency injection where appropriate
+- Keep coupling low and cohesion high
+
+### Import Guidelines
+
+- Use absolute imports with `@` alias
+- Avoid deep relative imports
+- Group imports by type/source
+- Keep import statements organized
+
+Example:
+
+```typescript
+// Good
+import { UserService } from '@/services/user-service';
+import { TUser } from '@/types/user';
+
+// Avoid
+import { UserService } from '../../../services/user-service';
+```
+
+### Export Guidelines
+
+- Use named exports instead of default exports
+- Export types separately from implementations
+- Keep exports focused and well-named
+- Document public APIs
+
+Example:
+
+```typescript
+// Good
+export const userService = { ... };
+export type { TUser };
+
+// Avoid
+export default userService;
+```
