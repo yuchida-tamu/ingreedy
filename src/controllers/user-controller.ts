@@ -22,14 +22,13 @@ export class UserController {
           error: {
             message: 'Invalid request body',
             code: 'VALIDATION_ERROR',
-            status: errorStatusMap.VALIDATION_ERROR,
             details: validationResult.error.errors.reduce((acc, error) => {
               acc[error.path.join('.')] = error.message;
               return acc;
             }, {} as Record<string, string>),
           },
         };
-        res.status(response.error!.status).json(response);
+        res.status(errorStatusMap.VALIDATION_ERROR).json(response);
         return;
       }
 
@@ -41,7 +40,6 @@ export class UserController {
           error: {
             message: result.error.message,
             code: result.error.code,
-            status,
           },
         };
         res.status(status).json(response);
@@ -59,7 +57,6 @@ export class UserController {
         error: {
           message: 'Internal server error',
           code: 'INTERNAL_SERVER_ERROR',
-          status: 500,
           details: error instanceof Error ? { message: error.message } : undefined,
         },
       };

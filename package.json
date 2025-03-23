@@ -2,10 +2,10 @@
   "name": "ingreedy-server",
   "version": "1.0.0",
   "description": "Inventory and recipe management API server",
-  "main": "dist/server.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "build": "tsc && tsc-alias",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/index.ts",
     "lint": "eslint . --ext .ts",
     "test": "jest",
@@ -60,7 +60,7 @@
   "lint-staged": {
     "*.ts": [
       "eslint --fix",
-      "tsc --noEmit"
+      "npm run typecheck"
     ]
   }
 }
