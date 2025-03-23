@@ -1,6 +1,7 @@
 import { UserService } from '@/services/user/user-service';
 import { TApiResponse } from '@/types/api/response';
 import { newUserDtoSchema } from '@/types/dtos/user.dto';
+import { InternalServerError, UserValidationError } from '@/types/errors/user-error';
 import { Request, Response } from 'express';
 
 // Map domain error codes to HTTP status codes
@@ -17,16 +18,13 @@ export class UserController {
     try {
       const validationResult = newUserDtoSchema.safeParse(req.body);
       if (!validationResult.success) {
+        const errorDetails = validationResult.error.errors.reduce((acc, error) => {
+          acc[error.path.join('.')] = error.message;
+          return acc;
+        }, {} as Record<string, string>);
         const response = {
           success: false,
-          error: {
-            message: 'Invalid request body',
-            code: 'VALIDATION_ERROR',
-            details: validationResult.error.errors.reduce((acc, error) => {
-              acc[error.path.join('.')] = error.message;
-              return acc;
-            }, {} as Record<string, string>),
-          },
+          error: new UserValidationError(errorDetails),
         } as const satisfies TApiResponse<never>;
         res.status(400).json(response);
         return;
@@ -37,10 +35,7 @@ export class UserController {
         const status = errorStatusMap[result.error.code] || 500;
         const response = {
           success: false,
-          error: {
-            message: result.error.message,
-            code: result.error.code,
-          },
+          error: result.error,
         } as const satisfies TApiResponse<never>;
         res.status(status).json(response);
         return;
@@ -54,12 +49,11 @@ export class UserController {
     } catch (error) {
       const response = {
         success: false,
-        error: {
-          message: 'Internal server error',
-          code: 'INTERNAL_SERVER_ERROR',
-          details: error instanceof Error ? { message: error.message } : undefined,
-        },
+        error: new InternalServerError({
+          message: error instanceof Error ? error.message : 'Unknown error',
+        }),
       } as const satisfies TApiResponse<never>;
+
       res.status(500).json(response);
     }
   }

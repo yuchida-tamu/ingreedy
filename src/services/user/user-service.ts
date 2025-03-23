@@ -1,7 +1,7 @@
-import { TResult } from '@/types/common';
 import { TNewUserDto, TUserResponseDto } from '@/types/dtos/user.dto';
 import { TUser } from '@/types/entities/user';
-import { TUserDomainError } from '@/types/errors/domain-error';
+import { UserAlreadyExistsError, UserCreationFailedError } from '@/types/errors/user-error';
+import { TResult } from '@/types/result';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,18 +9,14 @@ export class UserService {
   // In-memory storage for now, will be replaced with database
   private users: TUser[] = [];
 
-  async createUser(userData: TNewUserDto): Promise<TResult<TUserResponseDto, TUserDomainError>> {
+  async createUser(userData: TNewUserDto): Promise<TResult<TUserResponseDto>> {
     try {
       // Check if user with email already exists
       const existingUser = this.users.find((user) => user.email === userData.email);
       if (existingUser) {
         return {
           success: false,
-          error: {
-            code: 'USER_ALREADY_EXISTS',
-            message: 'User with this email already exists',
-            details: { email: userData.email },
-          },
+          error: new UserAlreadyExistsError({ email: userData.email }),
         };
       }
 
@@ -57,11 +53,9 @@ export class UserService {
     } catch (error) {
       return {
         success: false,
-        error: {
-          code: 'USER_CREATION_FAILED',
-          message: 'Failed to create user',
-          details: error instanceof Error ? error.message : 'Unknown error',
-        },
+        error: new UserCreationFailedError({
+          message: error instanceof Error ? error.message : 'Unknown error',
+        }),
       };
     }
   }
