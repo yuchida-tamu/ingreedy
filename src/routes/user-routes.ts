@@ -1,5 +1,5 @@
 import { UserController } from '@/controllers/user-controller';
-import { UserService } from '@/services/user-service';
+import { UserService } from '@/services/user/user-service';
 import { Router } from 'express';
 
 export function createUserRouter(): Router {

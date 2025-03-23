@@ -1,4 +1,4 @@
-import { UserService } from '@/services/user-service';
+import { UserService } from '@/services/user/user-service';
 import { TApiResponse } from '@/types/api/response';
 import { newUserDtoSchema } from '@/types/dtos/user.dto';
 import { Request, Response } from 'express';
@@ -28,7 +28,7 @@ export class UserController {
             }, {} as Record<string, string>),
           },
         } as const satisfies TApiResponse<never>;
-        res.status(errorStatusMap.VALIDATION_ERROR).json(response);
+        res.status(400).json(response);
         return;
       }
 
