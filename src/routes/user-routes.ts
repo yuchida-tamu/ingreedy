@@ -7,7 +7,7 @@ export function generateUserRouter(): Router {
   const userService = new UserService();
   const userController = new UserController(userService);
 
-  router.post('/create', (req, res) => userController.createUser(req, res));
+  router.post('/new', (req, res) => userController.createUser(req, res));
 
   return router;
 }
