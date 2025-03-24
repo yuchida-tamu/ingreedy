@@ -8,6 +8,7 @@ export function generateUserRouter(): Router {
   const userController = new UserController(userService);
 
   router.post('/new', (req, res) => userController.createUser(req, res));
+  router.get('/', (req, res) => userController.getUser(req, res));
 
   return router;
 }

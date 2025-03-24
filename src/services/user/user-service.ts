@@ -1,6 +1,10 @@
 import { TNewUserDto, TUserResponseDto } from '@/types/dtos/user.dto';
 import { TUser } from '@/types/entities/user';
-import { UserAlreadyExistsError, UserCreationFailedError } from '@/types/errors/user-error';
+import {
+  UserAlreadyExistsError,
+  UserCreationFailedError,
+  UserNotFoundError,
+} from '@/types/errors/user-error';
 import { TResult } from '@/types/result';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,6 +13,41 @@ export class UserService {
   // In-memory storage for now, will be replaced with database
   private users: TUser[] = [];
 
+  async getUserById(userId: string): Promise<TResult<TUserResponseDto>> {
+    try {
+      const user = this.users.find((user) => user.id === userId);
+      if (!user) {
+        return {
+          success: false,
+          error: new UserNotFoundError({
+            message: `User with id ${userId} not found`,
+          }),
+        };
+      }
+
+      const { id, email, username, firstName, lastName, createdAt, updatedAt } = user;
+      return {
+        success: true,
+        data: {
+          id,
+          email,
+          username,
+          firstName,
+          lastName,
+          createdAt,
+          updatedAt,
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: new UserNotFoundError({
+          message: error instanceof Error ? error.message : 'Unknown error',
+        }),
+      };
+    }
+  }
+
   async createUser(userData: TNewUserDto): Promise<TResult<TUserResponseDto>> {
     try {
       // Check if user with email already exists
@@ -16,7 +55,9 @@ export class UserService {
       if (existingUser) {
         return {
           success: false,
-          error: new UserAlreadyExistsError({ email: userData.email }),
+          error: new UserAlreadyExistsError({
+            message: `User with email ${userData.email} already exists`,
+          }),
         };
       }
 
