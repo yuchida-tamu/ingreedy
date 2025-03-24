@@ -1,4 +1,4 @@
-import { createUserRouter } from '@/routes/user-routes';
+import { generateUserRouter } from '@/routes/user-routes';
 import cors from 'cors';
 import express, { type Express, type NextFunction, type Request, type Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
@@ -31,7 +31,7 @@ export function createApp(): Express {
 
   // API routes
   const apiRouter = express.Router();
-  apiRouter.use('/users', createUserRouter());
+  apiRouter.use('/users', generateUserRouter());
   app.use(`${process.env.API_PREFIX || '/api'}/${process.env.API_VERSION || 'v1'}`, apiRouter);
 
   // Error handling middleware

@@ -2,7 +2,7 @@ import { UserController } from '@/controllers/user-controller';
 import { UserService } from '@/services/user/user-service';
 import { Router } from 'express';
 
-export function createUserRouter(): Router {
+export function generateUserRouter(): Router {
   const router = Router();
   const userService = new UserService();
   const userController = new UserController(userService);
