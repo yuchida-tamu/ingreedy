@@ -1,6 +1,7 @@
+import { errorHandler } from '@/middleware/error.middleware';
 import { generateUserRouter } from '@/routes/user-routes';
 import cors from 'cors';
-import express, { type Express, type NextFunction, type Request, type Response } from 'express';
+import express, { type Express, type Request, type Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -35,16 +36,7 @@ export function createApp(): Express {
   app.use(`${process.env.API_PREFIX || '/api'}/${process.env.API_VERSION || 'v1'}`, apiRouter);
 
   // Error handling middleware
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    console.error(err.stack);
-    res.status(err.status || 500).json({
-      error: {
-        message: err.message || 'Internal Server Error',
-        ...(process.env.NODE_ENV === 'development' ? { stack: err.stack } : {}),
-      },
-    });
-  });
+  app.use(errorHandler);
 
   return app;
 }

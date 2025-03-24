@@ -15,11 +15,11 @@ export function generateUserRouter(): Router {
   const userService = new UserService();
   const userController = new UserController(userService);
 
-  router.post('/new', validateRequest(newUserDtoSchema), (req, res) =>
-    userController.createUser(req, res),
+  router.post('/new', validateRequest(newUserDtoSchema), (req, res, next) =>
+    userController.createUser(req, res, next),
   );
-  router.get('/', validateRequest(userIdSchema, 'query'), (req, res) =>
-    userController.getUser(req, res),
+  router.get('/', validateRequest(userIdSchema, 'query'), (req, res, next) =>
+    userController.getUser(req, res, next),
   );
 
   return router;
