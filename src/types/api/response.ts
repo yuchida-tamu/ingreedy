@@ -2,7 +2,6 @@
 export type TApiError = {
   message: string;
   code: string;
-  details?: Record<string, unknown>;
 };
 
 // Generic API response type

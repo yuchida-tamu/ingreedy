@@ -4,11 +4,20 @@ import { InternalServerError } from '@/types/errors/user-error';
 import { NextFunction, Request, Response } from 'express';
 
 // Map domain error codes to HTTP status codes
-const errorStatusMap: Record<string, number> = {
+const ERROR_STATUS_MAP: Record<string, number> = {
   USER_ALREADY_EXISTS: 409,
   USER_CREATION_FAILED: 500,
   VALIDATION_ERROR: 400,
   USER_NOT_FOUND: 404,
+};
+
+const ERROR_CODE_MAP: Record<string, string> = {
+  UNKNOWN_ERROR: 'U000',
+  USER_ALREADY_EXISTS: 'U001',
+  USER_CREATION_FAILED: 'U002',
+  VALIDATION_ERROR: 'U003',
+  USER_NOT_FOUND: 'U004',
+  INTERNAL_SERVER_ERROR: 'U005',
 };
 
 export const errorHandler = (
@@ -36,11 +45,13 @@ export const errorHandler = (
           message: error.message || 'Unknown error',
         });
 
-  const status = errorStatusMap[errorInstance.code] || 500;
   const response = {
     success: false,
-    error: errorInstance,
+    error: {
+      message: errorInstance.message,
+      code: ERROR_CODE_MAP[errorInstance.code],
+    },
   } as const satisfies TApiResponse<never>;
 
-  res.status(status).json(response);
+  res.status(ERROR_STATUS_MAP[errorInstance.code]).json(response);
 };
