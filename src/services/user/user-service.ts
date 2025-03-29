@@ -9,6 +9,7 @@ import {
   UserNotFoundError,
 } from '@/types/errors/user-error';
 import { TResult } from '@/types/result';
+import { ResultUtil } from '@/utils/result.util';
 import bcrypt from 'bcrypt';
 
 export class UserService implements IUserService {
@@ -20,17 +21,17 @@ export class UserService implements IUserService {
     try {
       const user = await this.userRepository.findById(userId);
       if (!user) {
-        return this.error(
+        return ResultUtil.error(
           new UserNotFoundError({
             message: `User with id ${userId} not found`,
           }),
         );
       }
 
-      return this.success(this.mapToUserResponse(user));
+      return ResultUtil.success(this.mapToUserResponse(user));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      return this.error(new UserError(message));
+      return ResultUtil.error(new UserError(message));
     }
   }
 
@@ -39,7 +40,7 @@ export class UserService implements IUserService {
       // Check if user with email already exists
       const existingUser = await this.userRepository.findByEmail(userData.email);
       if (existingUser) {
-        return this.error(
+        return ResultUtil.error(
           new UserAlreadyExistsError({
             message: `User with email ${userData.email} already exists`,
           }),
@@ -52,10 +53,10 @@ export class UserService implements IUserService {
         password: await this.hashPassword(userData.password),
       });
 
-      return this.success(this.mapToUserResponse(newUser));
+      return ResultUtil.success(this.mapToUserResponse(newUser));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      return this.error(new UserCreationFailedError({ message }));
+      return ResultUtil.error(new UserCreationFailedError({ message }));
     }
   }
 
@@ -82,14 +83,6 @@ export class UserService implements IUserService {
       lastName,
       createdAt,
       updatedAt,
-    };
-  }
-
-  private success<T>(data: T): TResult<T> {
-    return { success: true, data };
-  }
-
-  private error<E>(error: E): TResult<never, E> {
-    return { success: false, error };
+    } as const satisfies TUserResponseDto;
   }
 }
