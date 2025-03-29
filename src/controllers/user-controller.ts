@@ -14,11 +14,7 @@ export class UserController {
         return;
       }
 
-      const response = {
-        success: true,
-        data: result.data,
-      } as const satisfies TApiResponse<typeof result.data>;
-      res.status(200).json(response);
+      this.handleSuccessResponse(res, result.data);
     } catch (error) {
       next(error);
     }
@@ -32,13 +28,17 @@ export class UserController {
         return;
       }
 
-      const response: TApiResponse<typeof result.data> = {
-        success: true,
-        data: result.data,
-      };
-      res.status(201).json(response);
+      this.handleSuccessResponse(res, result.data, 201);
     } catch (error) {
       next(error);
     }
+  }
+
+  private handleSuccessResponse<T>(res: Response, data: T, statusCode: number = 200): void {
+    const response = {
+      success: true,
+      data,
+    } as const satisfies TApiResponse<T>;
+    res.status(statusCode).json(response);
   }
 }
