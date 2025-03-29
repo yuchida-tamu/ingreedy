@@ -1,5 +1,4 @@
 import { TNewUserDto, TUserResponseDto } from '@/types/dtos/user.dto';
-import { TUser } from '@/types/entities/user';
 import {
   UserAlreadyExistsError,
   UserCreationFailedError,
@@ -7,15 +6,14 @@ import {
 } from '@/types/errors/user-error';
 import { TResult } from '@/types/result';
 import bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
+import { IUserRepository } from './interfaces/user-repository.interface';
 
 export class UserService {
-  // In-memory storage for now, will be replaced with database
-  private users: TUser[] = [];
+  constructor(private userRepository: IUserRepository) {}
 
   async getUserById(userId: string): Promise<TResult<TUserResponseDto>> {
     try {
-      const user = this.users.find((user) => user.id === userId);
+      const user = await this.userRepository.findById(userId);
       if (!user) {
         return {
           success: false,
@@ -51,7 +49,7 @@ export class UserService {
   async createUser(userData: TNewUserDto): Promise<TResult<TUserResponseDto>> {
     try {
       // Check if user with email already exists
-      const existingUser = this.users.find((user) => user.email === userData.email);
+      const existingUser = await this.userRepository.findByEmail(userData.email);
       if (existingUser) {
         return {
           success: false,
@@ -66,16 +64,10 @@ export class UserService {
       const hashedPassword = await bcrypt.hash(userData.password, salt);
 
       // Create new user
-      const newUser: TUser = {
+      const newUser = await this.userRepository.create({
         ...userData,
-        id: uuidv4(),
         password: hashedPassword,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      // Store user
-      this.users.push(newUser);
+      });
 
       // Return user data without password
       const { id, email, username, firstName, lastName, createdAt, updatedAt } = newUser;
