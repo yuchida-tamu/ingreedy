@@ -4,6 +4,25 @@ import path from 'path';
 import { Client } from 'pg';
 import { DatabaseError, getConnectionHint, type PostgresError } from './database-error';
 
+async function createClient(database = 'postgres'): Promise<Client> {
+  const client = new Client({
+    ...databaseConfig,
+    user: databaseConfig.username,
+    database,
+  });
+
+  try {
+    await client.connect();
+    console.info(
+      `Connected to ${database === 'postgres' ? 'PostgreSQL' : `database: ${database}`}`,
+    );
+    return client;
+  } catch (error) {
+    const hint = getConnectionHint(error as PostgresError);
+    throw new DatabaseError(`Failed to connect to ${database}`, error, hint);
+  }
+}
+
 // Initialize database if it doesn't exist
 export async function initializeDatabase(): Promise<void> {
   // Validate configuration first
@@ -14,18 +33,9 @@ export async function initializeDatabase(): Promise<void> {
     );
   }
 
-  const client = new Client({
-    host: databaseConfig.host,
-    port: databaseConfig.port,
-    user: databaseConfig.username,
-    password: databaseConfig.password,
-    database: 'postgres', // Connect to default database first
-  });
-
+  // Create initial database if needed
+  const client = await createClient();
   try {
-    await client.connect();
-    console.info('Connected to PostgreSQL');
-
     // Check if database exists
     const dbExists = await client.query('SELECT 1 FROM pg_database WHERE datname = $1', [
       databaseConfig.database,
@@ -37,23 +47,13 @@ export async function initializeDatabase(): Promise<void> {
     } else {
       console.info(`Database '${databaseConfig.database}' already exists`);
     }
-  } catch (error) {
-    const hint = getConnectionHint(error as PostgresError);
-    throw new DatabaseError('Failed to create database', error, hint);
   } finally {
     await client.end().catch(console.error);
   }
 
   // Run initialization SQL if needed
-  const initClient = new Client({
-    ...databaseConfig,
-    database: databaseConfig.database,
-  });
-
+  const initClient = await createClient(databaseConfig.database);
   try {
-    await initClient.connect();
-    console.info(`Connected to database: ${databaseConfig.database}`);
-
     // Try to find init.sql in both src and dist directories
     const possiblePaths = [
       path.join(__dirname, 'init.sql'), // dist directory
