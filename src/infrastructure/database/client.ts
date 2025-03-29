@@ -1,5 +1,5 @@
 import { databaseConfig } from '@/config/database.config';
-import { Pool, QueryResult } from 'pg';
+import { Pool, PoolClient, QueryResult } from 'pg';
 import { DatabaseError, getConnectionHint, type PostgresError } from './database-error';
 import { checkSchema } from './database-utils';
 
@@ -45,7 +45,7 @@ export const db = {
     }
   },
 
-  getClient: async () => {
+  getClient: async (): Promise<PoolClient> => {
     try {
       return await pool.connect();
     } catch (error) {
@@ -54,5 +54,5 @@ export const db = {
     }
   },
 
-  checkSchema: () => checkSchema(pool),
+  checkSchema: async (): Promise<void> => checkSchema(pool),
 };
