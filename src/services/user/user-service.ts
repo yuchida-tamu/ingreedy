@@ -1,3 +1,4 @@
+import { IUserService } from '@/core/application/services/user.service';
 import { IUserRepository } from '@/core/repositories/user.repository';
 import { TNewUserDto, TUserResponseDto } from '@/types/dtos/user.dto';
 import {
@@ -8,7 +9,7 @@ import {
 import { TResult } from '@/types/result';
 import bcrypt from 'bcrypt';
 
-export class UserService {
+export class UserService implements IUserService {
   constructor(private userRepository: IUserRepository) {}
 
   async getUserById(userId: string): Promise<TResult<TUserResponseDto>> {

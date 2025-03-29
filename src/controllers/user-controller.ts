@@ -1,9 +1,9 @@
-import { UserService } from '@/services/user/user-service';
+import { IUserService } from '@/core/application/services/user.service';
 import { TApiResponse } from '@/types/api/response';
 import { NextFunction, Request, Response } from 'express';
 
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: IUserService) {}
 
   async getUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
