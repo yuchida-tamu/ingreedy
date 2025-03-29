@@ -11,7 +11,8 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "prepare": "husky install",
-    "db:init": "./scripts/init-db.sh"
+    "db:init": "./scripts/init-db.sh",
+    "db:check": "ts-node -r tsconfig-paths/register scripts/check-db.ts"
   },
   "keywords": [
     "recipe",
