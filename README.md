@@ -67,9 +67,7 @@ The server will start on `http://localhost:3000` (or the port specified in your 
 ```
 src/
 ├── core/           # Core domain entities and business rules
-│   └── domain/     # Domain entities and interfaces
 ├── infrastructure/ # Infrastructure implementations
-│   └── repositories/ # Concrete repository implementations
 ├── config/         # Configuration files and environment setup
 ├── controllers/    # HTTP request handlers
 ├── middleware/     # Express middleware (auth, error handling, etc.)
@@ -78,8 +76,6 @@ src/
 ├── routes/         # API route definitions
 ├── services/       # Application services and business logic
 ├── types/          # TypeScript types and interfaces
-│   ├── api/       # API-related types (requests, responses)
-│   └── errors/    # Error types and classes
 ├── utils/          # Utility functions and helpers
 ├── app.ts         # Express app setup and configuration
 └── index.ts       # Application entry point
