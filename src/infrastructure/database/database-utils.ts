@@ -64,7 +64,7 @@ export async function checkSchema(pool: Pool): Promise<void> {
 
     const functionalIndexResult = await pool.query(functionalIndexQuery);
     if (functionalIndexResult.rows.length > 0) {
-      console.log('\nFunctional indexes on users table:');
+      console.info('\nFunctional indexes on users table:');
       console.table(functionalIndexResult.rows);
     }
   } catch (error) {
