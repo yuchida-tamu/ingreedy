@@ -5,7 +5,7 @@ import { UserNotFoundError, UserValidationError } from '../../types/errors/user-
 import { UserController } from '../user-controller';
 
 // Mock the UserService
-jest.mock('@/services/user/user-service');
+jest.mock('../../services/user/user-service');
 
 describe('UserController', () => {
   let userController: UserController;
@@ -124,7 +124,10 @@ describe('UserController', () => {
       };
       const mockCreatedUser: TUserResponseDto = {
         id: 'new-user-id',
-        ...mockUserData,
+        email: mockUserData.email,
+        username: mockUserData.username,
+        firstName: mockUserData.firstName,
+        lastName: mockUserData.lastName,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

@@ -1,49 +1,36 @@
+import { config } from '@/config';
 import { IUserService } from '@/core/application/services/user.service';
 import { IUserRepository } from '@/core/repositories/user.repository';
 import { TNewUserDto, TUserResponseDto } from '@/types/dtos/user.dto';
 import {
   UserAlreadyExistsError,
   UserCreationFailedError,
+  UserError,
   UserNotFoundError,
 } from '@/types/errors/user-error';
 import { TResult } from '@/types/result';
 import bcrypt from 'bcrypt';
 
 export class UserService implements IUserService {
+  private readonly SALT_ROUNDS = config.auth.saltRounds;
+
   constructor(private userRepository: IUserRepository) {}
 
   async getUserById(userId: string): Promise<TResult<TUserResponseDto>> {
     try {
       const user = await this.userRepository.findById(userId);
       if (!user) {
-        return {
-          success: false,
-          error: new UserNotFoundError({
+        return this.error(
+          new UserNotFoundError({
             message: `User with id ${userId} not found`,
           }),
-        };
+        );
       }
 
-      const { id, email, username, firstName, lastName, createdAt, updatedAt } = user;
-      return {
-        success: true,
-        data: {
-          id,
-          email,
-          username,
-          firstName,
-          lastName,
-          createdAt,
-          updatedAt,
-        },
-      };
+      return this.success(this.mapToUserResponse(user));
     } catch (error) {
-      return {
-        success: false,
-        error: new UserNotFoundError({
-          message: error instanceof Error ? error.message : 'Unknown error',
-        }),
-      };
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      return this.error(new UserError(message));
     }
   }
 
@@ -52,45 +39,57 @@ export class UserService implements IUserService {
       // Check if user with email already exists
       const existingUser = await this.userRepository.findByEmail(userData.email);
       if (existingUser) {
-        return {
-          success: false,
-          error: new UserAlreadyExistsError({
+        return this.error(
+          new UserAlreadyExistsError({
             message: `User with email ${userData.email} already exists`,
           }),
-        };
+        );
       }
 
-      // Hash password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(userData.password, salt);
-
-      // Create new user
+      // Create new user with hashed password
       const newUser = await this.userRepository.create({
         ...userData,
-        password: hashedPassword,
+        password: await this.hashPassword(userData.password),
       });
 
-      // Return user data without password
-      const { id, email, username, firstName, lastName, createdAt, updatedAt } = newUser;
-      return {
-        success: true,
-        data: {
-          id,
-          email,
-          username,
-          firstName,
-          lastName,
-          createdAt,
-          updatedAt,
-        },
-      };
+      return this.success(this.mapToUserResponse(newUser));
     } catch (error) {
-      return {
-        success: false,
-        error: new UserCreationFailedError({
-          message: error instanceof Error ? error.message : 'Unknown error',
-        }),
-      };
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      return this.error(new UserCreationFailedError({ message }));
     }
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(this.SALT_ROUNDS);
+    return bcrypt.hash(password, salt);
+  }
+
+  private mapToUserResponse(user: {
+    id: string;
+    email: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }): TUserResponseDto {
+    const { id, email, username, firstName, lastName, createdAt, updatedAt } = user;
+    return {
+      id,
+      email,
+      username,
+      firstName,
+      lastName,
+      createdAt,
+      updatedAt,
+    };
+  }
+
+  private success<T>(data: T): TResult<T> {
+    return { success: true, data };
+  }
+
+  private error<E>(error: E): TResult<never, E> {
+    return { success: false, error };
   }
 }

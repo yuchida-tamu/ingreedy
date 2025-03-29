@@ -4,6 +4,7 @@ import { TNewUserDto } from '../../../types/dtos/user.dto';
 import {
   UserAlreadyExistsError,
   UserCreationFailedError,
+  UserError,
   UserNotFoundError,
 } from '../../../types/errors/user-error';
 import { UserService } from '../user-service';
@@ -95,6 +96,7 @@ describe('UserService', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(UserAlreadyExistsError);
+        expect(result.error.message).toBe('User already exists');
       }
       expect(mockUserRepository.create).not.toHaveBeenCalled();
     });
@@ -111,6 +113,7 @@ describe('UserService', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(UserCreationFailedError);
+        expect(result.error.message).toBe('Failed to create user');
       }
     });
   });
@@ -157,13 +160,13 @@ describe('UserService', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(UserNotFoundError);
+        expect(result.error.message).toBe('User not found');
       }
     });
 
     it('should handle repository errors during fetch', async () => {
       // Arrange
-      const errorMessage = 'User not found';
-      mockUserRepository.findById.mockRejectedValue(new Error(errorMessage));
+      mockUserRepository.findById.mockRejectedValue(new Error('Database error'));
 
       // Act
       const result = await userService.getUserById('mock-id');
@@ -171,8 +174,8 @@ describe('UserService', () => {
       // Assert
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toBeInstanceOf(UserNotFoundError);
-        expect(result.error.message).toBe(errorMessage);
+        expect(result.error).toBeInstanceOf(UserError);
+        expect(result.error.message).toBe('Database error');
       }
     });
   });
