@@ -1,3 +1,4 @@
+import { IUserRepository } from '@/core/repositories/user.repository';
 import { TNewUserDto, TUserResponseDto } from '@/types/dtos/user.dto';
 import {
   UserAlreadyExistsError,
@@ -6,7 +7,6 @@ import {
 } from '@/types/errors/user-error';
 import { TResult } from '@/types/result';
 import bcrypt from 'bcrypt';
-import { IUserRepository } from './interfaces/user-repository.interface';
 
 export class UserService {
   constructor(private userRepository: IUserRepository) {}

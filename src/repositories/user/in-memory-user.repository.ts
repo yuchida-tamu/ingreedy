@@ -1,6 +1,6 @@
+import { IUserRepository } from '@/core/repositories/user.repository';
 import { TUser } from '@/types/entities/user';
 import { v4 as uuidv4 } from 'uuid';
-import { IUserRepository } from '../interfaces/user-repository.interface';
 
 export class InMemoryUserRepository implements IUserRepository {
   private users: TUser[] = [];
