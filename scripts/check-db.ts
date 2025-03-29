@@ -1,6 +1,6 @@
 import { db } from '../src/infrastructure/database/client';
 
-async function checkSchema() {
+async function checkSchema(): Promise<void> {
   try {
     await db.checkSchema();
     process.exit(0);
