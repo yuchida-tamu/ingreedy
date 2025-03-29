@@ -1,6 +1,6 @@
 import { UserController } from '@/controllers/user-controller';
 import { validateRequest } from '@/middleware/validation.middleware';
-import { InMemoryUserRepository } from '@/repositories/user/in-memory-user.repository';
+import { InMemoryUserRepository } from '@/repositories/user/in-memory-user-repository';
 import { UserService } from '@/services/user/user-service';
 import { newUserDtoSchema } from '@/types/dtos/user.dto';
 import { Router } from 'express';
