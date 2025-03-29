@@ -6,6 +6,7 @@ const USER_ERROR_CODES = {
   ALREADY_EXISTS: 'USER_ALREADY_EXISTS',
   CREATION_FAILED: 'USER_CREATION_FAILED',
   VALIDATION_FAILED: 'USER_VALIDATION_FAILED',
+  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
 } as const;
 
 export class UserError extends ApplicationError {
@@ -44,5 +45,12 @@ export class UserCreationFailedError extends UserError {
   constructor(details: Record<string, string>) {
     super('Failed to create user', USER_ERROR_CODES.CREATION_FAILED, details);
     this.name = 'UserCreationFailedError';
+  }
+}
+
+export class InternalServerError extends UserError {
+  constructor(details: Record<string, string>) {
+    super('Internal server error', USER_ERROR_CODES.INTERNAL_SERVER_ERROR, details);
+    this.name = 'InternalServerError';
   }
 }

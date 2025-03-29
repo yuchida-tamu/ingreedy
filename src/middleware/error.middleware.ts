@@ -9,6 +9,7 @@ const ERROR_STATUS_MAP: Record<string, number> = {
   USER_CREATION_FAILED: 500,
   VALIDATION_ERROR: 400,
   USER_NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
 };
 
 const ERROR_CODE_MAP: Record<string, string> = {
@@ -49,9 +50,9 @@ export const errorHandler = (
     success: false,
     error: {
       message: errorInstance.message,
-      code: ERROR_CODE_MAP[errorInstance.code],
+      code: ERROR_CODE_MAP[errorInstance.code] || ERROR_CODE_MAP.UNKNOWN_ERROR,
     },
   } as const satisfies TApiResponse<never>;
 
-  res.status(ERROR_STATUS_MAP[errorInstance.code]).json(response);
+  res.status(ERROR_STATUS_MAP[errorInstance.code] || 500).json(response);
 };
