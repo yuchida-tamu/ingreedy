@@ -49,8 +49,8 @@ export class UserCreationFailedError extends UserError {
 }
 
 export class InternalServerError extends UserError {
-  constructor(details: Record<string, string>) {
-    super('Internal server error', USER_ERROR_CODES.INTERNAL_SERVER_ERROR, details);
+  constructor({ message, ...details }: { message?: string } & Record<string, string>) {
+    super(message || 'Internal server error', USER_ERROR_CODES.INTERNAL_SERVER_ERROR, details);
     this.name = 'InternalServerError';
   }
 }
