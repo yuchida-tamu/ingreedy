@@ -1,22 +1,22 @@
+import { User } from '@/core/domain/user/user.entity';
 import { IUserRepository } from '@/core/repositories/user.repository';
-import { TUser } from '@/types/entities/user';
 import { v4 as uuidv4 } from 'uuid';
 
 export class InMemoryUserRepository implements IUserRepository {
-  private users: TUser[] = [];
+  private users: User[] = [];
 
-  async findById(id: string): Promise<TUser | null> {
+  async findById(id: string): Promise<User | null> {
     const user = this.users.find((user) => user.id === id);
     return user || null;
   }
 
-  async findByEmail(email: string): Promise<TUser | null> {
+  async findByEmail(email: string): Promise<User | null> {
     const user = this.users.find((user) => user.email === email);
     return user || null;
   }
 
-  async create(userData: Omit<TUser, 'id' | 'createdAt' | 'updatedAt'>): Promise<TUser> {
-    const newUser: TUser = {
+  async create(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
+    const newUser: User = {
       ...userData,
       id: uuidv4(),
       createdAt: new Date(),

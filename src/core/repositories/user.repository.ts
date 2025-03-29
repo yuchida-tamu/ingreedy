@@ -1,7 +1,7 @@
-import { TUser } from '@/types/entities/user';
+import { User } from '@/core/domain/user/user.entity';
 
 export interface IUserRepository {
-  findById(id: string): Promise<TUser | null>;
-  findByEmail(email: string): Promise<TUser | null>;
-  create(user: Omit<TUser, 'id' | 'createdAt' | 'updatedAt'>): Promise<TUser>;
+  findById(id: string): Promise<User | null>;
+  findByEmail(email: string): Promise<User | null>;
+  create(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User>;
 }

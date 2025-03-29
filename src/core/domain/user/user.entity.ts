@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// User entity schema
+// User entity schema for validation
 export const userSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
@@ -12,5 +12,9 @@ export const userSchema = z.object({
   updatedAt: z.date(),
 });
 
-// TypeScript type for User entity
-export type TUser = z.infer<typeof userSchema>;
+// Domain entity type
+export type User = z.infer<typeof userSchema>;
+
+// Value Objects and domain-specific types
+export type UserId = string & { readonly _brand: unique symbol };
+export type UserEmail = string & { readonly _brand: unique symbol };

@@ -1,5 +1,5 @@
+import { userSchema } from '@/core/domain/user/user.entity';
 import { z } from 'zod';
-import { userSchema } from '../entities/user';
 
 // DTO schema for new user registration request
 export const newUserDtoSchema = userSchema.omit({
