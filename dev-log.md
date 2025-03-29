@@ -18,8 +18,8 @@ Ingreedy is an inventory & recipe management application that helps users track 
 
 - [x] Create development log
 - [x] Establish coding guidelines and standards
-- [ ] Set up basic project structure
-- [ ] Choose and configure database
+- [x] Set up basic project structure
+- [x] Choose and configure database
 - [ ] Set up basic server configuration
 - [ ] Implement basic authentication system
 
