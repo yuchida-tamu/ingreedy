@@ -66,17 +66,50 @@ The server will start on `http://localhost:3000` (or the port specified in your 
 
 ```
 src/
-├── config/         # Configuration files
-├── controllers/    # Route controllers
-├── middleware/     # Custom middleware
-├── models/         # Data models
-├── routes/         # API routes
-├── services/       # Business logic
-├── types/          # TypeScript types
-├── utils/          # Utility functions
-├── app.ts         # Express app setup
-└── server.ts      # Server entry point
+├── core/           # Core domain entities and business rules
+│   └── domain/     # Domain entities and interfaces
+├── infrastructure/ # Infrastructure implementations
+│   └── repositories/ # Concrete repository implementations
+├── config/         # Configuration files and environment setup
+├── controllers/    # HTTP request handlers
+├── middleware/     # Express middleware (auth, error handling, etc.)
+├── models/         # Data models and schemas
+├── repositories/   # Repository interfaces and implementations
+├── routes/         # API route definitions
+├── services/       # Application services and business logic
+├── types/          # TypeScript types and interfaces
+│   ├── api/       # API-related types (requests, responses)
+│   └── errors/    # Error types and classes
+├── utils/          # Utility functions and helpers
+├── app.ts         # Express app setup and configuration
+└── index.ts       # Application entry point
 ```
+
+### Directory Details
+
+- **core/**: Contains the core business logic and domain entities, following Domain-Driven Design principles
+  - **domain/**: Domain entities, value objects, and repository interfaces
+- **infrastructure/**: Implementation of interfaces defined in the core domain
+  - **repositories/**: Concrete implementations of repository interfaces (e.g., in-memory, database)
+- **config/**: Application configuration, environment variables, and constants
+- **controllers/**: HTTP request handlers that use services to process requests
+- **middleware/**: Express middleware for cross-cutting concerns
+  - Error handling
+  - Authentication
+  - Request validation
+  - Logging
+- **models/**: Data models and database schemas
+- **repositories/**: Repository pattern implementation
+  - Repository interfaces
+  - Data access layer
+- **routes/**: API route definitions and endpoint grouping
+- **services/**: Application services that implement business logic
+  - Orchestrate between repositories and domain entities
+  - Handle business rules and workflows
+- **types/**: TypeScript type definitions
+  - **api/**: Request/Response types
+  - **errors/**: Custom error types and error handling
+- **utils/**: Helper functions and shared utilities
 
 ## API Documentation
 
