@@ -36,8 +36,6 @@ describe('UserService', () => {
       email: 'test@example.com',
       username: 'testuser',
       password: 'password123',
-      firstName: 'Test',
-      lastName: 'User',
     };
   });
 
@@ -65,8 +63,6 @@ describe('UserService', () => {
           id: 'mock-id',
           email: mockUser.email,
           username: mockUser.username,
-          firstName: mockUser.firstName,
-          lastName: mockUser.lastName,
           createdAt,
           updatedAt,
         });
@@ -140,8 +136,6 @@ describe('UserService', () => {
           id: user.id,
           email: user.email,
           username: user.username,
-          firstName: user.firstName,
-          lastName: user.lastName,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         });

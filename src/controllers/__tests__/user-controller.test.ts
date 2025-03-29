@@ -45,8 +45,6 @@ describe('UserController', () => {
         id: mockUserId,
         email: 'test@example.com',
         username: 'testuser',
-        firstName: 'Test',
-        lastName: 'User',
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -126,8 +124,6 @@ describe('UserController', () => {
         id: 'new-user-id',
         email: mockUserData.email,
         username: mockUserData.username,
-        firstName: mockUserData.firstName,
-        lastName: mockUserData.lastName,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

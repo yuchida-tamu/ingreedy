@@ -69,18 +69,14 @@ export class UserService implements IUserService {
     id: string;
     email: string;
     username: string;
-    firstName: string;
-    lastName: string;
     createdAt: Date;
     updatedAt: Date;
   }): TUserResponseDto {
-    const { id, email, username, firstName, lastName, createdAt, updatedAt } = user;
+    const { id, email, username, createdAt, updatedAt } = user;
     return {
       id,
       email,
       username,
-      firstName,
-      lastName,
       createdAt,
       updatedAt,
     } as const satisfies TUserResponseDto;

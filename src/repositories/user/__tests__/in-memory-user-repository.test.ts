@@ -11,8 +11,6 @@ describe('InMemoryUserRepository', () => {
       email: 'test@example.com',
       username: 'testuser',
       password: 'password123',
-      firstName: 'Test',
-      lastName: 'User',
     };
   });
 
