@@ -61,7 +61,7 @@
   "lint-staged": {
     "*.ts": [
       "eslint --fix",
-      "tsc-alias && tsc -p tsconfig.json"
+      "bash -c 'tsc --noEmit'"
     ]
   }
 }
