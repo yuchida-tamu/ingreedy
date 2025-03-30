@@ -1,4 +1,3 @@
-import type { TApiResponse } from '@/core/application/types/api/response';
 import { ApplicationError } from '@/core/application/types/errors/application-error';
 import { InternalServerError } from '@/core/application/types/errors/user-error';
 import type { NextFunction, Request, Response } from 'express';
@@ -40,8 +39,8 @@ export const errorHandler = (
     error: {
       message: errorInstance.message,
       code: ERROR_CODE_MAP[errorInstance.code] || ERROR_CODE_MAP.UNKNOWN_ERROR,
-    },
-  } as const satisfies TApiResponse<never>;
+    } as const,
+  } as const;
 
   res.status(ERROR_STATUS_MAP[errorInstance.code] || 500).json(response);
 };

@@ -1,7 +1,16 @@
+import type { IUserRepository } from '@/core/application/repositories/user.repository';
+import type { User } from '@/core/domain/user/user.entity';
+import { db } from '@/infrastructure/database/client';
 import { DatabaseError } from '@/infrastructure/database/database-error';
-import { IUserRepository } from '../../../core/application/repositories/user.repository';
-import { User } from '../../../core/domain/user/user.entity';
-import { db } from '../../database/client';
+
+type DbUser = {
+  id: string;
+  email: string;
+  username: string;
+  password: string;
+  created_at: Date;
+  updated_at: Date;
+};
 
 /**
  * PostgreSQL implementation of the user repository.
@@ -10,10 +19,18 @@ import { db } from '../../database/client';
 export class PostgresUserRepository implements IUserRepository {
   async findById(id: string): Promise<User | null> {
     try {
-      const row = await db.queryOne<Record<string, unknown>>('SELECT * FROM users WHERE id = $1', [
-        id,
-      ]);
-      return row ? this.mapToUser(row) : null;
+      const result = await db.query<DbUser>(
+        `SELECT id, email, username, password, created_at, updated_at 
+         FROM users 
+         WHERE id = $1`,
+        [id],
+      );
+
+      if (result.length === 0) {
+        return null;
+      }
+
+      return this.mapToUser(result[0]);
     } catch (error) {
       throw new DatabaseError('Failed to find user by ID', error);
     }
@@ -21,43 +38,86 @@ export class PostgresUserRepository implements IUserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     try {
-      // Use case-insensitive search since we have an index for it
-      const row = await db.queryOne<Record<string, unknown>>(
-        'SELECT * FROM users WHERE lower(email) = lower($1)',
+      const result = await db.query<DbUser>(
+        `SELECT id, email, username, password, created_at, updated_at 
+         FROM users 
+         WHERE email = $1`,
         [email],
       );
-      return row ? this.mapToUser(row) : null;
+
+      if (result.length === 0) {
+        return null;
+      }
+
+      return this.mapToUser(result[0]);
     } catch (error) {
       throw new DatabaseError('Failed to find user by email', error);
     }
   }
 
-  async create(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
+  async create(data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
     try {
-      const row = await db.queryOne<Record<string, unknown>>(
-        `
-        INSERT INTO users (
-          email,
-          username,
-          password
-        ) VALUES (
-          $1, $2, $3
-        )
-        RETURNING *
-        `,
-        [user.email, user.username, user.password],
+      const result = await db.query<DbUser>(
+        `INSERT INTO users (email, username, password)
+         VALUES ($1, $2, $3)
+         RETURNING id, email, username, password, created_at, updated_at`,
+        [data.email, data.username, data.password],
       );
 
-      if (!row) {
-        throw new DatabaseError('Failed to create user: No result returned');
+      return this.mapToUser(result[0]);
+    } catch (error) {
+      throw new DatabaseError('Failed to create user', error);
+    }
+  }
+
+  async update(
+    id: string,
+    data: Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>,
+  ): Promise<User> {
+    try {
+      const setClause: string[] = [];
+      const values: unknown[] = [];
+      let paramCounter = 1;
+
+      // Build SET clause dynamically based on provided fields
+      if (data.email) {
+        setClause.push(`email = $${paramCounter}`);
+        values.push(data.email);
+        paramCounter++;
+      }
+      if (data.username) {
+        setClause.push(`username = $${paramCounter}`);
+        values.push(data.username);
+        paramCounter++;
+      }
+      if (data.password) {
+        setClause.push(`password = $${paramCounter}`);
+        values.push(data.password);
+        paramCounter++;
       }
 
-      return this.mapToUser(row);
-    } catch (error) {
-      if (error instanceof DatabaseError) {
-        throw error;
+      if (setClause.length === 0) {
+        throw new DatabaseError('No fields to update');
       }
-      throw new DatabaseError('Failed to create user', error);
+
+      // Add id as the last parameter
+      values.push(id);
+
+      const result = await db.query<DbUser>(
+        `UPDATE users 
+         SET ${setClause.join(', ')}, updated_at = CURRENT_TIMESTAMP
+         WHERE id = $${paramCounter}
+         RETURNING id, email, username, password, created_at, updated_at`,
+        values,
+      );
+
+      if (result.length === 0) {
+        throw new DatabaseError('User not found');
+      }
+
+      return this.mapToUser(result[0]);
+    } catch (error) {
+      throw new DatabaseError('Failed to update user', error);
     }
   }
 
@@ -66,14 +126,14 @@ export class PostgresUserRepository implements IUserRepository {
    * Handles conversion from snake_case column names to camelCase properties
    * and ensures proper date parsing.
    */
-  private mapToUser(row: Record<string, unknown>): User {
+  private mapToUser(row: DbUser): User {
     return {
-      id: row.id as string,
-      email: row.email as string,
-      username: row.username as string,
-      password: row.password as string,
-      createdAt: new Date(row.created_at as string),
-      updatedAt: new Date(row.updated_at as string),
+      id: row.id,
+      email: row.email,
+      username: row.username,
+      password: row.password,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     };
   }
 }

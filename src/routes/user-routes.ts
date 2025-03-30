@@ -1,6 +1,6 @@
 import { UserController } from '@/controllers/user-controller';
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
-import { newUserDtoSchema } from '@/core/application/types/dtos/user.dto';
+import { newUserDtoSchema, updateUserDtoSchema } from '@/core/application/types/dtos/user.dto';
 import { PostgresUserRepository } from '@/infrastructure/repositories/user/postgres-user-repository';
 import { authenticateJwt } from '@/middleware/auth.middleware';
 import { validateRequest } from '@/middleware/validation.middleware';
@@ -20,6 +20,13 @@ export function generateUserRouter(): Router {
   );
   router.get('/getUser', authenticateJwt(jwtService), (req, res, next) =>
     userController.getUser(req as AuthenticatedRequest, res, next),
+  );
+
+  router.put(
+    '/updateUser',
+    authenticateJwt(jwtService),
+    validateRequest(updateUserDtoSchema),
+    (req, res, next) => userController.updateUser(req as AuthenticatedRequest, res, next),
   );
 
   return router;

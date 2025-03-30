@@ -1,8 +1,11 @@
-import { IUserRepository } from '@/core/application/repositories/user.repository';
-import { User } from '@/core/domain/user/user.entity';
+import type { IUserRepository } from '@/core/application/repositories/user.repository';
+import type { User } from '@/core/domain/user/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 
 export class InMemoryUserRepository implements IUserRepository {
+  update(_id: string, _data: Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>): Promise<User> {
+    throw new Error('Method not implemented.');
+  }
   private users: User[] = [];
 
   async findById(id: string): Promise<User | null> {

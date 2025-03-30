@@ -1,20 +1,23 @@
-import { UserValidationError } from '@/core/application/types/errors/user-error';
-import { NextFunction, Request, Response } from 'express';
-import { AnyZodObject } from 'zod';
+import type { NextFunction, Request, Response } from 'express';
+import { z } from 'zod';
 
-type ValidationTarget = 'body' | 'query' | 'params';
-
-export const validateRequest = (schema: AnyZodObject, target: ValidationTarget = 'body') => {
-  return (req: Request, _: Response, next: NextFunction): void => {
-    const validationResult = schema.safeParse(req[target]);
-
-    if (!validationResult.success) {
-      next(new UserValidationError({ message: validationResult.error.message }));
-      return;
+export const validateRequest = (schema: z.ZodTypeAny) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      req.body = await schema.parseAsync(req.body);
+      next();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: 'Validation failed',
+            details: error.errors,
+          },
+        });
+        return;
+      }
+      next(error);
     }
-
-    // Add validated data to request
-    req[target] = validationResult.data;
-    next();
   };
 };

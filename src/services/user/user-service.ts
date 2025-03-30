@@ -1,12 +1,17 @@
 import { config } from '@/config';
-import { IUserRepository } from '@/core/application/repositories/user.repository';
-import { IUserService } from '@/core/application/services/user.service';
-import { TNewUserDto, TUserResponseDto } from '@/core/application/types/dtos/user.dto';
+import type { IUserRepository } from '@/core/application/repositories/user.repository';
+import type { IUserService } from '@/core/application/services/user.service';
+import type {
+  TNewUserDto,
+  TUpdateUserDto,
+  TUserResponseDto,
+} from '@/core/application/types/dtos/user.dto';
 import {
   UserAlreadyExistsError,
   UserCreationFailedError,
   UserError,
   UserNotFoundError,
+  UserUpdateFailedError,
 } from '@/core/application/types/errors/user-error';
 import { ResultUtil } from '@/utils/result.util';
 import bcrypt from 'bcrypt';
@@ -36,26 +41,69 @@ export class UserService implements IUserService {
 
   async createUser(userData: TNewUserDto) {
     try {
+      const { email, password, username } = userData;
       // Check if user with email already exists
-      const existingUser = await this.userRepository.findByEmail(userData.email);
+      const existingUser = await this.userRepository.findByEmail(email);
       if (existingUser) {
         return ResultUtil.error(
           new UserAlreadyExistsError({
-            message: `User with email ${userData.email} already exists`,
+            message: `User with email ${email} already exists`,
           }),
         );
       }
 
       // Create new user with hashed password
       const newUser = await this.userRepository.create({
-        ...userData,
-        password: await this.hashPassword(userData.password),
+        email,
+        username,
+        password: await this.hashPassword(password),
       });
 
       return ResultUtil.success(this.mapToUserResponse(newUser));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       return ResultUtil.error(new UserCreationFailedError({ message }));
+    }
+  }
+
+  async updateUser(userId: string, updateData: TUpdateUserDto) {
+    try {
+      const { email, password, username } = updateData;
+      // Check if user exists
+      const existingUser = await this.userRepository.findById(userId);
+      if (!existingUser) {
+        return ResultUtil.error(
+          new UserNotFoundError({
+            message: `User with id ${userId} not found`,
+          }),
+        );
+      }
+
+      // If email is being updated, check if it's already taken
+      if (email && email !== existingUser.email) {
+        const userWithEmail = await this.userRepository.findByEmail(email);
+        if (userWithEmail) {
+          return ResultUtil.error(
+            new UserAlreadyExistsError({
+              message: `User with email ${email} already exists`,
+            }),
+          );
+        }
+      }
+
+      // Hash password if it's being updated
+      const dataToUpdate = {
+        email,
+        username,
+        password: password ? await this.hashPassword(password) : undefined,
+      } as const;
+
+      // Update user
+      const updatedUser = await this.userRepository.update(userId, dataToUpdate);
+      return ResultUtil.success(this.mapToUserResponse(updatedUser));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      return ResultUtil.error(new UserUpdateFailedError({ message }));
     }
   }
 

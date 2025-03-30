@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
-import { IUserRepository } from '../../../core/application/repositories/user.repository';
-import { TNewUserDto } from '../../../core/application/types/dtos/user.dto';
+import type { IUserRepository } from '../../../core/application/repositories/user.repository';
+import type { TNewUserDto } from '../../../core/application/types/dtos/user.dto';
 import {
   UserAlreadyExistsError,
   UserCreationFailedError,
@@ -26,6 +26,7 @@ describe('UserService', () => {
       create: jest.fn(),
       findById: jest.fn(),
       findByEmail: jest.fn(),
+      update: jest.fn(),
     };
 
     // Initialize service with mock repository

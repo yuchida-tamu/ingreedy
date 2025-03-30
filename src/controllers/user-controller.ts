@@ -1,7 +1,7 @@
 import type { IJwtService } from '@/core/application/services/jwt.service';
 import type { IUserService } from '@/core/application/services/user.service';
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
-import type { TApiResponse } from '@/core/application/types/api/response';
+import type { TResult } from '@/core/application/types/result';
 import type { NextFunction, Request, Response } from 'express';
 
 export class UserController {
@@ -51,11 +51,25 @@ export class UserController {
     }
   }
 
+  async updateUser(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await this.userService.updateUser(req.user.id, req.body);
+      if (!result.success) {
+        next(result.error);
+        return;
+      }
+
+      this.handleSuccessResponse(res, result.data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   private handleSuccessResponse<T>(res: Response, data: T, statusCode: number = 200): void {
     const response = {
       success: true,
       data,
-    } as const satisfies TApiResponse<T>;
+    } as const satisfies TResult<T>;
     res.status(statusCode).json(response);
   }
 }
