@@ -1,7 +1,7 @@
-import { TApiResponse } from '@/core/application/types/api/response';
+import type { TApiResponse } from '@/core/application/types/api/response';
 import { ApplicationError } from '@/core/application/types/errors/application-error';
 import { InternalServerError } from '@/core/application/types/errors/user-error';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 // Map domain error codes to HTTP status codes
 const ERROR_STATUS_MAP: Record<string, number> = {
@@ -23,21 +23,10 @@ const ERROR_CODE_MAP: Record<string, string> = {
 
 export const errorHandler = (
   error: Error,
-  req: Request,
+  _: Request,
   res: Response,
   _next: NextFunction,
 ): void => {
-  // Log error details
-  console.error('Error occurred:', {
-    path: req.path,
-    method: req.method,
-    error: {
-      name: error.name,
-      message: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-    },
-  });
-
   // If it's our application error, use its code for status
   const errorInstance =
     error instanceof ApplicationError
