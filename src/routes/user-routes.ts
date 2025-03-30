@@ -1,6 +1,6 @@
 import { UserController } from '@/controllers/user-controller';
+import { PostgresUserRepository } from '@/infrastructure/repositories/user/postgres-user-repository';
 import { validateRequest } from '@/middleware/validation.middleware';
-import { InMemoryUserRepository } from '@/repositories/user/in-memory-user-repository';
 import { UserService } from '@/services/user/user-service';
 import { newUserDtoSchema } from '@/types/dtos/user.dto';
 import { Router } from 'express';
@@ -13,7 +13,7 @@ const userIdSchema = z.object({
 
 export function generateUserRouter(): Router {
   const router = Router();
-  const userService = new UserService(new InMemoryUserRepository());
+  const userService = new UserService(new PostgresUserRepository());
   const userController = new UserController(userService);
 
   router.post('/new', validateRequest(newUserDtoSchema), (req, res, next) =>
