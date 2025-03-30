@@ -1,7 +1,6 @@
 import { databaseConfig } from '@/config/database.config';
 import { Pool, PoolClient, QueryResult } from 'pg';
 import { DatabaseError, getConnectionHint, type PostgresError } from './database-error';
-import { checkSchema } from './database-utils';
 
 // Create the connection pool
 const pool = new Pool({
@@ -53,6 +52,4 @@ export const db = {
       throw new DatabaseError('Failed to get database client', error, hint);
     }
   },
-
-  checkSchema: async (): Promise<void> => checkSchema(pool),
 };
