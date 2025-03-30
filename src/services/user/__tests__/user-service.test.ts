@@ -174,4 +174,94 @@ describe('UserService', () => {
       }
     });
   });
+
+  describe('updateUser', () => {
+    const userId = 'mock-id';
+    const existingUser = {
+      id: userId,
+      email: 'existing@example.com',
+      username: 'existinguser',
+      password: 'hashed-password',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    it('should successfully update user data', async () => {
+      // Arrange
+      const updateData = { username: 'newusername' };
+      mockUserRepository.findById.mockResolvedValue(existingUser);
+      mockUserRepository.update.mockResolvedValue({
+        ...existingUser,
+        ...updateData,
+        updatedAt: new Date(),
+      });
+
+      // Act
+      const result = await userService.updateUser(userId, updateData);
+
+      // Assert
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.username).toBe(updateData.username);
+      }
+      expect(mockUserRepository.update).toHaveBeenCalledWith(userId, updateData);
+    });
+
+    it('should hash password when updating password', async () => {
+      // Arrange
+      const updateData = { password: 'newpassword123' };
+      mockUserRepository.findById.mockResolvedValue(existingUser);
+      mockUserRepository.update.mockResolvedValue({
+        ...existingUser,
+        password: 'hashed-password',
+        updatedAt: new Date(),
+      });
+
+      // Act
+      const result = await userService.updateUser(userId, updateData);
+
+      // Assert
+      expect(result.success).toBe(true);
+      expect(bcrypt.hash).toHaveBeenCalledWith(updateData.password, 'mock-salt');
+      expect(mockUserRepository.update).toHaveBeenCalledWith(userId, {
+        password: 'hashed-password',
+      });
+    });
+
+    it('should return error when user not found', async () => {
+      // Arrange
+      mockUserRepository.findById.mockResolvedValue(null);
+
+      // Act
+      const result = await userService.updateUser(userId, { username: 'newname' });
+
+      // Assert
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBeInstanceOf(UserNotFoundError);
+      }
+      expect(mockUserRepository.update).not.toHaveBeenCalled();
+    });
+
+    it('should return error when updating to existing email', async () => {
+      // Arrange
+      const updateData = { email: 'taken@example.com' };
+      mockUserRepository.findById.mockResolvedValue(existingUser);
+      mockUserRepository.findByEmail.mockResolvedValue({
+        ...existingUser,
+        id: 'other-id',
+        email: updateData.email,
+      });
+
+      // Act
+      const result = await userService.updateUser(userId, updateData);
+
+      // Assert
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBeInstanceOf(UserAlreadyExistsError);
+      }
+      expect(mockUserRepository.update).not.toHaveBeenCalled();
+    });
+  });
 });
