@@ -24,6 +24,7 @@ describe('UserController', () => {
     mockUserService = {
       getUserById: jest.fn(),
       createUser: jest.fn(),
+      updateUser: jest.fn(),
     } as unknown as jest.Mocked<UserService>;
 
     mockJwtService = {
@@ -231,6 +232,103 @@ describe('UserController', () => {
 
       // Assert
       expect(mockUserService.createUser).toHaveBeenCalledWith(mockUserData);
+      expect(mockNext).toHaveBeenCalledWith(mockError);
+      expect(mockResponse.status).not.toHaveBeenCalled();
+      expect(mockResponse.json).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('updateUser', () => {
+    it('should update user and return 200 status when successful', async () => {
+      // Arrange
+      const mockUserId = 'test-user-id';
+      const mockUpdateData = { username: 'newusername' };
+      const mockUpdatedUser: TUserResponseDto = {
+        id: mockUserId,
+        email: 'test@example.com',
+        username: mockUpdateData.username,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      mockRequest = {
+        user: { id: mockUserId },
+        body: mockUpdateData,
+      };
+
+      mockUserService.updateUser = jest.fn().mockResolvedValue({
+        success: true,
+        data: mockUpdatedUser,
+      });
+
+      // Act
+      await userController.updateUser(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      // Assert
+      expect(mockUserService.updateUser).toHaveBeenCalledWith(mockUserId, mockUpdateData);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        success: true,
+        data: mockUpdatedUser,
+      });
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+
+    it('should call next with error when updateUser returns error', async () => {
+      // Arrange
+      const mockUserId = 'test-user-id';
+      const mockUpdateData = { email: 'taken@example.com' };
+      const mockError = new UserValidationError({
+        message: 'Email already exists',
+      });
+      mockRequest = {
+        user: { id: mockUserId },
+        body: mockUpdateData,
+      };
+
+      mockUserService.updateUser = jest.fn().mockResolvedValue({
+        success: false,
+        error: mockError,
+      });
+
+      // Act
+      await userController.updateUser(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      // Assert
+      expect(mockUserService.updateUser).toHaveBeenCalledWith(mockUserId, mockUpdateData);
+      expect(mockNext).toHaveBeenCalledWith(mockError);
+      expect(mockResponse.status).not.toHaveBeenCalled();
+      expect(mockResponse.json).not.toHaveBeenCalled();
+    });
+
+    it('should call next with error when an exception occurs', async () => {
+      // Arrange
+      const mockUserId = 'test-user-id';
+      const mockUpdateData = { username: 'newname' };
+      const mockError = new Error('Unexpected error');
+      mockRequest = {
+        user: { id: mockUserId },
+        body: mockUpdateData,
+      };
+
+      mockUserService.updateUser = jest.fn().mockRejectedValue(mockError);
+
+      // Act
+      await userController.updateUser(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      // Assert
+      expect(mockUserService.updateUser).toHaveBeenCalledWith(mockUserId, mockUpdateData);
       expect(mockNext).toHaveBeenCalledWith(mockError);
       expect(mockResponse.status).not.toHaveBeenCalled();
       expect(mockResponse.json).not.toHaveBeenCalled();
