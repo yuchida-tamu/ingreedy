@@ -1,13 +1,13 @@
-import { NextFunction, Request, Response } from 'express';
-import { TUserResponseDto } from '../../core/application/types/dtos/user.dto';
+import type { NextFunction, Request, Response } from 'express';
+import type { AuthenticatedRequest } from '../../core/application/types/api/request';
+import type { TUserResponseDto } from '../../core/application/types/dtos/user.dto';
 import {
   UserNotFoundError,
   UserValidationError,
 } from '../../core/application/types/errors/user-error';
-import { JwtService } from '../../services/auth/jwt-service';
-import { UserService } from '../../services/user/user-service';
+import type { JwtService } from '../../services/auth/jwt-service';
+import type { UserService } from '../../services/user/user-service';
 import { UserController } from '../user-controller';
-
 // Mock the UserService
 jest.mock('../../services/user/user-service');
 
@@ -58,7 +58,7 @@ describe('UserController', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      mockRequest.query = { id: mockUserId };
+      mockRequest = { user: { id: mockUserId } };
 
       mockUserService.getUserById.mockResolvedValue({
         success: true,
@@ -66,7 +66,11 @@ describe('UserController', () => {
       });
 
       // Act
-      await userController.getUser(mockRequest as Request, mockResponse as Response, mockNext);
+      await userController.getUser(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext,
+      );
 
       // Assert
       expect(mockUserService.getUserById).toHaveBeenCalledWith(mockUserId);
@@ -84,7 +88,7 @@ describe('UserController', () => {
       const mockError = new UserNotFoundError({
         message: 'User not found',
       });
-      mockRequest.query = { id: mockUserId };
+      mockRequest = { user: { id: mockUserId } };
 
       mockUserService.getUserById.mockResolvedValue({
         success: false,
@@ -92,7 +96,11 @@ describe('UserController', () => {
       });
 
       // Act
-      await userController.getUser(mockRequest as Request, mockResponse as Response, mockNext);
+      await userController.getUser(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext,
+      );
 
       // Assert
       expect(mockUserService.getUserById).toHaveBeenCalledWith(mockUserId);
@@ -105,12 +113,16 @@ describe('UserController', () => {
       // Arrange
       const mockUserId = 'test-user-id';
       const mockError = new Error('Unexpected error');
-      mockRequest.query = { id: mockUserId };
+      mockRequest = { user: { id: mockUserId } };
 
       mockUserService.getUserById.mockRejectedValue(mockError);
 
       // Act
-      await userController.getUser(mockRequest as Request, mockResponse as Response, mockNext);
+      await userController.getUser(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext,
+      );
 
       // Assert
       expect(mockUserService.getUserById).toHaveBeenCalledWith(mockUserId);

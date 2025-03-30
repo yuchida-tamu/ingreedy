@@ -1,15 +1,17 @@
-import { IJwtService } from '@/core/application/services/jwt.service';
-import { IUserService } from '@/core/application/services/user.service';
-import { TApiResponse } from '@/core/application/types/api/response';
-import { NextFunction, Request, Response } from 'express';
+import type { IJwtService } from '@/core/application/services/jwt.service';
+import type { IUserService } from '@/core/application/services/user.service';
+import type { AuthenticatedRequest } from '@/core/application/types/api/request';
+import type { TApiResponse } from '@/core/application/types/api/response';
+import type { NextFunction, Request, Response } from 'express';
 
 export class UserController {
   constructor(private userService: IUserService, private jwtService: IJwtService) {}
 
-  async getUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getUser(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      //req.query.id is supposed to have been validated by the validation middleware
-      const result = await this.userService.getUserById(req.query.id as string);
+      const { id } = req.user;
+
+      const result = await this.userService.getUserById(id);
       if (!result.success) {
         next(result.error);
         return;
