@@ -4,6 +4,7 @@ import {
   UserNotFoundError,
   UserValidationError,
 } from '../../core/application/types/errors/user-error';
+import { JwtService } from '../../services/auth/jwt-service';
 import { UserService } from '../../services/user/user-service';
 import { UserController } from '../user-controller';
 
@@ -13,6 +14,7 @@ jest.mock('../../services/user/user-service');
 describe('UserController', () => {
   let userController: UserController;
   let mockUserService: jest.Mocked<UserService>;
+  let mockJwtService: jest.Mocked<JwtService>;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let mockNext: jest.MockedFunction<NextFunction>;
@@ -24,7 +26,11 @@ describe('UserController', () => {
       createUser: jest.fn(),
     } as unknown as jest.Mocked<UserService>;
 
-    userController = new UserController(mockUserService);
+    mockJwtService = {
+      generateTokens: jest.fn(),
+    } as unknown as jest.Mocked<JwtService>;
+
+    userController = new UserController(mockUserService, mockJwtService);
 
     // Setup mock request/response/next
     mockRequest = {
@@ -35,6 +41,7 @@ describe('UserController', () => {
     mockResponse = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
+      cookie: jest.fn().mockReturnThis(),
     };
 
     mockNext = jest.fn();
@@ -119,8 +126,6 @@ describe('UserController', () => {
       const mockUserData = {
         email: 'test@example.com',
         username: 'testuser',
-        firstName: 'Test',
-        lastName: 'User',
         password: 'password123',
       };
       const mockCreatedUser: TUserResponseDto = {
@@ -130,6 +135,10 @@ describe('UserController', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
+      const mockTokens = {
+        accessToken: 'mock-access-token',
+        refreshToken: 'mock-refresh-token',
+      };
       mockRequest.body = mockUserData;
 
       mockUserService.createUser.mockResolvedValue({
@@ -137,11 +146,27 @@ describe('UserController', () => {
         data: mockCreatedUser,
       });
 
+      mockJwtService.generateTokens.mockReturnValue({
+        accessToken: mockTokens.accessToken,
+        refreshToken: mockTokens.refreshToken,
+      });
+
       // Act
       await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
 
       // Assert
       expect(mockUserService.createUser).toHaveBeenCalledWith(mockUserData);
+      expect(mockJwtService.generateTokens).toHaveBeenCalledWith(mockCreatedUser.id);
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        'accessToken',
+        mockTokens.accessToken,
+        expect.any(Object),
+      );
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        'refreshToken',
+        mockTokens.refreshToken,
+        expect.any(Object),
+      );
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -155,8 +180,6 @@ describe('UserController', () => {
       const mockUserData = {
         email: 'test@example.com',
         username: 'testuser',
-        firstName: 'Test',
-        lastName: 'User',
         password: 'password123',
       };
       const mockError = new UserValidationError({
@@ -184,8 +207,6 @@ describe('UserController', () => {
       const mockUserData = {
         email: 'test@example.com',
         username: 'testuser',
-        firstName: 'Test',
-        lastName: 'User',
         password: 'password123',
       };
       const mockError = new Error('Unexpected error');
