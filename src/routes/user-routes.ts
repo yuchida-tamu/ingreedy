@@ -1,8 +1,8 @@
 import { UserController } from '@/controllers/user-controller';
+import { newUserDtoSchema } from '@/core/application/types/dtos/user.dto';
 import { PostgresUserRepository } from '@/infrastructure/repositories/user/postgres-user-repository';
 import { validateRequest } from '@/middleware/validation.middleware';
 import { UserService } from '@/services/user/user-service';
-import { newUserDtoSchema } from '@/types/dtos/user.dto';
 import { Router } from 'express';
 import { z } from 'zod';
 

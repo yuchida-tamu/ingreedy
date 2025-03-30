@@ -1,4 +1,4 @@
-import { User } from '../domain/user/user.entity';
+import { User } from '@/core/domain/user/user.entity';
 
 /**
  * Interface for user repository operations.

@@ -5,7 +5,7 @@ import {
   UserCreationFailedError,
   UserNotFoundError,
   UserValidationError,
-} from '../../types/errors/user-error';
+} from '../../core/application/types/errors/user-error';
 import { errorHandler } from '../error.middleware';
 
 describe('Error Middleware', () => {

@@ -1,12 +1,12 @@
 import bcrypt from 'bcrypt';
-import { IUserRepository } from '../../../core/repositories/user.repository';
-import { TNewUserDto } from '../../../types/dtos/user.dto';
+import { IUserRepository } from '../../../core/application/repositories/user.repository';
+import { TNewUserDto } from '../../../core/application/types/dtos/user.dto';
 import {
   UserAlreadyExistsError,
   UserCreationFailedError,
   UserError,
   UserNotFoundError,
-} from '../../../types/errors/user-error';
+} from '../../../core/application/types/errors/user-error';
 import { UserService } from '../user-service';
 
 // Mock bcrypt

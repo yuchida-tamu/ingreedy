@@ -1,4 +1,4 @@
-import { UserValidationError } from '@/types/errors/user-error';
+import { UserValidationError } from '@/core/application/types/errors/user-error';
 import { NextFunction, Request, Response } from 'express';
 import { AnyZodObject } from 'zod';
 

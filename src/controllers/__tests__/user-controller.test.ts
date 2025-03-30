@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
+import { TUserResponseDto } from '../../core/application/types/dtos/user.dto';
+import {
+  UserNotFoundError,
+  UserValidationError,
+} from '../../core/application/types/errors/user-error';
 import { UserService } from '../../services/user/user-service';
-import { TUserResponseDto } from '../../types/dtos/user.dto';
-import { UserNotFoundError, UserValidationError } from '../../types/errors/user-error';
 import { UserController } from '../user-controller';
 
 // Mock the UserService

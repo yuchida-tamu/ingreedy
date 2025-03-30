@@ -1,14 +1,13 @@
 import { config } from '@/config';
+import { IUserRepository } from '@/core/application/repositories/user.repository';
 import { IUserService } from '@/core/application/services/user.service';
-import { IUserRepository } from '@/core/repositories/user.repository';
-import { TNewUserDto, TUserResponseDto } from '@/types/dtos/user.dto';
+import { TNewUserDto, TUserResponseDto } from '@/core/application/types/dtos/user.dto';
 import {
   UserAlreadyExistsError,
   UserCreationFailedError,
   UserError,
   UserNotFoundError,
-} from '@/types/errors/user-error';
-import { TResult } from '@/types/result';
+} from '@/core/application/types/errors/user-error';
 import { ResultUtil } from '@/utils/result.util';
 import bcrypt from 'bcrypt';
 
@@ -17,7 +16,7 @@ export class UserService implements IUserService {
 
   constructor(private userRepository: IUserRepository) {}
 
-  async getUserById(userId: string): Promise<TResult<TUserResponseDto>> {
+  async getUserById(userId: string) {
     try {
       const user = await this.userRepository.findById(userId);
       if (!user) {
@@ -35,7 +34,7 @@ export class UserService implements IUserService {
     }
   }
 
-  async createUser(userData: TNewUserDto): Promise<TResult<TUserResponseDto>> {
+  async createUser(userData: TNewUserDto) {
     try {
       // Check if user with email already exists
       const existingUser = await this.userRepository.findByEmail(userData.email);

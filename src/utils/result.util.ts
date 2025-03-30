@@ -1,4 +1,4 @@
-import { TResult } from '@/types/result';
+import { TResult } from '@/core/application/types/result';
 
 export class ResultUtil {
   static success<T>(data: T): TResult<T> {

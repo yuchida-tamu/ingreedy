@@ -1,5 +1,5 @@
 import { IUserService } from '@/core/application/services/user.service';
-import { TApiResponse } from '@/types/api/response';
+import { TApiResponse } from '@/core/application/types/api/response';
 import { NextFunction, Request, Response } from 'express';
 
 export class UserController {

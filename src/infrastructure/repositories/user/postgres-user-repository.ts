@@ -1,6 +1,6 @@
 import { DatabaseError } from '@/infrastructure/database/database-error';
+import { IUserRepository } from '../../../core/application/repositories/user.repository';
 import { User } from '../../../core/domain/user/user.entity';
-import { IUserRepository } from '../../../core/repositories/user.repository';
 import { db } from '../../database/client';
 
 /**

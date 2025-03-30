@@ -1,6 +1,6 @@
-import { TApiResponse } from '@/types/api/response';
-import { ApplicationError } from '@/types/errors/application-error';
-import { InternalServerError } from '@/types/errors/user-error';
+import { TApiResponse } from '@/core/application/types/api/response';
+import { ApplicationError } from '@/core/application/types/errors/application-error';
+import { InternalServerError } from '@/core/application/types/errors/user-error';
 import { NextFunction, Request, Response } from 'express';
 
 // Map domain error codes to HTTP status codes

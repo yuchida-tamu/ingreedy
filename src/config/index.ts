@@ -1,7 +1,24 @@
-import { TConfig } from '@/types/config';
 import dotenv from 'dotenv';
 
 dotenv.config();
+
+type TConfig = {
+  readonly auth: {
+    readonly saltRounds: number;
+    readonly jwtSecret: string;
+    readonly jwtExpiresIn: string;
+  };
+  readonly database: {
+    readonly host: string;
+    readonly port: string;
+    readonly username: string;
+    readonly password: string;
+    readonly name: string;
+    readonly ssl: string;
+    readonly maxConnections: string;
+    readonly idleTimeoutMillis: string;
+  };
+};
 
 export const config: TConfig = {
   auth: {
