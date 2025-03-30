@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import type { Pool } from 'pg';
 import { getConnectionHint, type PostgresError } from './database-error';
 
 export async function healthCheck(pool: Pool): Promise<boolean> {
