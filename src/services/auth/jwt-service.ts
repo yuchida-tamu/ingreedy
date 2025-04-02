@@ -1,10 +1,11 @@
-import { IJwtService } from '@/core/application/services/jwt.service';
+import type { IJwtService } from '@/core/application/services/jwt.service';
 import {
   JwtTokenInvalidError,
   JwtVerificationError,
 } from '@/core/application/types/errors/jwt-error';
 import { ResultUtil } from '@/utils/result.util';
-import jwt, { SignOptions } from 'jsonwebtoken';
+import type { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 export class JwtService implements IJwtService {
   private readonly secretKey: string;
@@ -36,16 +37,16 @@ export class JwtService implements IJwtService {
       const decoded = jwt.verify(token, this.secretKey);
 
       if (typeof decoded === 'string') {
-        return ResultUtil.error(new JwtTokenInvalidError());
+        return ResultUtil.fail(new JwtTokenInvalidError());
       }
 
       if (decoded['userId'] === undefined) {
-        return ResultUtil.error(new JwtTokenInvalidError());
+        return ResultUtil.fail(new JwtTokenInvalidError());
       }
 
       return ResultUtil.success({ userId: decoded.userId } as const);
     } catch (error) {
-      return ResultUtil.error(new JwtVerificationError());
+      return ResultUtil.fail(new JwtVerificationError());
     }
   }
 
@@ -53,16 +54,16 @@ export class JwtService implements IJwtService {
     try {
       const decoded = jwt.verify(token, this.secretKey);
       if (typeof decoded === 'string') {
-        return ResultUtil.error(new JwtTokenInvalidError());
+        return ResultUtil.fail(new JwtTokenInvalidError());
       }
 
       if (decoded['userId'] === undefined) {
-        return ResultUtil.error(new JwtTokenInvalidError());
+        return ResultUtil.fail(new JwtTokenInvalidError());
       }
 
       return ResultUtil.success({ userId: decoded.userId } as const);
     } catch (error) {
-      return ResultUtil.error(new JwtVerificationError());
+      return ResultUtil.fail(new JwtVerificationError());
     }
   }
 }

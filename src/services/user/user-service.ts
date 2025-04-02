@@ -25,7 +25,7 @@ export class UserService implements IUserService {
     try {
       const user = await this.userRepository.findById(userId);
       if (!user) {
-        return ResultUtil.error(
+        return ResultUtil.fail(
           new UserNotFoundError({
             message: `User with id ${userId} not found`,
           }),
@@ -35,7 +35,7 @@ export class UserService implements IUserService {
       return ResultUtil.success(this.mapToUserResponse(user));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      return ResultUtil.error(new UserError(message));
+      return ResultUtil.fail(new UserError(message));
     }
   }
 
@@ -45,7 +45,7 @@ export class UserService implements IUserService {
       // Check if user with email already exists
       const existingUser = await this.userRepository.findByEmail(email);
       if (existingUser) {
-        return ResultUtil.error(
+        return ResultUtil.fail(
           new UserAlreadyExistsError({
             message: `User with email ${email} already exists`,
           }),
@@ -62,7 +62,7 @@ export class UserService implements IUserService {
       return ResultUtil.success(this.mapToUserResponse(newUser));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      return ResultUtil.error(new UserCreationFailedError({ message }));
+      return ResultUtil.fail(new UserCreationFailedError({ message }));
     }
   }
 
@@ -72,7 +72,7 @@ export class UserService implements IUserService {
       // Check if user exists
       const existingUser = await this.userRepository.findById(userId);
       if (!existingUser) {
-        return ResultUtil.error(
+        return ResultUtil.fail(
           new UserNotFoundError({
             message: `User with id ${userId} not found`,
           }),
@@ -83,7 +83,7 @@ export class UserService implements IUserService {
       if (email && email !== existingUser.email) {
         const userWithEmail = await this.userRepository.findByEmail(email);
         if (userWithEmail) {
-          return ResultUtil.error(
+          return ResultUtil.fail(
             new UserAlreadyExistsError({
               message: `User with email ${email} already exists`,
             }),
@@ -103,7 +103,7 @@ export class UserService implements IUserService {
       return ResultUtil.success(this.mapToUserResponse(updatedUser));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      return ResultUtil.error(new UserUpdateFailedError({ message }));
+      return ResultUtil.fail(new UserUpdateFailedError({ message }));
     }
   }
 
