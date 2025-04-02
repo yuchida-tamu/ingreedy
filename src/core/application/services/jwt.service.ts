@@ -1,4 +1,4 @@
-import { TResult } from '@/core/application/types/result';
+import type { TResult } from '@/core/application/types/result';
 
 export interface IJwtService {
   generateTokens(userId: string): {
