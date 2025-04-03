@@ -1,4 +1,5 @@
 import { errorHandler } from '@/middleware/error.middleware';
+import { generateIngredientRouter } from '@/routes/ingredient-routes';
 import { generateUserRouter } from '@/routes/user-routes';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -40,6 +41,7 @@ export function createApp(): Express {
   // API routes
   const apiRouter = express.Router();
   apiRouter.use('/users', generateUserRouter());
+  apiRouter.use('/ingredients', generateIngredientRouter());
   app.use(`${process.env.API_PREFIX || '/api'}/${process.env.API_VERSION || 'v1'}`, apiRouter);
 
   // Error handling middleware
