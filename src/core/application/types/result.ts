@@ -1,4 +1,4 @@
-import { ApplicationError } from './errors/application-error';
+import type { ApplicationError } from './errors/application-error';
 
 // Result type for handling success/error responses
 export type TResult<T, E = ApplicationError> =
