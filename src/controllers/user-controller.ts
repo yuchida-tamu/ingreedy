@@ -1,6 +1,5 @@
 import type { IUserService } from '@/core/application/services/user.service';
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
-import type { TResult } from '@/core/application/types/result';
 import type { NextFunction, Request, Response } from 'express';
 
 export class UserController {
@@ -16,7 +15,9 @@ export class UserController {
         return;
       }
 
-      this.handleSuccessResponse(res, result.data);
+      res.locals.data = result.data;
+      res.locals.status = 200;
+      next();
     } catch (error) {
       next(error);
     }
@@ -46,17 +47,11 @@ export class UserController {
         return;
       }
 
-      this.handleSuccessResponse(res, result.data);
+      res.locals.data = result.data;
+      res.locals.status = 200;
+      next();
     } catch (error) {
       next(error);
     }
-  }
-
-  private handleSuccessResponse<T>(res: Response, data: T, statusCode: number = 200): void {
-    const response = {
-      success: true,
-      data,
-    } as const satisfies TResult<T>;
-    res.status(statusCode).json(response);
   }
 }

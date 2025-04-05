@@ -70,12 +70,8 @@ describe('UserController', () => {
 
       // Assert
       expect(mockUserService.getUserById).toHaveBeenCalledWith(mockUserId);
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        success: true,
-        data: mockUser,
-      });
-      expect(mockNext).not.toHaveBeenCalled();
+      expect(mockResponse.locals?.data).toEqual(mockUser);
+      expect(mockNext).toHaveBeenCalled();
     });
 
     it('should call next with error when getUserById returns error', async () => {
@@ -240,12 +236,8 @@ describe('UserController', () => {
 
       // Assert
       expect(mockUserService.updateUser).toHaveBeenCalledWith(mockUserId, mockUpdateData);
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        success: true,
-        data: mockUpdatedUser,
-      });
-      expect(mockNext).not.toHaveBeenCalled();
+      expect(mockResponse.locals?.data).toEqual(mockUpdatedUser);
+      expect(mockNext).toHaveBeenCalled();
     });
 
     it('should call next with error when updateUser returns error', async () => {
