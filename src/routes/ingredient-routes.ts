@@ -15,12 +15,29 @@ export function generateIngredientRouter(): Router {
 
   const auth = authenticateJwt(jwtService);
 
-  router.get('/getIngredients', auth, ingredientController.getAllIngredients);
-  router.get('/getIngredientById/:id', auth, ingredientController.getIngredientById);
-  router.get('/getIngredientsByCategory', auth, ingredientController.getIngredientsByCategory);
-  router.get('/getIngredientByName', auth, ingredientController.getIngredientByName);
-  router.post('/createIngredient', auth, ingredientController.createIngredient);
-  router.put('/updateIngredient/:id', auth, ingredientController.updateIngredient);
+  router.get('/getIngredients', auth, (req, res, next) =>
+    ingredientController.getAllIngredients(req, res, next),
+  );
+
+  router.get('/getIngredientById/:id', auth, (req, res, next) =>
+    ingredientController.getIngredientById(req, res, next),
+  );
+
+  router.get('/getIngredientsByCategory', auth, (req, res, next) =>
+    ingredientController.getIngredientsByCategory(req, res, next),
+  );
+
+  router.get('/getIngredientByName', auth, (req, res, next) =>
+    ingredientController.getIngredientByName(req, res, next),
+  );
+
+  router.post('/createIngredient', auth, (req, res, next) =>
+    ingredientController.createIngredient(req, res, next),
+  );
+
+  router.put('/updateIngredient/:id', auth, (req, res, next) =>
+    ingredientController.updateIngredient(req, res, next),
+  );
 
   return router;
 }
