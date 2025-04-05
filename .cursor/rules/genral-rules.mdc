@@ -1,12 +1,5 @@
 ---
-description: General rules for AI to work on a project
+description:  General rules for AI to work on a project
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
-
-# Your rule content
-- You must not install unnecessary packages if the package use is out of scope of a on-going task. If you are going to need it in future, make sure to explain and ask for approval to install it.
-- Make sure to check if a code change breaks the current codebase before you make a commit.
-- Makes sure to follow SOLID principles when you code, especially careful with Dependency Inversion pricinple and Open-Closed principle.
-- Avoid exporting unused types and interfaces unless they are necessary. 
-- Always keep a daily log of your task. Whenever there is a change or you do another task, update the log.
