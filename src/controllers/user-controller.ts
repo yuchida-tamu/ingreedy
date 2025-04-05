@@ -30,7 +30,9 @@ export class UserController {
         return;
       }
 
-      this.handleSuccessResponse(res, result.data, 201);
+      res.locals.data = result.data;
+      res.locals.status = 201;
+      next();
     } catch (error) {
       next(error);
     }

@@ -37,6 +37,7 @@ describe('UserController', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
       cookie: jest.fn().mockReturnThis(),
+      locals: {},
     };
 
     mockNext = jest.fn();
@@ -154,12 +155,8 @@ describe('UserController', () => {
 
       // Assert
       expect(mockUserService.createUser).toHaveBeenCalledWith(mockUserData);
-      expect(mockResponse.status).toHaveBeenCalledWith(201);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        success: true,
-        data: mockCreatedUser,
-      });
-      expect(mockNext).not.toHaveBeenCalled();
+      expect(mockResponse.locals?.data).toEqual(mockCreatedUser);
+      expect(mockNext).toHaveBeenCalled();
     });
 
     it('should call next with error when createUser returns error', async () => {
