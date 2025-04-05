@@ -13,6 +13,7 @@ describe('IngredientController', () => {
   let mockIngredientService: jest.Mocked<IIngredientService>;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
+  let mockNext: jest.Mock;
   let jsonMock: jest.Mock;
   let statusMock: jest.Mock;
 
@@ -28,6 +29,7 @@ describe('IngredientController', () => {
     // Reset mocks
     jsonMock = jest.fn().mockReturnThis();
     statusMock = jest.fn().mockReturnThis();
+    mockNext = jest.fn();
 
     mockResponse = {
       json: jsonMock,
@@ -60,8 +62,13 @@ describe('IngredientController', () => {
     it('should create an ingredient successfully', async () => {
       mockIngredientService.addIngredient.mockResolvedValue(ResultUtil.success(mockIngredient));
 
-      await ingredientController.createIngredient(mockRequest as Request, mockResponse as Response);
+      await ingredientController.createIngredient(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext,
+      );
 
+      expect(mockNext).not.toHaveBeenCalled();
       expect(statusMock).toHaveBeenCalledWith(201);
       expect(jsonMock).toHaveBeenCalledWith({
         success: true,
@@ -69,24 +76,21 @@ describe('IngredientController', () => {
       });
     });
 
-    it('should return 400 when ingredient already exists', async () => {
-      mockIngredientService.addIngredient.mockResolvedValue(
-        ResultUtil.fail(
-          new IngredientAlreadyExistsError({
-            message: 'Ingredient already exists',
-          }),
-        ),
+    it('should pass error to next when ingredient already exists', async () => {
+      const error = new IngredientAlreadyExistsError({
+        message: 'Ingredient already exists',
+      });
+      mockIngredientService.addIngredient.mockResolvedValue(ResultUtil.fail(error));
+
+      await ingredientController.createIngredient(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext,
       );
 
-      await ingredientController.createIngredient(mockRequest as Request, mockResponse as Response);
-
-      expect(statusMock).toHaveBeenCalledWith(400);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: false,
-        error: {
-          message: 'Ingredient already exists',
-        },
-      });
+      expect(mockNext).toHaveBeenCalledWith(error);
+      expect(statusMock).not.toHaveBeenCalled();
+      expect(jsonMock).not.toHaveBeenCalled();
     });
   });
 
@@ -101,8 +105,10 @@ describe('IngredientController', () => {
       await ingredientController.getIngredientById(
         mockRequest as Request,
         mockResponse as Response,
+        mockNext,
       );
 
+      expect(mockNext).not.toHaveBeenCalled();
       expect(statusMock).toHaveBeenCalledWith(200);
       expect(jsonMock).toHaveBeenCalledWith({
         success: true,
@@ -110,27 +116,21 @@ describe('IngredientController', () => {
       });
     });
 
-    it('should return 404 when ingredient is not found', async () => {
-      mockIngredientService.getIngredientById.mockResolvedValue(
-        ResultUtil.fail(
-          new IngredientNotFoundError({
-            message: 'Ingredient not found',
-          }),
-        ),
-      );
+    it('should pass error to next when ingredient is not found', async () => {
+      const error = new IngredientNotFoundError({
+        message: 'Ingredient not found',
+      });
+      mockIngredientService.getIngredientById.mockResolvedValue(ResultUtil.fail(error));
 
       await ingredientController.getIngredientById(
         mockRequest as Request,
         mockResponse as Response,
+        mockNext,
       );
 
-      expect(statusMock).toHaveBeenCalledWith(404);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: false,
-        error: {
-          message: 'Ingredient not found',
-        },
-      });
+      expect(mockNext).toHaveBeenCalledWith(error);
+      expect(statusMock).not.toHaveBeenCalled();
+      expect(jsonMock).not.toHaveBeenCalled();
     });
   });
 
@@ -144,8 +144,10 @@ describe('IngredientController', () => {
       await ingredientController.getIngredientByName(
         mockRequest as Request,
         mockResponse as Response,
+        mockNext,
       );
 
+      expect(mockNext).not.toHaveBeenCalled();
       expect(statusMock).toHaveBeenCalledWith(200);
       expect(jsonMock).toHaveBeenCalledWith({
         success: true,
@@ -153,45 +155,39 @@ describe('IngredientController', () => {
       });
     });
 
-    it('should return 400 when name parameter is missing', async () => {
+    it('should pass error to next when name parameter is missing', async () => {
       mockRequest.query = {};
 
       await ingredientController.getIngredientByName(
         mockRequest as Request,
         mockResponse as Response,
+        mockNext,
       );
 
-      expect(statusMock).toHaveBeenCalledWith(400);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: false,
-        error: {
-          message: 'Name parameter is required and must be a string',
-        },
-      });
+      expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
+      expect(mockNext.mock.calls[0][0].message).toBe(
+        'Name parameter is required and must be a string',
+      );
+      expect(statusMock).not.toHaveBeenCalled();
+      expect(jsonMock).not.toHaveBeenCalled();
     });
 
-    it('should return 404 when ingredient is not found', async () => {
+    it('should pass error to next when ingredient is not found', async () => {
       mockRequest.query = { name: 'Nonexistent Ingredient' };
-      mockIngredientService.getIngredientByName.mockResolvedValue(
-        ResultUtil.fail(
-          new IngredientNotFoundError({
-            message: 'Ingredient not found',
-          }),
-        ),
-      );
+      const error = new IngredientNotFoundError({
+        message: 'Ingredient not found',
+      });
+      mockIngredientService.getIngredientByName.mockResolvedValue(ResultUtil.fail(error));
 
       await ingredientController.getIngredientByName(
         mockRequest as Request,
         mockResponse as Response,
+        mockNext,
       );
 
-      expect(statusMock).toHaveBeenCalledWith(404);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: false,
-        error: {
-          message: 'Ingredient not found',
-        },
-      });
+      expect(mockNext).toHaveBeenCalledWith(error);
+      expect(statusMock).not.toHaveBeenCalled();
+      expect(jsonMock).not.toHaveBeenCalled();
     });
   });
 
@@ -213,8 +209,10 @@ describe('IngredientController', () => {
       await ingredientController.getIngredientsByCategory(
         mockRequest as Request,
         mockResponse as Response,
+        mockNext,
       );
 
+      expect(mockNext).not.toHaveBeenCalled();
       expect(statusMock).toHaveBeenCalledWith(200);
       expect(jsonMock).toHaveBeenCalledWith({
         success: true,
@@ -222,21 +220,21 @@ describe('IngredientController', () => {
       });
     });
 
-    it('should return 400 when category parameter is missing', async () => {
+    it('should pass error to next when category parameter is missing', async () => {
       mockRequest.query = {};
 
       await ingredientController.getIngredientsByCategory(
         mockRequest as Request,
         mockResponse as Response,
+        mockNext,
       );
 
-      expect(statusMock).toHaveBeenCalledWith(400);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: false,
-        error: {
-          message: 'Category parameter is required and must be a string',
-        },
-      });
+      expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
+      expect(mockNext.mock.calls[0][0].message).toBe(
+        'Category parameter is required and must be a string',
+      );
+      expect(statusMock).not.toHaveBeenCalled();
+      expect(jsonMock).not.toHaveBeenCalled();
     });
   });
 
@@ -258,8 +256,13 @@ describe('IngredientController', () => {
         ResultUtil.success(updatedIngredient),
       );
 
-      await ingredientController.updateIngredient(mockRequest as Request, mockResponse as Response);
+      await ingredientController.updateIngredient(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext,
+      );
 
+      expect(mockNext).not.toHaveBeenCalled();
       expect(statusMock).toHaveBeenCalledWith(200);
       expect(jsonMock).toHaveBeenCalledWith({
         success: true,
@@ -267,44 +270,38 @@ describe('IngredientController', () => {
       });
     });
 
-    it('should return 404 when ingredient is not found', async () => {
-      mockIngredientService.updateIngredient.mockResolvedValue(
-        ResultUtil.fail(
-          new IngredientNotFoundError({
-            message: 'Ingredient not found',
-          }),
-        ),
+    it('should pass error to next when ingredient is not found', async () => {
+      const error = new IngredientNotFoundError({
+        message: 'Ingredient not found',
+      });
+      mockIngredientService.updateIngredient.mockResolvedValue(ResultUtil.fail(error));
+
+      await ingredientController.updateIngredient(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext,
       );
 
-      await ingredientController.updateIngredient(mockRequest as Request, mockResponse as Response);
-
-      expect(statusMock).toHaveBeenCalledWith(404);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: false,
-        error: {
-          message: 'Ingredient not found',
-        },
-      });
+      expect(mockNext).toHaveBeenCalledWith(error);
+      expect(statusMock).not.toHaveBeenCalled();
+      expect(jsonMock).not.toHaveBeenCalled();
     });
 
-    it('should return 400 when ingredient name already exists', async () => {
-      mockIngredientService.updateIngredient.mockResolvedValue(
-        ResultUtil.fail(
-          new IngredientAlreadyExistsError({
-            message: 'Ingredient already exists',
-          }),
-        ),
+    it('should pass error to next when ingredient name already exists', async () => {
+      const error = new IngredientAlreadyExistsError({
+        message: 'Ingredient already exists',
+      });
+      mockIngredientService.updateIngredient.mockResolvedValue(ResultUtil.fail(error));
+
+      await ingredientController.updateIngredient(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext,
       );
 
-      await ingredientController.updateIngredient(mockRequest as Request, mockResponse as Response);
-
-      expect(statusMock).toHaveBeenCalledWith(400);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: false,
-        error: {
-          message: 'Ingredient already exists',
-        },
-      });
+      expect(mockNext).toHaveBeenCalledWith(error);
+      expect(statusMock).not.toHaveBeenCalled();
+      expect(jsonMock).not.toHaveBeenCalled();
     });
   });
 });
