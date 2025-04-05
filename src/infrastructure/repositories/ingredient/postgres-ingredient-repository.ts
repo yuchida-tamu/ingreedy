@@ -66,6 +66,20 @@ export class PostgresIngredientRepository implements IIngredientRepository {
     }
   }
 
+  async findAll(): Promise<Ingredient[]> {
+    try {
+      const result = await db.query<DbIngredient>(
+        `SELECT id, name, category, created_at, updated_at 
+         FROM ingredients 
+         ORDER BY name ASC`,
+      );
+
+      return result.map(this.mapToIngredient);
+    } catch (error) {
+      throw new DatabaseError('Failed to find all ingredients', error);
+    }
+  }
+
   async create(
     ingredient: Omit<Ingredient, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Ingredient> {

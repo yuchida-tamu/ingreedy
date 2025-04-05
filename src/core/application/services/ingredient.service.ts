@@ -39,4 +39,9 @@ export abstract class IIngredientService {
    * Check if ingredient exists by name
    */
   abstract checkIngredientExists(name: string): Promise<TResult<boolean>>;
+
+  /**
+   * Get all ingredients
+   */
+  abstract getAllIngredients(): Promise<TResult<TIngredientListDto>>;
 }

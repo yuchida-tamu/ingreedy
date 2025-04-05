@@ -16,22 +16,23 @@ export function generateUserRouter(): Router {
   const userController = new UserController(userService);
   const authMiddleware = new AuthMiddleware(jwtService);
 
+  const auth = authenticateJwt(jwtService);
+  const validateCreateUser = validateRequest(newUserDtoSchema);
+  const validateUpdateUser = validateRequest(updateUserDtoSchema);
+
   router.post(
     '/createUser',
-    validateRequest(newUserDtoSchema),
+    validateCreateUser,
     userController.createUser,
     authMiddleware.attachTokens,
   );
 
-  router.get('/getUser', authenticateJwt(jwtService), (req, res, next) =>
+  router.get('/getUser', auth, (req, res, next) =>
     userController.getUser(req as AuthenticatedRequest, res, next),
   );
 
-  router.put(
-    '/updateUser',
-    authenticateJwt(jwtService),
-    validateRequest(updateUserDtoSchema),
-    (req, res, next) => userController.updateUser(req as AuthenticatedRequest, res, next),
+  router.put('/updateUser', auth, validateUpdateUser, (req, res, next) =>
+    userController.updateUser(req as AuthenticatedRequest, res, next),
   );
 
   return router;

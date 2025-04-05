@@ -100,4 +100,18 @@ export class IngredientController {
       data: result.data,
     });
   };
+
+  getAllIngredients = async (_: Request, res: Response, next: NextFunction): Promise<void> => {
+    const result = await this.ingredientService.getAllIngredients();
+
+    if (!result.success) {
+      next(result.error);
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: result.data,
+    });
+  };
 }

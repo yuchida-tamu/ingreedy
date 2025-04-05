@@ -28,6 +28,7 @@ describe('IngredientService', () => {
       findByCategory: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
+      findAll: jest.fn(),
     };
 
     ingredientService = new IngredientService(mockIngredientRepository);

@@ -135,6 +135,22 @@ export class IngredientService extends IIngredientService {
     }
   }
 
+  async getAllIngredients(): Promise<TResult<TIngredientListDto>> {
+    try {
+      const ingredients = await this.ingredientRepository.findAll();
+      return ResultUtil.success({
+        items: ingredients.map(this.mapToIngredientDto),
+        total: ingredients.length,
+        page: 1,
+        limit: ingredients.length,
+        totalPages: 1,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      return ResultUtil.fail(new IngredientError(message));
+    }
+  }
+
   private mapToIngredientDto(ingredient: {
     id: string;
     name: string;
