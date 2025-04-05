@@ -1,11 +1,10 @@
-import type { IJwtService } from '@/core/application/services/jwt.service';
 import type { IUserService } from '@/core/application/services/user.service';
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
 import type { TResult } from '@/core/application/types/result';
 import type { NextFunction, Request, Response } from 'express';
 
 export class UserController {
-  constructor(private userService: IUserService, private jwtService: IJwtService) {}
+  constructor(private userService: IUserService) {}
 
   async getUser(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -30,20 +29,6 @@ export class UserController {
         next(result.error);
         return;
       }
-
-      const { accessToken, refreshToken } = this.jwtService.generateTokens(result.data.id);
-
-      res.cookie('accessToken', accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
-      });
-
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
-      });
 
       this.handleSuccessResponse(res, result.data, 201);
     } catch (error) {

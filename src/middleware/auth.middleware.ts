@@ -23,3 +23,31 @@ export const authenticateJwt = (jwtService: IJwtService) => {
     }
   };
 };
+
+export class AuthMiddleware {
+  constructor(private jwtService: IJwtService) {}
+
+  attachTokens = (_: Request, res: Response, next: NextFunction): void => {
+    const userId = res.locals.userId;
+    if (!userId) {
+      next();
+      return;
+    }
+
+    const { accessToken, refreshToken } = this.jwtService.generateTokens(userId);
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+    });
+
+    next();
+  };
+}

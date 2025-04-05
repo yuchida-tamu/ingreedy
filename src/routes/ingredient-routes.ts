@@ -13,8 +13,8 @@ export function generateIngredientRouter(): Router {
   router.get('/getIngredientById/:id', ingredientController.getIngredientById);
   router.get('/getIngredientsByCategory', ingredientController.getIngredientsByCategory);
   router.get('/getIngredientByName', ingredientController.getIngredientByName);
-  router.post('/register', ingredientController.createIngredient);
-  router.put('/update/:id', ingredientController.updateIngredient);
+  router.post('/createIngredient', ingredientController.createIngredient);
+  router.put('/updateIngredient/:id', ingredientController.updateIngredient);
 
   return router;
 }

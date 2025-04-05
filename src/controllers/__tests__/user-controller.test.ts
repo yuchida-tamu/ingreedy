@@ -5,7 +5,6 @@ import {
   UserNotFoundError,
   UserValidationError,
 } from '../../core/application/types/errors/user-error';
-import type { JwtService } from '../../services/auth/jwt-service';
 import type { UserService } from '../../services/user/user-service';
 import { UserController } from '../user-controller';
 // Mock the UserService
@@ -14,7 +13,6 @@ jest.mock('../../services/user/user-service');
 describe('UserController', () => {
   let userController: UserController;
   let mockUserService: jest.Mocked<UserService>;
-  let mockJwtService: jest.Mocked<JwtService>;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let mockNext: jest.MockedFunction<NextFunction>;
@@ -27,11 +25,7 @@ describe('UserController', () => {
       updateUser: jest.fn(),
     } as unknown as jest.Mocked<UserService>;
 
-    mockJwtService = {
-      generateTokens: jest.fn(),
-    } as unknown as jest.Mocked<JwtService>;
-
-    userController = new UserController(mockUserService, mockJwtService);
+    userController = new UserController(mockUserService);
 
     // Setup mock request/response/next
     mockRequest = {
@@ -148,10 +142,6 @@ describe('UserController', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      const mockTokens = {
-        accessToken: 'mock-access-token',
-        refreshToken: 'mock-refresh-token',
-      };
       mockRequest.body = mockUserData;
 
       mockUserService.createUser.mockResolvedValue({
@@ -159,27 +149,11 @@ describe('UserController', () => {
         data: mockCreatedUser,
       });
 
-      mockJwtService.generateTokens.mockReturnValue({
-        accessToken: mockTokens.accessToken,
-        refreshToken: mockTokens.refreshToken,
-      });
-
       // Act
       await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
 
       // Assert
       expect(mockUserService.createUser).toHaveBeenCalledWith(mockUserData);
-      expect(mockJwtService.generateTokens).toHaveBeenCalledWith(mockCreatedUser.id);
-      expect(mockResponse.cookie).toHaveBeenCalledWith(
-        'accessToken',
-        mockTokens.accessToken,
-        expect.any(Object),
-      );
-      expect(mockResponse.cookie).toHaveBeenCalledWith(
-        'refreshToken',
-        mockTokens.refreshToken,
-        expect.any(Object),
-      );
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
