@@ -1,5 +1,5 @@
-import { errorHandler } from '@/middleware/error.middleware';
-import { httpResponseHandler } from '@/middleware/response.middleware';
+import { errorHandler } from '@/middlewares/error.middleware';
+import { httpResponseHandler } from '@/middlewares/response.middleware';
 import { generateIngredientRouter } from '@/routes/ingredient-routes';
 import { generateUserRouter } from '@/routes/user-routes';
 import cookieParser from 'cookie-parser';

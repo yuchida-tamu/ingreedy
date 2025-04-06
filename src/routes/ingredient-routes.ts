@@ -1,6 +1,6 @@
 import { IngredientController } from '@/controllers/ingredient/ingredient-controller';
 import { PostgresIngredientRepository } from '@/infrastructure/repositories/ingredient/postgres-ingredient-repository';
-import { withAuth } from '@/middleware/auth.middleware';
+import { withAuth } from '@/middlewares/auth.middleware';
 import { JwtService } from '@/services/auth/jwt-service';
 import { IngredientService } from '@/services/ingredient/ingredient-service';
 import { Router } from 'express';
