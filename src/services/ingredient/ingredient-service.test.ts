@@ -1,13 +1,10 @@
-import type { IIngredientRepository } from '../../../core/application/repositories/ingredient.repository';
+import type { IIngredientRepository } from '../../core/application/repositories/ingredient.repository';
 import {
   IngredientAlreadyExistsError,
   IngredientNotFoundError,
-} from '../../../core/application/types/errors/ingredient-error';
-import type {
-  Ingredient,
-  IngredientCategory,
-} from '../../../core/domain/inventory/ingredient.entity';
-import { IngredientService } from '../ingredient-service';
+} from '../../core/application/types/errors/ingredient-error';
+import type { Ingredient, IngredientCategory } from '../../core/domain/inventory/ingredient.entity';
+import { IngredientService } from './ingredient-service';
 
 describe('IngredientService', () => {
   let ingredientService: IngredientService;

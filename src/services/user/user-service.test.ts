@@ -1,13 +1,13 @@
 import bcrypt from 'bcrypt';
-import type { IUserRepository } from '../../../core/application/repositories/user.repository';
-import type { TNewUserDto } from '../../../core/application/types/dtos/user.dto';
+import type { IUserRepository } from '../../core/application/repositories/user.repository';
+import type { TNewUserDto } from '../../core/application/types/dtos/user.dto';
 import {
   UserAlreadyExistsError,
   UserCreationFailedError,
   UserError,
   UserNotFoundError,
-} from '../../../core/application/types/errors/user-error';
-import { UserService } from '../user-service';
+} from '../../core/application/types/errors/user-error';
+import { UserService } from './user-service';
 
 // Mock bcrypt
 jest.mock('bcrypt', () => ({
