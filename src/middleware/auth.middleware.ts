@@ -42,7 +42,14 @@ const authenticateJwt = (jwtService: IJwtService): MiddlewareFunction => {
 
 const attachTokens = (jwtService: IJwtService): MiddlewareFunction => {
   return (_: Request, res: Response, next: NextFunction): void => {
-    const userId = res.locals.data?.id;
+    const data = res.locals.data as { id: string };
+
+    if (!data) {
+      next(new UnauthorizedError('Invalid or missing access token'));
+      return;
+    }
+
+    const userId = data.id;
     if (!userId) {
       next(new UnauthorizedError('Invalid or missing access token'));
       return;
