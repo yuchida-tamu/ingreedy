@@ -20,10 +20,8 @@ describe('IngredientController', () => {
   let ingredientController: IngredientController;
   let mockIngredientService: jest.Mocked<IIngredientService>;
   let mockRequest: Partial<Request>;
-  let mockResponse: Response;
+  let mockResponse: Partial<Response>;
   let mockNext: jest.MockedFunction<NextFunction>;
-  let jsonMock: jest.Mock;
-  let statusMock: jest.Mock;
 
   const mockIngredient: TIngredientDto = {
     id: '123',
@@ -35,14 +33,10 @@ describe('IngredientController', () => {
 
   beforeEach(() => {
     // Reset mocks
-    jsonMock = jest.fn().mockReturnThis();
-    statusMock = jest.fn().mockReturnThis();
     mockNext = jest.fn();
-
     mockResponse = {
-      json: jsonMock,
-      status: statusMock,
-    } as unknown as Response;
+      locals: {},
+    } as Partial<Response>;
 
     mockRequest = {
       params: {},
@@ -81,12 +75,11 @@ describe('IngredientController', () => {
         mockNext,
       );
 
-      expect(mockNext).not.toHaveBeenCalled();
-      expect(statusMock).toHaveBeenCalledWith(201);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: true,
+      expect(mockResponse.locals).toEqual({
         data: mockIngredient,
+        status: 201,
       });
+      expect(mockNext).toHaveBeenCalledWith();
     });
 
     it('should pass error to next when ingredient already exists', async () => {
@@ -102,8 +95,8 @@ describe('IngredientController', () => {
       );
 
       expect(mockNext).toHaveBeenCalledWith(error);
-      expect(statusMock).not.toHaveBeenCalled();
-      expect(jsonMock).not.toHaveBeenCalled();
+      expect(mockResponse.locals).not.toHaveProperty('data');
+      expect(mockResponse.locals).not.toHaveProperty('status');
     });
   });
 
@@ -121,12 +114,11 @@ describe('IngredientController', () => {
         mockNext,
       );
 
-      expect(mockNext).not.toHaveBeenCalled();
-      expect(statusMock).toHaveBeenCalledWith(200);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: true,
+      expect(mockResponse.locals).toEqual({
         data: mockIngredient,
+        status: 200,
       });
+      expect(mockNext).toHaveBeenCalledWith();
     });
 
     it('should pass error to next when ingredient is not found', async () => {
@@ -142,8 +134,8 @@ describe('IngredientController', () => {
       );
 
       expect(mockNext).toHaveBeenCalledWith(error);
-      expect(statusMock).not.toHaveBeenCalled();
-      expect(jsonMock).not.toHaveBeenCalled();
+      expect(mockResponse.locals).not.toHaveProperty('data');
+      expect(mockResponse.locals).not.toHaveProperty('status');
     });
   });
 
@@ -160,12 +152,11 @@ describe('IngredientController', () => {
         mockNext,
       );
 
-      expect(mockNext).not.toHaveBeenCalled();
-      expect(statusMock).toHaveBeenCalledWith(200);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: true,
+      expect(mockResponse.locals).toEqual({
         data: mockIngredient,
+        status: 200,
       });
+      expect(mockNext).toHaveBeenCalledWith();
     });
 
     it('should pass error to next when name parameter is missing', async () => {
@@ -183,8 +174,8 @@ describe('IngredientController', () => {
       if (isError(error)) {
         expect(error.message).toBe('Name parameter is required and must be a string');
       }
-      expect(mockResponse.status).not.toHaveBeenCalled();
-      expect(mockResponse.json).not.toHaveBeenCalled();
+      expect(mockResponse.locals).not.toHaveProperty('data');
+      expect(mockResponse.locals).not.toHaveProperty('status');
     });
 
     it('should pass error to next when ingredient is not found', async () => {
@@ -201,8 +192,8 @@ describe('IngredientController', () => {
       );
 
       expect(mockNext).toHaveBeenCalledWith(error);
-      expect(statusMock).not.toHaveBeenCalled();
-      expect(jsonMock).not.toHaveBeenCalled();
+      expect(mockResponse.locals).not.toHaveProperty('data');
+      expect(mockResponse.locals).not.toHaveProperty('status');
     });
   });
 
@@ -227,12 +218,11 @@ describe('IngredientController', () => {
         mockNext,
       );
 
-      expect(mockNext).not.toHaveBeenCalled();
-      expect(statusMock).toHaveBeenCalledWith(200);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: true,
+      expect(mockResponse.locals).toEqual({
         data: mockIngredientList,
+        status: 200,
       });
+      expect(mockNext).toHaveBeenCalledWith();
     });
 
     it('should pass error to next when category parameter is missing', async () => {
@@ -250,8 +240,8 @@ describe('IngredientController', () => {
       if (isError(error)) {
         expect(error.message).toBe('Category parameter is required and must be a string');
       }
-      expect(mockResponse.status).not.toHaveBeenCalled();
-      expect(mockResponse.json).not.toHaveBeenCalled();
+      expect(mockResponse.locals).not.toHaveProperty('data');
+      expect(mockResponse.locals).not.toHaveProperty('status');
     });
   });
 
@@ -279,12 +269,11 @@ describe('IngredientController', () => {
         mockNext,
       );
 
-      expect(mockNext).not.toHaveBeenCalled();
-      expect(statusMock).toHaveBeenCalledWith(200);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: true,
+      expect(mockResponse.locals).toEqual({
         data: updatedIngredient,
+        status: 200,
       });
+      expect(mockNext).toHaveBeenCalledWith();
     });
 
     it('should pass error to next when ingredient is not found', async () => {
@@ -300,8 +289,8 @@ describe('IngredientController', () => {
       );
 
       expect(mockNext).toHaveBeenCalledWith(error);
-      expect(statusMock).not.toHaveBeenCalled();
-      expect(jsonMock).not.toHaveBeenCalled();
+      expect(mockResponse.locals).not.toHaveProperty('data');
+      expect(mockResponse.locals).not.toHaveProperty('status');
     });
 
     it('should pass error to next when ingredient name already exists', async () => {
@@ -317,14 +306,13 @@ describe('IngredientController', () => {
       );
 
       expect(mockNext).toHaveBeenCalledWith(error);
-      expect(statusMock).not.toHaveBeenCalled();
-      expect(jsonMock).not.toHaveBeenCalled();
+      expect(mockResponse.locals).not.toHaveProperty('data');
+      expect(mockResponse.locals).not.toHaveProperty('status');
     });
   });
 
   describe('getAllIngredients', () => {
-    it('should return all ingredients with 200 status when successful', async () => {
-      // Arrange
+    it('should return all ingredients successfully', async () => {
       const mockIngredients: TIngredientListDto = {
         items: [
           {
@@ -352,40 +340,34 @@ describe('IngredientController', () => {
         ResultUtil.success(mockIngredients),
       );
 
-      // Act
       await ingredientController.getAllIngredients(
         mockRequest as Request,
         mockResponse as Response,
         mockNext,
       );
 
-      // Assert
       expect(mockIngredientService.getAllIngredients).toHaveBeenCalled();
-      expect(statusMock).toHaveBeenCalledWith(200);
-      expect(jsonMock).toHaveBeenCalledWith({
-        success: true,
+      expect(mockResponse.locals).toEqual({
         data: mockIngredients,
+        status: 200,
       });
-      expect(mockNext).not.toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalledWith();
     });
 
     it('should call next with error when getAllIngredients returns error', async () => {
-      // Arrange
       const mockError = new IngredientError('Failed to get ingredients');
       mockIngredientService.getAllIngredients.mockResolvedValue(ResultUtil.fail(mockError));
 
-      // Act
       await ingredientController.getAllIngredients(
         mockRequest as Request,
         mockResponse as Response,
         mockNext,
       );
 
-      // Assert
       expect(mockIngredientService.getAllIngredients).toHaveBeenCalled();
       expect(mockNext).toHaveBeenCalledWith(mockError);
-      expect(statusMock).not.toHaveBeenCalled();
-      expect(jsonMock).not.toHaveBeenCalled();
+      expect(mockResponse.locals).not.toHaveProperty('data');
+      expect(mockResponse.locals).not.toHaveProperty('status');
     });
   });
 });

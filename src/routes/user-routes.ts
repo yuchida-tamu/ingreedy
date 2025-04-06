@@ -3,7 +3,6 @@ import type { AuthenticatedRequest } from '@/core/application/types/api/request'
 import { newUserDtoSchema, updateUserDtoSchema } from '@/core/application/types/dtos/user.dto';
 import { PostgresUserRepository } from '@/infrastructure/repositories/user/postgres-user-repository';
 import { withAuth } from '@/middleware/auth.middleware';
-import { httpResponseHandler } from '@/middleware/response.middleware';
 import { validateRequest } from '@/middleware/validation.middleware';
 import { JwtService } from '@/services/auth/jwt-service';
 import { UserService } from '@/services/user/user-service';
@@ -34,8 +33,6 @@ export function generateUserRouter(): Router {
   router.put('/updateUser', auth.authenticate, validateUpdateUser, (req, res, next) =>
     userController.updateUser(req as AuthenticatedRequest, res, next),
   );
-
-  router.use(httpResponseHandler);
 
   return router;
 }

@@ -9,54 +9,63 @@ export class IngredientController {
   constructor(private ingredientService: IIngredientService) {}
 
   createIngredient = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const ingredientData = req.body as TAddIngredientDto;
-    const result = await this.ingredientService.addIngredient(ingredientData);
+    try {
+      const ingredientData = req.body as TAddIngredientDto;
+      const result = await this.ingredientService.addIngredient(ingredientData);
 
-    if (!result.success) {
-      next(result.error);
-      return;
+      if (!result.success) {
+        next(result.error);
+        return;
+      }
+
+      res.locals.data = result.data;
+      res.locals.status = 201;
+      next();
+    } catch (error) {
+      next(error);
     }
-
-    res.status(201).json({
-      success: true,
-      data: result.data,
-    });
   };
 
   getIngredientById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const { id } = req.params;
-    const result = await this.ingredientService.getIngredientById(id);
+    try {
+      const { id } = req.params;
+      const result = await this.ingredientService.getIngredientById(id);
 
-    if (!result.success) {
-      next(result.error);
-      return;
+      if (!result.success) {
+        next(result.error);
+        return;
+      }
+
+      res.locals.data = result.data;
+      res.locals.status = 200;
+      next();
+    } catch (error) {
+      next(error);
     }
-
-    res.status(200).json({
-      success: true,
-      data: result.data,
-    });
   };
 
   getIngredientByName = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const { name } = req.query;
+    try {
+      const { name } = req.query;
 
-    if (typeof name !== 'string') {
-      next(new Error('Name parameter is required and must be a string'));
-      return;
+      if (typeof name !== 'string') {
+        next(new Error('Name parameter is required and must be a string'));
+        return;
+      }
+
+      const result = await this.ingredientService.getIngredientByName(name);
+
+      if (!result.success) {
+        next(result.error);
+        return;
+      }
+
+      res.locals.data = result.data;
+      res.locals.status = 200;
+      next();
+    } catch (error) {
+      next(error);
     }
-
-    const result = await this.ingredientService.getIngredientByName(name);
-
-    if (!result.success) {
-      next(result.error);
-      return;
-    }
-
-    res.status(200).json({
-      success: true,
-      data: result.data,
-    });
   };
 
   getIngredientsByCategory = async (
@@ -64,54 +73,63 @@ export class IngredientController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    const { category } = req.query;
+    try {
+      const { category } = req.query;
 
-    if (typeof category !== 'string') {
-      next(new Error('Category parameter is required and must be a string'));
-      return;
+      if (typeof category !== 'string') {
+        next(new Error('Category parameter is required and must be a string'));
+        return;
+      }
+
+      const result = await this.ingredientService.getIngredientsByCategory(category);
+
+      if (!result.success) {
+        next(result.error);
+        return;
+      }
+
+      res.locals.data = result.data;
+      res.locals.status = 200;
+      next();
+    } catch (error) {
+      next(error);
     }
-
-    const result = await this.ingredientService.getIngredientsByCategory(category);
-
-    if (!result.success) {
-      next(result.error);
-      return;
-    }
-
-    res.status(200).json({
-      success: true,
-      data: result.data,
-    });
   };
 
   updateIngredient = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const { id } = req.params;
-    const updateData = req.body as TUpdateIngredientDto;
+    try {
+      const { id } = req.params;
+      const updateData = req.body as TUpdateIngredientDto;
 
-    const result = await this.ingredientService.updateIngredient(id, updateData);
+      const result = await this.ingredientService.updateIngredient(id, updateData);
 
-    if (!result.success) {
-      next(result.error);
-      return;
+      if (!result.success) {
+        next(result.error);
+        return;
+      }
+
+      res.locals.data = result.data;
+      res.locals.status = 200;
+      next();
+    } catch (error) {
+      next(error);
     }
-
-    res.status(200).json({
-      success: true,
-      data: result.data,
-    });
   };
 
   getAllIngredients = async (_: Request, res: Response, next: NextFunction): Promise<void> => {
-    const result = await this.ingredientService.getAllIngredients();
+    try {
+      const result = await this.ingredientService.getAllIngredients();
 
-    if (!result.success) {
-      next(result.error);
-      return;
+      if (!result.success) {
+        next(result.error);
+        return;
+      }
+
+      res.locals.data = result.data;
+      res.locals.status = 200;
+      next();
+    } catch (error) {
+      next(error);
     }
-
-    res.status(200).json({
-      success: true,
-      data: result.data,
-    });
   };
 }
