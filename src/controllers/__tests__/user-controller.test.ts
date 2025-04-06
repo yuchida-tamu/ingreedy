@@ -6,7 +6,7 @@ import {
   UserValidationError,
 } from '../../core/application/types/errors/user-error';
 import type { UserService } from '../../services/user/user-service';
-import { UserController } from '../user-controller';
+import { UserController } from '../user/user-controller';
 // Mock the UserService
 jest.mock('../../services/user/user-service');
 

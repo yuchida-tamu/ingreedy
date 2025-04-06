@@ -1,4 +1,4 @@
-import { IngredientController } from '@/controllers/ingredient-controller';
+import { IngredientController } from '@/controllers/ingredient/ingredient-controller';
 import { PostgresIngredientRepository } from '@/infrastructure/repositories/ingredient/postgres-ingredient-repository';
 import { withAuth } from '@/middleware/auth.middleware';
 import { JwtService } from '@/services/auth/jwt-service';

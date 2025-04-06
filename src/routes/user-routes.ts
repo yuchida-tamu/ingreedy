@@ -1,4 +1,4 @@
-import { UserController } from '@/controllers/user-controller';
+import { UserController } from '@/controllers/user/user-controller';
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
 import { newUserDtoSchema, updateUserDtoSchema } from '@/core/application/types/dtos/user.dto';
 import { PostgresUserRepository } from '@/infrastructure/repositories/user/postgres-user-repository';
