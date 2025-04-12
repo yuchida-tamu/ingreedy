@@ -8,11 +8,10 @@ import type {
 } from '@/core/application/types/dtos/user.dto';
 import {
   UserAlreadyExistsError,
-  UserCreationFailedError,
-  UserError,
-  UserNotFoundError,
-  UserUpdateFailedError,
+  UserNotFoundError
 } from '@/core/application/types/errors/user-error';
+import type { TResult } from '@/core/application/types/result';
+import type { User } from '@/core/domain/user/user.entity';
 import { ResultUtil } from '@/utils/result.util';
 import bcrypt from 'bcrypt';
 
@@ -21,90 +20,89 @@ export class UserService implements IUserService {
 
   constructor(private userRepository: IUserRepository) {}
 
-  async getUserById(userId: string) {
-    try {
-      const user = await this.userRepository.findById(userId);
-      if (!user) {
-        return ResultUtil.fail(
-          new UserNotFoundError({
-            message: `User with id ${userId} not found`,
-          }),
-        );
-      }
+  async getUserByEmail(email: string) : Promise<TResult<User>> {
+    const user = await this.userRepository.findByEmail(email);
 
-      return ResultUtil.success(this.mapToUserResponse(user));
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return ResultUtil.fail(new UserError(message));
+    if (!user) {
+      return ResultUtil.fail(
+        new UserNotFoundError({
+          message: `User with email ${email} not found`,
+        }),
+      );
     }
+
+    return ResultUtil.success(user);
+  }
+
+  async getUserById(userId: string) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      return ResultUtil.fail(
+        new UserNotFoundError({
+          message: `User with id ${userId} not found`,
+        }),
+      );
+    }
+
+    return ResultUtil.success(this.mapToUserResponse(user));
   }
 
   async createUser(userData: TNewUserDto) {
-    try {
-      const { email, password, username } = userData;
-      // Check if user with email already exists
-      const existingUser = await this.userRepository.findByEmail(email);
-      if (existingUser) {
+    const { email, password, username } = userData;
+    // Check if user with email already exists
+    const existingUser = await this.userRepository.findByEmail(email);
+    if (existingUser) {
+      return ResultUtil.fail(
+        new UserAlreadyExistsError({
+          message: `User with email ${email} already exists`,
+        }),
+      );
+    }
+
+    // Create new user with hashed password
+    const newUser = await this.userRepository.create({
+      email,
+      username,
+      password: await this.hashPassword(password),
+    });
+
+    return ResultUtil.success(this.mapToUserResponse(newUser));
+  }
+
+  async updateUser(userId: string, updateData: TUpdateUserDto) {
+    const { email, password, username } = updateData;
+    // Check if user exists
+    const existingUser = await this.userRepository.findById(userId);
+    if (!existingUser) {
+      return ResultUtil.fail(
+        new UserNotFoundError({
+          message: `User with id ${userId} not found`,
+        }),
+      );
+    }
+
+    // If email is being updated, check if it's already taken
+    if (email && email !== existingUser.email) {
+      const userWithEmail = await this.userRepository.findByEmail(email);
+      if (userWithEmail) {
         return ResultUtil.fail(
           new UserAlreadyExistsError({
             message: `User with email ${email} already exists`,
           }),
         );
       }
-
-      // Create new user with hashed password
-      const newUser = await this.userRepository.create({
-        email,
-        username,
-        password: await this.hashPassword(password),
-      });
-
-      return ResultUtil.success(this.mapToUserResponse(newUser));
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return ResultUtil.fail(new UserCreationFailedError({ message }));
     }
-  }
 
-  async updateUser(userId: string, updateData: TUpdateUserDto) {
-    try {
-      const { email, password, username } = updateData;
-      // Check if user exists
-      const existingUser = await this.userRepository.findById(userId);
-      if (!existingUser) {
-        return ResultUtil.fail(
-          new UserNotFoundError({
-            message: `User with id ${userId} not found`,
-          }),
-        );
-      }
+    // Hash password if it's being updated
+    const dataToUpdate = {
+      email,
+      username,
+      password: password ? await this.hashPassword(password) : undefined,
+    } as const;
 
-      // If email is being updated, check if it's already taken
-      if (email && email !== existingUser.email) {
-        const userWithEmail = await this.userRepository.findByEmail(email);
-        if (userWithEmail) {
-          return ResultUtil.fail(
-            new UserAlreadyExistsError({
-              message: `User with email ${email} already exists`,
-            }),
-          );
-        }
-      }
-
-      // Hash password if it's being updated
-      const dataToUpdate = {
-        email,
-        username,
-        password: password ? await this.hashPassword(password) : undefined,
-      } as const;
-
-      // Update user
-      const updatedUser = await this.userRepository.update(userId, dataToUpdate);
-      return ResultUtil.success(this.mapToUserResponse(updatedUser));
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      return ResultUtil.fail(new UserUpdateFailedError({ message }));
-    }
+    // Update user
+    const updatedUser = await this.userRepository.update(userId, dataToUpdate);
+    return ResultUtil.success(this.mapToUserResponse(updatedUser));
   }
 
   private async hashPassword(password: string): Promise<string> {

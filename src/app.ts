@@ -1,7 +1,6 @@
 import { errorHandler } from '@/middlewares/error.middleware';
 import { httpResponseHandler } from '@/middlewares/response.middleware';
-import { generateIngredientRouter } from '@/routes/ingredient-routes';
-import { generateUserRouter } from '@/routes/user-routes';
+import { AppRoutes } from '@/routes';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import type { Express, Request, Response } from 'express';
@@ -41,8 +40,9 @@ export function createApp(): Express {
 
   // API routes
   const apiRouter = express.Router();
-  apiRouter.use('/users', generateUserRouter());
-  apiRouter.use('/ingredients', generateIngredientRouter());
+  apiRouter.use('/auth', AppRoutes.auth());
+  apiRouter.use('/users', AppRoutes.users());
+  apiRouter.use('/ingredients', AppRoutes.ingredients());
   app.use(`${process.env.API_PREFIX || '/api'}/${process.env.API_VERSION || 'v1'}`, apiRouter);
 
   // http response handler
