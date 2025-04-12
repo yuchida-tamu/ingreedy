@@ -43,6 +43,7 @@ export function createApp(): Express {
   apiRouter.use('/auth', AppRoutes.auth());
   apiRouter.use('/users', AppRoutes.users());
   apiRouter.use('/ingredients', AppRoutes.ingredients());
+  apiRouter.use('/inventory', AppRoutes.inventory());
   app.use(`${process.env.API_PREFIX || '/api'}/${process.env.API_VERSION || 'v1'}`, apiRouter);
 
   // http response handler
