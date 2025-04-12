@@ -4,7 +4,7 @@ import {
   IngredientNotFoundError,
 } from '../../core/application/types/errors/ingredient-error';
 import type { Ingredient, IngredientCategory } from '../../core/domain/inventory/ingredient.entity';
-import { IngredientService } from './ingredient-service';
+import { IngredientService } from '../ingredient/ingredient-service';
 
 describe('IngredientService', () => {
   let ingredientService: IngredientService;

@@ -1,8 +1,8 @@
-import type { AuthService } from '@/services/auth/auth-service';
 import type { NextFunction, Request, Response } from 'express';
+import type { IAuthService } from '../../core/application/services/auth.service';
 
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: IAuthService) {}
 
   async login(req: Request, res: Response, next: NextFunction) {
     const { email, password } = req.body;

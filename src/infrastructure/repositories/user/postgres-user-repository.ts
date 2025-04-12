@@ -17,7 +17,7 @@ type DbUser = {
  * Handles all user-related database operations using PostgreSQL.
  */
 export class PostgresUserRepository implements IUserRepository {
-  async findById(id: string): Promise<User | null> {
+  async findById(id: string) {
     try {
       const result = await db.query<DbUser>(
         `SELECT id, email, username, password, created_at, updated_at 
@@ -32,11 +32,11 @@ export class PostgresUserRepository implements IUserRepository {
 
       return this.mapToUser(result[0]);
     } catch (error) {
-      throw new DatabaseError('Failed to find user by ID', error);
+      return null;
     }
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string) {
     try {
       const result = await db.query<DbUser>(
         `SELECT id, email, username, password, created_at, updated_at 
@@ -51,7 +51,7 @@ export class PostgresUserRepository implements IUserRepository {
 
       return this.mapToUser(result[0]);
     } catch (error) {
-      throw new DatabaseError('Failed to find user by email', error);
+      return null
     }
   }
 
@@ -73,7 +73,7 @@ export class PostgresUserRepository implements IUserRepository {
   async update(
     id: string,
     data: Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>,
-  ): Promise<User> {
+  ){
     try {
       const setClause: string[] = [];
       const values: unknown[] = [];
@@ -97,7 +97,7 @@ export class PostgresUserRepository implements IUserRepository {
       }
 
       if (setClause.length === 0) {
-        throw new DatabaseError('No fields to update');
+        return null; // No fields to update
       }
 
       // Add id as the last parameter
@@ -112,12 +112,12 @@ export class PostgresUserRepository implements IUserRepository {
       );
 
       if (result.length === 0) {
-        throw new DatabaseError('User not found');
+        throw null;
       }
 
       return this.mapToUser(result[0]);
     } catch (error) {
-      throw new DatabaseError('Failed to update user', error);
+      return null;
     }
   }
 

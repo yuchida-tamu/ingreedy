@@ -10,7 +10,7 @@ import {
   IngredientNotFoundError,
 } from '../../core/application/types/errors/ingredient-error';
 import { ResultUtil } from '../../utils/result.util';
-import { IngredientController } from './ingredient-controller';
+import { IngredientController } from '../ingredient/ingredient-controller';
 
 function isError(error: unknown): error is Error {
   return error instanceof Error;

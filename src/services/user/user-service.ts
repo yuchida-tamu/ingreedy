@@ -8,7 +8,9 @@ import type {
 } from '@/core/application/types/dtos/user.dto';
 import {
   UserAlreadyExistsError,
-  UserNotFoundError
+  UserCreationFailedError,
+  UserNotFoundError,
+  UserUpdateFailedError
 } from '@/core/application/types/errors/user-error';
 import type { TResult } from '@/core/application/types/result';
 import type { User } from '@/core/domain/user/user.entity';
@@ -66,6 +68,14 @@ export class UserService implements IUserService {
       password: await this.hashPassword(password),
     });
 
+    if (!newUser) {
+      return ResultUtil.fail(
+        new UserCreationFailedError({
+          message: `failed to create user`,
+        }),
+      );
+    }
+
     return ResultUtil.success(this.mapToUserResponse(newUser));
   }
 
@@ -102,6 +112,14 @@ export class UserService implements IUserService {
 
     // Update user
     const updatedUser = await this.userRepository.update(userId, dataToUpdate);
+    if (!updatedUser) {
+      return ResultUtil.fail(
+        new UserUpdateFailedError({
+          message: `failed to update user`,
+        }),
+      );
+    }
+    
     return ResultUtil.success(this.mapToUserResponse(updatedUser));
   }
 

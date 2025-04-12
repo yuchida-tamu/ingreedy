@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { IJwtService } from '../../core/application/services/jwt.service';
+import type { AuthenticatedRequest } from '../../core/application/types/api/request';
 import { ApplicationError } from '../../core/application/types/errors/application-error';
 import { UnauthorizedError } from '../../core/application/types/errors/auth-error';
 import type { TResult } from '../../core/application/types/result';
@@ -7,7 +8,7 @@ import { withAuth } from '../auth.middleware';
 
 describe('Auth Middleware', () => {
   let mockJwtService: jest.Mocked<IJwtService>;
-  let mockRequest: Partial<Request>;
+  let mockRequest: Partial<AuthenticatedRequest>;
   let mockResponse: Partial<Response>;
   let mockNext: jest.MockedFunction<NextFunction>;
 
