@@ -8,6 +8,11 @@ import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+
+// Load the OpenAPI schema
+const swaggerDocument = YAML.load('./docs/openapi.yaml');
 
 export function createApp(): Express {
   const app = express();
@@ -45,6 +50,9 @@ export function createApp(): Express {
   apiRouter.use('/ingredients', AppRoutes.ingredients());
   apiRouter.use('/inventory', AppRoutes.inventory());
   app.use(`${process.env.API_PREFIX || '/api'}/${process.env.API_VERSION || 'v1'}`, apiRouter);
+
+  // Swagger UI setup
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   // http response handler
   app.use(httpResponseHandler);

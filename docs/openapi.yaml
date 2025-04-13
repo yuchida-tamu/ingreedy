@@ -1,0 +1,447 @@
+openapi: 3.0.3
+info:
+  title: Ingreedy API
+  description: API documentation for the Ingreedy server.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+tags:
+  - name: Auth
+    description: Endpoints related to authentication
+  - name: Users
+    description: Endpoints related to user management
+  - name: Ingredients
+    description: Endpoints related to ingredient management
+  - name: Inventory
+    description: Endpoints related to inventory management
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+        '401':
+          description: Unauthorized
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: User logout
+      responses:
+        '200':
+          description: Successful logout
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    username:
+                      type: string
+                    email:
+                      type: string
+  /users/createUser:
+    post:
+      tags:
+        - Users
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - username
+                - password
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  email:
+                    type: string
+                  username:
+                    type: string
+  /users/getUser:
+    get:
+      tags:
+        - Users
+      summary: Get user details
+      responses:
+        '200':
+          description: User details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  email:
+                    type: string
+                  username:
+                    type: string
+  /users/updateUser:
+    put:
+      tags:
+        - Users
+      summary: Update user details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  email:
+                    type: string
+                  username:
+                    type: string
+  /ingredients/getIngredients:
+    get:
+      tags:
+        - Ingredients
+      summary: Get all ingredients
+      responses:
+        '200':
+          description: List of ingredients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    category:
+                      type: string
+  /ingredients/getIngredientById/{id}:
+    get:
+      tags:
+        - Ingredients
+      summary: Get ingredient by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ingredient details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  category:
+                    type: string
+  /ingredients/getIngredientsByCategory:
+    get:
+      tags:
+        - Ingredients
+      summary: Get ingredients by category
+      parameters:
+        - name: category
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of ingredients in the category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    category:
+                      type: string
+  /ingredients/getIngredientByName:
+    get:
+      tags:
+        - Ingredients
+      summary: Get ingredient by name
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ingredient details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  category:
+                    type: string
+  /ingredients/createIngredient:
+    post:
+      tags:
+        - Ingredients
+      summary: Create a new ingredient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+              required:
+                - name
+                - category
+      responses:
+        '201':
+          description: Ingredient created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  category:
+                    type: string
+  /ingredients/updateIngredient/{id}:
+    put:
+      tags:
+        - Ingredients
+      summary: Update an ingredient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+      responses:
+        '200':
+          description: Ingredient updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  category:
+                    type: string
+  /inventory/getInventoryById/{id}:
+    get:
+      tags:
+        - Inventory
+      summary: Get inventory by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Inventory details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  ingredientId:
+                    type: string
+                  quantity:
+                    type: number
+                  unit:
+                    type: string
+  /inventory/getInventoryByName:
+    get:
+      tags:
+        - Inventory
+      summary: Get inventory by name
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Inventory details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  ingredientId:
+                    type: string
+                  quantity:
+                    type: number
+                  unit:
+                    type: string
+  /inventory/getInventoryByCategory:
+    get:
+      tags:
+        - Inventory
+      summary: Get inventory by category
+      parameters:
+        - name: category
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of inventories in the category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    ingredientId:
+                      type: string
+                    quantity:
+                      type: number
+                    unit:
+                      type: string
+  /inventory/getAllInventories:
+    get:
+      tags:
+        - Inventory
+      summary: Get all inventories
+      responses:
+        '200':
+          description: List of all inventories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    ingredientId:
+                      type: string
+                    quantity:
+                      type: number
+                    unit:
+                      type: string
