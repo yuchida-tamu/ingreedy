@@ -25,7 +25,7 @@ Ingreedy is an inventory & recipe management application that helps users track 
 
 ### Phase 2: Core Features
 
-- [ ] Implement inventory management system
+- [x] Implement inventory management system
 - [ ] Create recipe management endpoints
 - [ ] Set up user profile management
 - [ ] Implement search functionality
@@ -103,6 +103,22 @@ Latest log: [2024-03-26](docs/logs/2024-03-26.md)
 - Think about recipe scaling functionality
 - Plan for ingredient substitution suggestions
 - Consider integration with popular grocery delivery services
+
+## Notes for Future Work
+
+### Integration Testing and Dependency Injection
+
+- Plan and design a comprehensive testing strategy for the project.
+- Refactor the project to support Dependency Injection (DI) for better testability.
+  - Use a DI library like `Awilix` or `InversifyJS` to manage dependencies.
+  - Ensure all routes and services can accept mock dependencies for testing.
+- Revisit integration tests to ensure they are isolated and do not depend on external systems.
+- Create mock implementations for services and repositories to use in tests.
+
+### Next Steps
+
+- Revisit this plan after finalizing the testing strategy.
+- Implement DI and update integration tests accordingly.
 
 ## Issues & Challenges
 
