@@ -1,5 +1,6 @@
 import { databaseConfig } from '@/config/database.config';
-import { Pool, PoolClient, QueryResult } from 'pg';
+import type { PoolClient, QueryResult } from 'pg';
+import { Pool } from 'pg';
 import { DatabaseError, getConnectionHint, type PostgresError } from './database-error';
 
 // Create the connection pool
