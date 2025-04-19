@@ -12,7 +12,7 @@ function RootComponent() {
         <Link to="/" className="[&.active]:font-bold">
           Home
         </Link>
-        <Link to="/login" className="[&.active]:font-bold">
+        <Link to="/top" className="[&.active]:font-bold">
           Login
         </Link>
       </div>
