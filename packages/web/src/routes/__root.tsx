@@ -12,8 +12,8 @@ function RootComponent() {
         <Link to="/" className="[&.active]:font-bold">
           Home
         </Link>
-        <Link to="/top" className="[&.active]:font-bold">
-          Login
+        <Link to="/auth" className="[&.active]:font-bold">
+          Auth
         </Link>
       </div>
       <hr />

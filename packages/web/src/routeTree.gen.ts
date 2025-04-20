@@ -11,20 +11,27 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TopImport } from './routes/top'
 import { Route as IndexImport } from './routes/index'
+import { Route as AuthIndexImport } from './routes/auth/index'
+import { Route as AuthLoginImport } from './routes/auth/login'
 
 // Create/Update Routes
-
-const TopRoute = TopImport.update({
-  id: '/top',
-  path: '/top',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthIndexRoute = AuthIndexImport.update({
+  id: '/auth/',
+  path: '/auth/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthLoginRoute = AuthLoginImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +46,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/top': {
-      id: '/top'
-      path: '/top'
-      fullPath: '/top'
-      preLoaderRoute: typeof TopImport
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/': {
+      id: '/auth/'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +67,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/top': typeof TopRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth': typeof AuthIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/top': typeof TopRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth': typeof AuthIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/top': typeof TopRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/': typeof AuthIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/top'
+  fullPaths: '/' | '/auth/login' | '/auth'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/top'
-  id: '__root__' | '/' | '/top'
+  to: '/' | '/auth/login' | '/auth'
+  id: '__root__' | '/' | '/auth/login' | '/auth/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  TopRoute: typeof TopRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthIndexRoute: typeof AuthIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  TopRoute: TopRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthIndexRoute: AuthIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +116,18 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/top"
+        "/auth/login",
+        "/auth/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/top": {
-      "filePath": "top.tsx"
+    "/auth/login": {
+      "filePath": "auth/login.tsx"
+    },
+    "/auth/": {
+      "filePath": "auth/index.tsx"
     }
   }
 }
