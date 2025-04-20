@@ -7,18 +7,14 @@ export const Route = createFileRoute('/auth/')({
 function RouteComponent() {
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <div className="join join-vertical gap-4">
-        <h1 className="text-4xl font-bold text-center join-item">
-          Welcome to Ingreedy
-        </h1>
-        <Link
-          from="/auth"
-          to="/auth/signin"
-          className="btn btn-primary join-item"
-        >
-          <button className="btn btn-primary join-item">Login</button>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-4xl font-bold text-center ">Welcome to Ingreedy</h1>
+        <Link from="/auth" to="/auth/signin" className="btn btn-primary ">
+          Signin
         </Link>
-        <button className="btn btn-secondary join-item">Signup</button>
+        <Link from="/auth" to="/auth/signup" className="btn btn-accent">
+          Signup
+        </Link>
       </div>
     </div>
   );
