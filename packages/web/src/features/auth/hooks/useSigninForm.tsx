@@ -39,7 +39,7 @@ function SigninFormSubmitButton({ label }: { label: string }) {
     <form.Subscribe selector={(state) => state.isSubmitting}>
       {(isSubmitting) => (
         <button
-          className="btn btn-accent rounded-md"
+          className="btn btn-primary rounded-md"
           type="submit"
           disabled={isSubmitting}
         >
