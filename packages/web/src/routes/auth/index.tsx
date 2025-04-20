@@ -13,7 +13,7 @@ function RouteComponent() {
         </h1>
         <Link
           from="/auth"
-          to="/auth/login"
+          to="/auth/signin"
           className="btn btn-primary join-item"
         >
           <button className="btn btn-primary join-item">Login</button>
