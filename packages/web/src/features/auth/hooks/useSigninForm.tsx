@@ -4,25 +4,20 @@ import {
   formOptions,
 } from '@tanstack/react-form';
 
+const {
+  fieldContext: signinFieldContext,
+  useFieldContext: useSigninFieldContext,
+  formContext: signinFormContext,
+  useFormContext: useSigninFormContext,
+} = createFormHookContexts();
+
 type SigninFormProps = {
   email: string;
   password: string;
 };
 
-const DEFAULT_VALUES: SigninFormProps = {
-  email: '',
-  password: '',
-};
-
-export const signinFormOptions = formOptions({
-  defaultValues: DEFAULT_VALUES,
-});
-
-const { fieldContext, useFieldContext, formContext, useFormContext } =
-  createFormHookContexts();
-
-function TextField({ label }: { label: string }) {
-  const field = useFieldContext<string>();
+function SigninFormTextField({ label }: { label: string }) {
+  const field = useSigninFieldContext<string>();
 
   return (
     <label className="label justify-between">
@@ -37,8 +32,8 @@ function TextField({ label }: { label: string }) {
   );
 }
 
-function SubmitButton({ label }: { label: string }) {
-  const form = useFormContext();
+function SigninFormSubmitButton({ label }: { label: string }) {
+  const form = useSigninFormContext();
 
   return (
     <form.Subscribe selector={(state) => state.isSubmitting}>
@@ -55,13 +50,28 @@ function SubmitButton({ label }: { label: string }) {
   );
 }
 
-export const { useAppForm, withForm } = createFormHook({
+const { useAppForm, withForm } = createFormHook({
   fieldComponents: {
-    TextField,
+    SigninFormTextField,
   },
   formComponents: {
-    SubmitButton,
+    SigninFormSubmitButton,
   },
-  fieldContext,
-  formContext,
+  fieldContext: signinFieldContext,
+  formContext: signinFormContext,
 });
+
+export const withSigninForm = withForm;
+
+export const signinFormOptions = formOptions({
+  defaultValues: {
+    email: '',
+    password: '',
+  } as const satisfies SigninFormProps,
+});
+
+export const useSigninForm = () => {
+  const form = useAppForm(signinFormOptions);
+
+  return form;
+};
