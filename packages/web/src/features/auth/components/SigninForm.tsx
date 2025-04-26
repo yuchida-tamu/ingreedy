@@ -1,65 +1,64 @@
+import { HeroFormContainer } from '@/elements/forms/HeroFormContainer';
 import { LabeledTextField } from '@/elements/forms/LabeledTextField';
-import { useSigninForm } from '@/features/auth/hooks/useSigninForm';
-import { PropsWithChildren } from 'react';
+import { useForm } from '@tanstack/react-form';
+import { useCallback } from 'react';
 
-type Props = PropsWithChildren<{
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-}>;
-
-function SigninFormContainer({ children, onSubmit }: Props) {
-  return (
-    <form onSubmit={onSubmit}>
-      <div className="hero min-h-screen">
-        <div className="hero-content bg-secondary-content flex-col rounded-lg lg:flex-row">
-          <img
-            // TODO: Replace the image with a logo
-            src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
-            className="max-w-sm rounded-lg"
-          />
-          <div className="flex h-full flex-col gap-4">
-            <h1 className="text-2xl font-bold">Sign In</h1>
-            {children}
-          </div>
-        </div>
-      </div>
-    </form>
-  );
-}
+const DEFAULT_VALUES = {
+  email: '',
+  password: '',
+};
 
 export function SigninForm() {
-  const { form, handleSubmit } = useSigninForm();
+  const { Field, Subscribe, handleSubmit } = useForm({
+    defaultValues: DEFAULT_VALUES,
+    onSubmit: (data) => {
+      console.log(data);
+    },
+  });
+
+  const handleSignInSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      handleSubmit();
+    },
+    [handleSubmit],
+  );
 
   return (
-    <SigninFormContainer onSubmit={handleSubmit}>
+    <HeroFormContainer
+      title="Sign in"
+      // TODO: Add image src
+      imageSrc="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
+      onSubmit={handleSignInSubmit}
+    >
       <div className="flex flex-col gap-2">
-        <form.Field
-          name="email"
-          children={(field) => (
+        <Field name="email">
+          {(field) => (
             <LabeledTextField
               label="Email"
               value={field.state.value}
               onChange={field.handleChange}
             />
           )}
-        />
-        <form.Field
-          name="password"
-          children={(field) => (
+        </Field>
+        <Field name="password">
+          {(field) => (
             <LabeledTextField
               label="Password"
               value={field.state.value}
+              type="password"
               onChange={field.handleChange}
             />
           )}
-        />
+        </Field>
       </div>
-      <form.Subscribe selector={(state) => state.isSubmitting}>
+      <Subscribe selector={(state) => state.isSubmitting}>
         {(isSubmitting) => (
           <button className="btn btn-primary" type="submit" disabled={isSubmitting}>
             Sign in
           </button>
         )}
-      </form.Subscribe>
-    </SigninFormContainer>
+      </Subscribe>
+    </HeroFormContainer>
   );
 }
