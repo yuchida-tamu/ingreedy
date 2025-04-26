@@ -10,13 +10,13 @@ function SigninFormContainer({ children, onSubmit }: Props) {
   return (
     <form onSubmit={onSubmit}>
       <div className="hero min-h-screen">
-        <div className="hero-content flex-col lg:flex-row bg-secondary-content rounded-lg">
+        <div className="hero-content bg-secondary-content flex-col rounded-lg lg:flex-row">
           <img
             // TODO: Replace the image with a logo
             src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
             className="max-w-sm rounded-lg"
           />
-          <div className="flex flex-col h-full gap-4">
+          <div className="flex h-full flex-col gap-4">
             <h1 className="text-2xl font-bold">Sign In</h1>
             {children}
           </div>
@@ -55,11 +55,7 @@ export function SigninForm() {
       </div>
       <form.Subscribe selector={(state) => state.isSubmitting}>
         {(isSubmitting) => (
-          <button
-            className="btn btn-primary"
-            type="submit"
-            disabled={isSubmitting}
-          >
+          <button className="btn btn-primary" type="submit" disabled={isSubmitting}>
             Sign in
           </button>
         )}
