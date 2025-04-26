@@ -1,59 +1,69 @@
-import {
-  signinFormOptions,
-  useSigninForm,
-  withSigninForm,
-} from '@/features/auth/hooks/useSigninForm';
+import { LabeledTextField } from '@/elements/forms/LabeledTextField';
+import { useSigninForm } from '@/features/auth/hooks/useSigninForm';
 import { PropsWithChildren } from 'react';
 
 type Props = PropsWithChildren<{
-  title: string;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }>;
 
-function SigninFormContainer({ children, title }: Props) {
+function SigninFormContainer({ children, onSubmit }: Props) {
   return (
-    <div className="hero min-h-screen">
-      <div className="hero-content flex-col lg:flex-row bg-secondary-content rounded-lg">
-        <img
-          src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
-          className="max-w-sm rounded-lg"
-        />
-        <div className="flex flex-col h-full gap-4">
-          <h1 className="text-2xl font-bold">{title}</h1>
-          {children}
+    <form onSubmit={onSubmit}>
+      <div className="hero min-h-screen">
+        <div className="hero-content flex-col lg:flex-row bg-secondary-content rounded-lg">
+          <img
+            // TODO: Replace the image with a logo
+            src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
+            className="max-w-sm rounded-lg"
+          />
+          <div className="flex flex-col h-full gap-4">
+            <h1 className="text-2xl font-bold">Sign In</h1>
+            {children}
+          </div>
         </div>
       </div>
-    </div>
+    </form>
   );
 }
 
-const SigninFormView = withSigninForm({
-  ...signinFormOptions,
-  props: {
-    title: 'Sign in',
-  },
-  render: ({ form, title }) => {
-    return (
-      <SigninFormContainer title={title}>
-        <div className="flex flex-col gap-2">
-          <form.AppField
-            name="email"
-            children={(field) => <field.SigninFormTextField label="Email" />}
-          />
-          <form.AppField
-            name="password"
-            children={(field) => <field.SigninFormTextField label="Password" />}
-          />
-        </div>
-        <form.AppForm>
-          <form.SigninFormSubmitButton label="Sign in" />
-        </form.AppForm>
-      </SigninFormContainer>
-    );
-  },
-});
-
 export function SigninForm() {
-  const form = useSigninForm();
+  const { form, handleSubmit } = useSigninForm();
 
-  return <SigninFormView form={form} title="Sign in" />;
+  return (
+    <SigninFormContainer onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-2">
+        <form.Field
+          name="email"
+          children={(field) => (
+            <LabeledTextField
+              label="Email"
+              value={field.state.value}
+              onChange={field.handleChange}
+            />
+          )}
+        />
+        <form.Field
+          name="password"
+          children={(field) => (
+            <LabeledTextField
+              label="Password"
+              value={field.state.value}
+              onChange={field.handleChange}
+            />
+          )}
+        />
+      </div>
+      <form.Subscribe selector={(state) => state.isSubmitting}>
+        {(isSubmitting) => (
+          <button
+            className="btn btn-primary"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            Sign in
+          </button>
+        )}
+      </form.Subscribe>
+    </SigninFormContainer>
+  );
 }
