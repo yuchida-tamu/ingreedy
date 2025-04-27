@@ -1,7 +1,6 @@
 import { HeroFormContainer } from '@/elements/forms/HeroFormContainer';
 import { LabeledTextField } from '@/elements/forms/LabeledTextField';
-import { useForm } from '@tanstack/react-form';
-import { useCallback } from 'react';
+import { useAuthHook } from '@/features/auth/hooks/useAuthHook';
 
 const DEFAULT_VALUES = {
   email: '',
@@ -9,27 +8,19 @@ const DEFAULT_VALUES = {
 };
 
 export function SigninForm() {
-  const { Field, Subscribe, handleSubmit } = useForm({
+  const { Field, Subscribe, handleSubmit } = useAuthHook({
     defaultValues: DEFAULT_VALUES,
     onSubmit: (data) => {
       console.log(data);
     },
   });
 
-  const handleSignInSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      handleSubmit();
-    },
-    [handleSubmit],
-  );
-
   return (
     <HeroFormContainer
       title="Sign in"
       // TODO: Add image src
       imageSrc="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
-      onSubmit={handleSignInSubmit}
+      onSubmit={handleSubmit}
     >
       <div className="flex flex-col gap-2">
         <Field name="email">
