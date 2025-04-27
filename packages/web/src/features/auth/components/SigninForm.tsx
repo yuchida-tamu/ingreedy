@@ -28,6 +28,7 @@ export function SigninForm() {
             <LabeledTextField
               label="Email"
               value={field.state.value}
+              type="email"
               onChange={field.handleChange}
             />
           )}

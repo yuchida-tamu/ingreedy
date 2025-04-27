@@ -39,6 +39,7 @@ export function SignupForm() {
             <LabeledTextField
               label="Email"
               value={field.state.value}
+              type="email"
               onChange={field.handleChange}
             />
           )}
