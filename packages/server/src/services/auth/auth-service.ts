@@ -8,7 +8,7 @@ import { AuthError } from '../../core/application/types/errors/auth-error';
 export class AuthService implements IAuthService {
   constructor(
     private userService: UserService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
   async login(email: string, password: string) {

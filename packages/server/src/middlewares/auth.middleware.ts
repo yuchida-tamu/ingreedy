@@ -17,10 +17,15 @@ const DEFAULT_TOKEN_CONFIG: TokenConfig = {
 };
 
 const authenticateJwt = (jwtService: IJwtService): MiddlewareFunction => {
-  return async (req: Request, _: Response, next: NextFunction): Promise<void> => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const token = req.cookies['accessToken'];
       if (!token) {
+        res.locals.status = 401;
+        res.locals.data = {
+          status: 0,
+          message: 'Unauthorized',
+        };
         next(new UnauthorizedError('Invalid or missing access token'));
         return;
       }
@@ -28,6 +33,11 @@ const authenticateJwt = (jwtService: IJwtService): MiddlewareFunction => {
       const result = jwtService.verifyAccessToken(token);
       const userId = result.success ? result.data.userId : null;
       if (!userId) {
+        res.locals.status = 401;
+        res.locals.data = {
+          status: 0,
+          message: 'Unauthorized',
+        };
         next(new UnauthorizedError('Verification failed'));
         return;
       }

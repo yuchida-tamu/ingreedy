@@ -1,11 +1,10 @@
-type SignUpData = {
-  username: string;
+type SignInData = {
   email: string;
   password: string;
 };
 
-export async function signupMutation(data: SignUpData) {
-  const response = await fetch('http://localhost:8000/api/v1/users/createUser', {
+export async function signinMutation(data: SignInData) {
+  const response = await fetch('http://localhost:8000/api/v1/auth/login', {
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify(data),
@@ -13,6 +12,5 @@ export async function signupMutation(data: SignUpData) {
       'Content-Type': 'application/json',
     },
   });
-
   return response.json();
 }
