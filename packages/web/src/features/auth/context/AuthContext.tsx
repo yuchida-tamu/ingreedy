@@ -2,6 +2,11 @@ import { statusQuery } from '@/apis/status';
 import { useQuery } from '@tanstack/react-query';
 import { createContext, useContext, useEffect, useState } from 'react';
 
+const AuthStatus = {
+  UNAUTHENTICATED: 0,
+  AUTHENTICATED: 1,
+} as const;
+
 type AuthContext = {
   isAuthenticated: boolean;
 };
@@ -24,8 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    console.log('data', data);
-    setIsAuthenticated(data?.data?.status === 1);
+    setIsAuthenticated(data?.data?.status === AuthStatus.AUTHENTICATED);
   }, [data]);
 
   return <AuthContext.Provider value={{ isAuthenticated }}>{children}</AuthContext.Provider>;
