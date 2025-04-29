@@ -17,9 +17,7 @@ export function generateAuthRouter(): Router {
 
   router.post('/login', (req, res, next) => authController.login(req, res, next));
   router.post('/logout', (req, res, next) => authController.logout(req, res, next));
-  router.get('/status', auth.authenticate, (req, res, next) =>
-    authController.status(req, res, next),
-  );
+  router.get('/status', auth.statusCheck);
 
   return router;
 }

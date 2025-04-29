@@ -42,21 +42,17 @@ export class AuthController {
       sameSite: 'strict',
     });
 
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
     this.authService.logout();
     res.locals.status = 200;
     res.locals.data = {
       message: 'Logout successful',
     };
-    next();
-  }
-
-  status(_: Request, res: Response, next: NextFunction) {
-    res.locals.status = 200;
-    res.locals.data = {
-      status: 1,
-      message: 'Authenticated',
-    };
-
     next();
   }
 }
