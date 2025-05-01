@@ -1,6 +1,7 @@
 import { statusQuery } from '@/apis/status';
 import { useQuery } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 
 const AuthStatus = {
   UNAUTHENTICATED: 0,
@@ -21,11 +22,15 @@ export const useAuth = () => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
 
   const handleAuthenticated = useCallback(() => {
-    setIsAuthenticated(true);
+    flushSync(() => {
+      setIsAuthenticated(true);
+    });
   }, [setIsAuthenticated]);
 
   const handleUnauthenticated = useCallback(() => {
-    setIsAuthenticated(false);
+    flushSync(() => {
+      setIsAuthenticated(false);
+    });
   }, [setIsAuthenticated]);
   return { isAuthenticated, handleAuthenticated, handleUnauthenticated };
 };
