@@ -18,6 +18,7 @@ const ERROR_CODE_MAP: Record<string, string> = {
   USER_VALIDATION_FAILED: 'U003',
   USER_NOT_FOUND: 'U004',
   INTERNAL_SERVER_ERROR: 'U005',
+  UNAUTHORIZED: 'U006',
 };
 
 export const errorHandler = (
