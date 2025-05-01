@@ -8,13 +8,10 @@ const getUserOptions = queryOptions({
 });
 
 export const Route = createFileRoute('/user/')({
-  beforeLoad: async ({ location, context }) => {
+  beforeLoad: async ({ context }) => {
     if (!context.auth.isAuthenticated) {
       throw redirect({
         to: '/auth',
-        search: {
-          redirect: location.href,
-        },
       });
     }
   },
