@@ -12,54 +12,6 @@ const DEFAULT_VALUES = {
   password: '',
 };
 
-const useSigninForm = () => {
-  const navigate = useNavigate();
-  const { handleAuthenticated } = useAuth();
-  // TODO: Add type for the response
-  const { mutate, isPending } = useMutation<
-    { success: boolean; data: { message: string } },
-    Error,
-    { email: string; password: string }
-  >({
-    mutationFn: signinMutation,
-    onSuccess: (data) => {
-      console.log('data', data);
-      // Update auth context with the successful sign-in
-      handleAuthenticated();
-      // Navigate to the user page on success
-      navigate({ to: '/user' });
-    },
-    onError: (error) => {
-      console.log('error', error);
-      // TODO: Show error message
-    },
-  });
-
-  const {
-    Field,
-    Subscribe,
-    handleSubmit: submit,
-  } = useForm({
-    defaultValues: DEFAULT_VALUES,
-    onSubmit: ({ value: { email, password } }) => {
-      mutate({
-        email,
-        password,
-      });
-    },
-  });
-
-  const handleSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      submit();
-    },
-    [submit],
-  );
-
-  return { Field, Subscribe, handleSubmit, isPending };
-};
-
 export function SigninForm() {
   const { Field, Subscribe, handleSubmit, isPending } = useSigninForm();
 
@@ -101,4 +53,55 @@ export function SigninForm() {
       </Subscribe>
     </HeroFormContainer>
   );
+}
+
+function useSigninForm() {
+  const navigate = useNavigate();
+  const { handleAuthenticated } = useAuth();
+  // TODO: Add type for the response
+  const { mutate, isPending } = useMutation<
+    { success: boolean; data: { message: string } },
+    Error,
+    { email: string; password: string }
+  >({
+    mutationFn: signinMutation,
+    onSuccess: (data) => {
+      if (data.success) {
+        // Update auth context with the successful sign-in
+        handleAuthenticated();
+        // Navigate to the user page on success
+        navigate({ to: '/user' });
+      } else {
+        // TODO: Show error message
+      }
+    },
+    onError: (error) => {
+      console.log('error', error);
+      // TODO: Show error message
+    },
+  });
+
+  const {
+    Field,
+    Subscribe,
+    handleSubmit: submit,
+  } = useForm({
+    defaultValues: DEFAULT_VALUES,
+    onSubmit: ({ value: { email, password } }) => {
+      mutate({
+        email,
+        password,
+      });
+    },
+  });
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      submit();
+    },
+    [submit],
+  );
+
+  return { Field, Subscribe, handleSubmit, isPending };
 }
