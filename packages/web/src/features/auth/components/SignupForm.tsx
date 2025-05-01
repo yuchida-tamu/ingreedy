@@ -1,6 +1,6 @@
-import { signupMutation } from '@/apis/signup';
 import { HeroFormContainer } from '@/elements/forms/HeroFormContainer';
 import { LabeledTextField } from '@/elements/forms/LabeledTextField';
+import { signupMutation } from '@/features/auth/apis/signup';
 import { useAuthHook } from '@/features/auth/hooks/useAuthHook';
 import { useMutation } from '@tanstack/react-query';
 
