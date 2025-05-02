@@ -1,4 +1,4 @@
-import { getUserFetcher, UnauthorizedError } from '@/features/user/api/getUser';
+import { getUserFetcher, UnauthorizedError } from '@/features/user/apis/getUser';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, ErrorComponentProps, redirect } from '@tanstack/react-router';
 
