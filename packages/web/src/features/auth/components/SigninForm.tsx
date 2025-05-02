@@ -1,11 +1,7 @@
 import { HeroFormContainer } from '@/elements/forms/HeroFormContainer';
 import { LabeledTextField } from '@/elements/forms/LabeledTextField';
-import { signinFetcher } from '@/features/auth/apis/siginin';
-import { useAuth } from '@/features/auth/context/AuthContext';
-import { useForm } from '@tanstack/react-form';
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
-import { useCallback } from 'react';
+import { signinFetcher } from '@/features/auth/apis/signin';
+import { useAuthForm } from '@/features/auth/hooks/useAuthForm';
 
 const DEFAULT_VALUES = {
   email: '',
@@ -13,7 +9,13 @@ const DEFAULT_VALUES = {
 };
 
 export function SigninForm() {
-  const { Field, Subscribe, handleSubmit, isPending } = useSigninForm();
+  const { Field, Subscribe, handleSubmit, isPending } = useAuthForm<{
+    email: string;
+    password: string;
+  }>({
+    defaultValues: DEFAULT_VALUES,
+    fetcher: signinFetcher,
+  });
 
   return (
     <HeroFormContainer
@@ -53,55 +55,4 @@ export function SigninForm() {
       </Subscribe>
     </HeroFormContainer>
   );
-}
-
-function useSigninForm() {
-  const navigate = useNavigate();
-  const { handleAuthenticated } = useAuth();
-  // TODO: Add type for the response
-  const { mutate, isPending } = useMutation<
-    { success: boolean; data: { message: string } },
-    Error,
-    { email: string; password: string }
-  >({
-    mutationFn: signinFetcher,
-    onSuccess: (data) => {
-      if (data.success) {
-        // Update auth context with the successful sign-in
-        handleAuthenticated();
-        // Navigate to the user page on success
-        navigate({ to: '/user' });
-      } else {
-        // TODO: Show error message
-      }
-    },
-    onError: (error) => {
-      console.log('error', error);
-      // TODO: Show error message
-    },
-  });
-
-  const {
-    Field,
-    Subscribe,
-    handleSubmit: submit,
-  } = useForm({
-    defaultValues: DEFAULT_VALUES,
-    onSubmit: ({ value: { email, password } }) => {
-      mutate({
-        email,
-        password,
-      });
-    },
-  });
-
-  const handleSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      submit();
-    },
-    [submit],
-  );
-
-  return { Field, Subscribe, handleSubmit, isPending };
 }

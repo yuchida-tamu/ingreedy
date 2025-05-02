@@ -1,8 +1,7 @@
 import { HeroFormContainer } from '@/elements/forms/HeroFormContainer';
 import { LabeledTextField } from '@/elements/forms/LabeledTextField';
 import { signupFetcher } from '@/features/auth/apis/signup';
-import { useAuthHook } from '@/features/auth/hooks/useAuthHook';
-import { useMutation } from '@tanstack/react-query';
+import { useAuthForm } from '@/features/auth/hooks/useAuthForm';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -12,14 +11,9 @@ const DEFAULT_VALUES = {
 };
 
 export function SignupForm() {
-  const { mutate, isPending } = useMutation({
-    mutationFn: signupFetcher,
-  });
-  const { Field, Subscribe, handleSubmit } = useAuthHook({
+  const { Field, Subscribe, handleSubmit } = useAuthForm({
     defaultValues: DEFAULT_VALUES,
-    onSubmit: ({ value: { username, email, password } }) => {
-      mutate({ username, email, password });
-    },
+    fetcher: signupFetcher,
   });
 
   return (
@@ -30,7 +24,6 @@ export function SignupForm() {
       onSubmit={handleSubmit}
     >
       <div className="flex flex-col gap-2">
-        {isPending && <div>Loading...</div>}
         <Field name="username">
           {(field) => (
             <LabeledTextField
