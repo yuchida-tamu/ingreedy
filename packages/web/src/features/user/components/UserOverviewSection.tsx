@@ -6,21 +6,23 @@ export function UserOverviewSection() {
 
         <div className="stats stats-vertical shadow">
           <div className="stat">
-            <div className="stat-title">Recipes Created</div>
-            <div className="stat-value">31</div>
-            <div className="stat-desc">↗︎ 40% more than last month</div>
+            <div className="stat-title">Active Inventory</div>
+            <div className="stat-value">
+              7 <span className="text-xs">items</span>
+            </div>
+            <div className="stat-desc">↗︎ milk is expiring soon</div>
+          </div>
+
+          <div className="stat">
+            <div className="stat-title">Your Recipes</div>
+            <div className="stat-value">10</div>
+            <div className="stat-desc">↗︎ 20% more than last month</div>
           </div>
 
           <div className="stat">
             <div className="stat-title">Recipes Saved</div>
             <div className="stat-value">120</div>
             <div className="stat-desc">↗︎ 20% more than last month</div>
-          </div>
-
-          <div className="stat">
-            <div className="stat-title">Account Status</div>
-            <div className="stat-value text-success">Active</div>
-            <div className="stat-desc">Member since Jan 2024</div>
           </div>
         </div>
       </div>
