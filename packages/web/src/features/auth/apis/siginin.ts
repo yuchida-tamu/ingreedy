@@ -4,7 +4,7 @@ type SignInData = {
 };
 
 export async function signinMutation(data: SignInData) {
-  const response = await fetch('http://localhost:8000/api/v1/auth/login', {
+  const response = await fetch(`${import.meta.env.VITE_APP_API_DOMAIN}/auth/login`, {
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify(data),
