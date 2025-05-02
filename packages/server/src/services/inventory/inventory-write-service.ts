@@ -1,7 +1,7 @@
-import type { IInventoryRepository } from '@/core/application/repositories/inventory.repository';
+// import type { IInventoryRepository } from '@/core/application/repositories/inventory.repository';
 
-export class InventoryWriteService {
-  constructor(private inventoryRepository: IInventoryRepository) {}
+// export class InventoryWriteService {
+//   constructor(private inventoryRepository: IInventoryRepository) {}
 
-  // TODO: Implement createInventory, updateInventory, deleteInventory methods as needed
-}
+//   // TODO: Implement createInventory, updateInventory, deleteInventory methods as needed
+// }
