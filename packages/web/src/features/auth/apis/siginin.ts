@@ -3,7 +3,7 @@ type SignInData = {
   password: string;
 };
 
-export async function signinMutation(data: SignInData) {
+export async function signinFetcher(data: SignInData) {
   const response = await fetch(`${import.meta.env.VITE_APP_API_DOMAIN}/auth/login`, {
     method: 'POST',
     credentials: 'include',

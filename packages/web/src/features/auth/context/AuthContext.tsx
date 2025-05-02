@@ -1,4 +1,4 @@
-import { statusQuery } from '@/features/auth/apis/status';
+import { statusFetcher } from '@/features/auth/apis/status';
 import { useQuery } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
@@ -38,7 +38,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { data } = useQuery({
     queryKey: ['auth-status'],
-    queryFn: statusQuery,
+    queryFn: statusFetcher,
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);

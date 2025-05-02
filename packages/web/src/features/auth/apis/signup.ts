@@ -4,7 +4,7 @@ type SignUpData = {
   password: string;
 };
 
-export async function signupMutation(data: SignUpData) {
+export async function signupFetcher(data: SignUpData) {
   const response = await fetch('http://localhost:8000/api/v1/users/createUser', {
     method: 'POST',
     credentials: 'include',

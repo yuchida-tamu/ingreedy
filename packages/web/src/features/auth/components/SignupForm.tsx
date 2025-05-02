@@ -1,6 +1,6 @@
 import { HeroFormContainer } from '@/elements/forms/HeroFormContainer';
 import { LabeledTextField } from '@/elements/forms/LabeledTextField';
-import { signupMutation } from '@/features/auth/apis/signup';
+import { signupFetcher } from '@/features/auth/apis/signup';
 import { useAuthHook } from '@/features/auth/hooks/useAuthHook';
 import { useMutation } from '@tanstack/react-query';
 
@@ -13,7 +13,7 @@ const DEFAULT_VALUES = {
 
 export function SignupForm() {
   const { mutate, isPending } = useMutation({
-    mutationFn: signupMutation,
+    mutationFn: signupFetcher,
   });
   const { Field, Subscribe, handleSubmit } = useAuthHook({
     defaultValues: DEFAULT_VALUES,
