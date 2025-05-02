@@ -8,14 +8,14 @@ export function UserSettingsSection() {
           <div className="form-control">
             <label className="label cursor-pointer">
               <span className="label-text">Email Notifications</span>
-              <input type="checkbox" className="toggle toggle-primary" defaultChecked />
+              <input type="checkbox" className="toggle toggle-primary" disabled />
             </label>
           </div>
 
           <div className="form-control">
             <label className="label cursor-pointer">
               <span className="label-text">Public Profile</span>
-              <input type="checkbox" className="toggle toggle-primary" />
+              <input type="checkbox" className="toggle toggle-primary" disabled />
             </label>
           </div>
 
