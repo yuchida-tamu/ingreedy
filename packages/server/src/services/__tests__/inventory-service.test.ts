@@ -12,6 +12,7 @@ describe('InventoryService', () => {
       findById: jest.fn(),
       findInventoryByName: jest.fn(),
       findInventoryByCategory: jest.fn(),
+      findInventoriesByUserId: jest.fn(),
       findAll: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),

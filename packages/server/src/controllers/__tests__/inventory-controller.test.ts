@@ -17,6 +17,7 @@ describe('InventoryController', () => {
       getInventoryByName: jest.fn(),
       getInventoryByCategory: jest.fn(),
       getAllInventories: jest.fn(),
+      getInventoriesByUserId: jest.fn(),
     };
 
     inventoryController = new InventoryController(mockInventoryService);

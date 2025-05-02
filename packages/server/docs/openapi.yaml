@@ -445,3 +445,26 @@ paths:
                       type: number
                     unit:
                       type: string
+  /inventory/getUserInventories:
+    get:
+      tags:
+        - Inventory
+      summary: Get all inventory items for the authenticated user
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: List of inventory items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Inventory'
+        '401':
+          description: Unauthorized

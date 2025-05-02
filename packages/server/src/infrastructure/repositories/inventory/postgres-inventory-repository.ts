@@ -141,6 +141,21 @@ export class PostgresInventoryRepository implements IInventoryRepository {
     }
   }
 
+  async findInventoriesByUserId(userId: string): Promise<Inventory[]> {
+    try {
+      const result = await db.query<DbInventory>(
+        `SELECT id, ingredient_id, quantity, unit, user_id, created_at, updated_at 
+         FROM inventory 
+         WHERE user_id = $1
+         ORDER BY created_at DESC`,
+        [userId],
+      );
+      return result.map(this.mapToInventory);
+    } catch (error) {
+      return [];
+    }
+  }
+
   private mapToInventory(row: DbInventory): Inventory {
     return {
       id: row.id,

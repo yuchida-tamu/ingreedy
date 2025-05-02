@@ -103,4 +103,26 @@ export class InventoryController {
       next(error);
     }
   };
+
+  getUserInventories = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const userId = req.user.id;
+      const result = await this.inventoryService.getInventoriesByUserId(userId);
+
+      if (!result.success) {
+        next(result.error);
+        return;
+      }
+
+      res.locals.data = result.data;
+      res.locals.status = 200;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
 }

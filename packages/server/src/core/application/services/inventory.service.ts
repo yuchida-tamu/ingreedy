@@ -6,4 +6,5 @@ export abstract class IInventoryService {
   abstract getInventoryByName(userId: string, name: string): Promise<TResult<Inventory>>;
   abstract getInventoryByCategory(userId: string, category: string): Promise<TResult<Inventory[]>>;
   abstract getAllInventories(): Promise<TResult<Inventory[]>>;
+  abstract getInventoriesByUserId(userId: string): Promise<TResult<Inventory[]>>;
 }
