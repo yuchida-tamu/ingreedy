@@ -12,6 +12,7 @@ describe('InventoryService', () => {
       findById: jest.fn(),
       findInventoryByName: jest.fn(),
       findInventoryByCategory: jest.fn(),
+      findInventoriesByUserId: jest.fn(),
       findAll: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
@@ -149,6 +150,41 @@ describe('InventoryService', () => {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toEqual(mockInventories);
+      }
+    });
+  });
+
+  describe('getInventoriesByUserId', () => {
+    it('should return inventories for the user', async () => {
+      const mockInventories = [
+        {
+          id: '1',
+          ingredientId: 'ingredient-1',
+          quantity: 10,
+          unit: 'kg' as InventoryUnit,
+          userId: 'user-1',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+      mockInventoryRepository.findInventoriesByUserId.mockResolvedValue(mockInventories);
+
+      const result = await inventoryService.getInventoriesByUserId('user-1');
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toEqual(mockInventories);
+      }
+    });
+
+    it('should return empty array if user has no inventories', async () => {
+      mockInventoryRepository.findInventoriesByUserId.mockResolvedValue([]);
+
+      const result = await inventoryService.getInventoriesByUserId('user-1');
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toEqual([]);
       }
     });
   });

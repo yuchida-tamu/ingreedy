@@ -47,4 +47,9 @@ export class InventoryService implements IInventoryService {
 
     return ResultUtil.success(inventories);
   }
+
+  async getInventoriesByUserId(userId: string): Promise<TResult<Inventory[]>> {
+    const inventories = await this.inventoryRepository.findInventoriesByUserId(userId);
+    return ResultUtil.success(inventories);
+  }
 }

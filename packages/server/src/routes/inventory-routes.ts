@@ -32,5 +32,9 @@ export function generateInventoryRouter(): Router {
     inventoryController.getAllInventories(req as AuthenticatedRequest, res, next),
   );
 
+  router.get('/getUserInventories', auth.authenticate, (req, res, next) =>
+    inventoryController.getUserInventories(req as AuthenticatedRequest, res, next),
+  );
+
   return router;
 }
