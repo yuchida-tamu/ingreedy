@@ -1,5 +1,5 @@
 import { UnauthorizedError } from '@/features/user/apis/getUser';
-import { getUserOptions, UserInfoSection } from '@/features/user/components/UserInfoSection';
+import { getUserOptions, UserInfoCard } from '@/features/user/components/UserInfoSection';
 import { createFileRoute, ErrorComponentProps, redirect } from '@tanstack/react-router';
 import { Suspense } from 'react';
 
@@ -36,7 +36,7 @@ function UserPage() {
       <div className="container mx-auto px-4">
         {/* User Profile Card */}
         <Suspense fallback={<div>Loading...</div>}>
-          <UserInfoSection />
+          <UserInfoCard />
         </Suspense>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">

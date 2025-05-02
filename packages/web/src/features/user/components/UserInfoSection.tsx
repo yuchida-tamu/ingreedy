@@ -6,7 +6,7 @@ export const getUserOptions = queryOptions({
   queryFn: getUserFetcher,
 });
 
-export function UserInfoSection() {
+export function UserInfoCard() {
   const { data } = useSuspenseQuery(getUserOptions);
 
   return (
