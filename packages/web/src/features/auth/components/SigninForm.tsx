@@ -1,7 +1,7 @@
 import { HeroFormContainer } from '@/elements/forms/HeroFormContainer';
 import { LabeledTextField } from '@/elements/forms/LabeledTextField';
 import { signinFetcher } from '@/features/auth/apis/siginin';
-import { useAuthHook } from '@/features/auth/hooks/useAuthHook';
+import { useAuthForm } from '@/features/auth/hooks/useAuthForm';
 
 const DEFAULT_VALUES = {
   email: '',
@@ -9,7 +9,7 @@ const DEFAULT_VALUES = {
 };
 
 export function SigninForm() {
-  const { Field, Subscribe, handleSubmit, isPending } = useAuthHook<{
+  const { Field, Subscribe, handleSubmit, isPending } = useAuthForm<{
     email: string;
     password: string;
   }>({

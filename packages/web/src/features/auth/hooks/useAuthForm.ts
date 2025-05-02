@@ -9,7 +9,7 @@ type Args<T> = {
   fetcher: (data: T) => Promise<{ success: boolean; data: { message: string } }>;
 };
 
-export function useAuthHook<T>({ defaultValues, fetcher }: Args<T>) {
+export function useAuthForm<T>({ defaultValues, fetcher }: Args<T>) {
   const navigate = useNavigate();
   const { handleAuthenticated } = useAuth();
 

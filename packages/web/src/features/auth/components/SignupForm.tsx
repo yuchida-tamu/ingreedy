@@ -1,7 +1,7 @@
 import { HeroFormContainer } from '@/elements/forms/HeroFormContainer';
 import { LabeledTextField } from '@/elements/forms/LabeledTextField';
 import { signupFetcher } from '@/features/auth/apis/signup';
-import { useAuthHook } from '@/features/auth/hooks/useAuthHook';
+import { useAuthForm } from '@/features/auth/hooks/useAuthForm';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -11,7 +11,7 @@ const DEFAULT_VALUES = {
 };
 
 export function SignupForm() {
-  const { Field, Subscribe, handleSubmit } = useAuthHook({
+  const { Field, Subscribe, handleSubmit } = useAuthForm({
     defaultValues: DEFAULT_VALUES,
     fetcher: signupFetcher,
   });
