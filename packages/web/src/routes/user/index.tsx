@@ -1,11 +1,7 @@
-import { getUserFetcher, UnauthorizedError } from '@/features/user/apis/getUser';
-import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
+import { UnauthorizedError } from '@/features/user/apis/getUser';
+import { getUserOptions, UserInfoSection } from '@/features/user/components/UserInfoSection';
 import { createFileRoute, ErrorComponentProps, redirect } from '@tanstack/react-router';
-
-const getUserOptions = queryOptions({
-  queryKey: ['user'],
-  queryFn: getUserFetcher,
-});
+import { Suspense } from 'react';
 
 export const Route = createFileRoute('/user/')({
   beforeLoad: async ({ context }) => {
@@ -35,29 +31,13 @@ function ErrorComponent({ error }: ErrorComponentProps) {
 }
 
 function UserPage() {
-  const { data } = useSuspenseQuery(getUserOptions);
   return (
     <div className="bg-base-200 min-h-screen py-8">
       <div className="container mx-auto px-4">
         {/* User Profile Card */}
-        <div className="card bg-base-100 mb-8 shadow-xl">
-          <div className="card-body">
-            <div className="flex items-center gap-4">
-              <div className="avatar placeholder">
-                <div className="bg-neutral text-neutral-content w-24 rounded-full">
-                  <span className="text-3xl">JD</span>
-                </div>
-              </div>
-              <div>
-                <h2 className="card-title text-2xl">{data.username}</h2>
-                <p className="text-base-content/70">{data.email}</p>
-                <div className="mt-2">
-                  <span className="badge badge-primary">Premium User</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Suspense fallback={<div>Loading...</div>}>
+          <UserInfoSection />
+        </Suspense>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {/* Main Content */}
