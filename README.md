@@ -36,8 +36,8 @@ For other operating systems, visit the [official PostgreSQL download page](https
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/yourusername/ingreedy-server.git
-   cd ingreedy-server
+   git clone https://github.com/yuchida-tamu/ingreedy.git
+   cd ingreedy
    ```
 
 2. **Install dependencies**
