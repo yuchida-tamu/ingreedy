@@ -100,6 +100,7 @@ This will start:
 
 - Frontend at `http://localhost:3000`
 - Backend at `http://localhost:8000`
+- API Documentation at `http://localhost:8000/api-docs`
 
 ### Running Individual Services
 
@@ -114,6 +115,17 @@ Run only the backend:
 ```bash
 npm run dev:server
 ```
+
+### API Documentation
+
+The API documentation is available through Swagger UI when running the server:
+
+- Visit `http://localhost:8000/api-docs` in your browser
+- The documentation includes:
+  - All available endpoints
+  - Request/response schemas
+  - Authentication requirements
+  - Example requests and responses
 
 ### Other Available Scripts
 
