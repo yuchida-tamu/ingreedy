@@ -110,6 +110,7 @@ export class InventoryReadController {
     next: NextFunction,
   ): Promise<void> => {
     try {
+      console.log('getUserInventories');
       const userId = req.user.id;
       const result = await this.inventoryService.getInventoriesByUserId(userId);
 
