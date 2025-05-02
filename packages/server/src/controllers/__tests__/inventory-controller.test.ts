@@ -1,8 +1,8 @@
+import { InventoryController } from '@/controllers/inventory/inventory-controller';
 import type { IInventoryService } from '@/core/application/services/inventory.service';
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
 import { InventoryNotFoundError } from '@/core/application/types/errors/inventory-error';
 import type { NextFunction, Response } from 'express';
-import { InventoryController } from '../inventory/inventory-controller';
 
 describe('InventoryController', () => {
   let inventoryController: InventoryController;
@@ -233,6 +233,68 @@ describe('InventoryController', () => {
 
       expect(mockInventoryService.getAllInventories).toHaveBeenCalled();
       expect(mockNext).toHaveBeenCalledWith(mockError);
+    });
+  });
+
+  describe('getUserInventories', () => {
+    it('should return inventories for the authenticated user', async () => {
+      const mockInventories = [
+        {
+          id: '1',
+          ingredientId: 'ingredient-1',
+          quantity: 10,
+          unit: 'kg',
+          userId: 'mock-user-id',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as const,
+      ];
+      mockInventoryService.getInventoriesByUserId.mockResolvedValue({
+        success: true,
+        data: mockInventories,
+      });
+
+      await inventoryController.getUserInventories(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      expect(mockInventoryService.getInventoriesByUserId).toHaveBeenCalledWith('mock-user-id');
+      expect(mockResponse.locals?.data).toEqual(mockInventories);
+      expect(mockResponse.locals?.status).toBe(200);
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should call next with error if service returns failure', async () => {
+      const mockError = new InventoryNotFoundError({ message: 'Service error' });
+      mockInventoryService.getInventoriesByUserId.mockResolvedValue({
+        success: false,
+        error: mockError,
+      });
+
+      await inventoryController.getUserInventories(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      expect(mockInventoryService.getInventoriesByUserId).toHaveBeenCalledWith('mock-user-id');
+      expect(mockNext).toHaveBeenCalledWith(mockError);
+    });
+
+    it('should call next with error if an exception is thrown', async () => {
+      const thrownError = new Error('Unexpected error');
+      mockInventoryService.getInventoriesByUserId.mockRejectedValue(thrownError);
+
+      await inventoryController.getUserInventories(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      expect(mockInventoryService.getInventoriesByUserId).toHaveBeenCalledWith('mock-user-id');
+      expect(mockNext).toHaveBeenCalledWith(thrownError);
     });
   });
 });
