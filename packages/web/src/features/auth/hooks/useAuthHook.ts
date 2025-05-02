@@ -1,19 +1,46 @@
+import { useAuth } from '@/features/auth/context/AuthContext';
+import { useCustomMutation } from '@/infra/hooks/useCustomMutation';
 import { useForm } from '@tanstack/react-form';
+import { useNavigate } from '@tanstack/react-router';
 import { useCallback } from 'react';
 
 type Args<T> = {
-  defaultValues: T;
-  onSubmit: (props: { value: T }) => Promise<void> | void;
+  defaultValues: T & { [key: string]: string };
+  fetcher: (data: T) => Promise<{ success: boolean; data: { message: string } }>;
 };
 
-export function useAuthHook<T>({ defaultValues, onSubmit }: Args<T>) {
+export function useAuthHook<T>({ defaultValues, fetcher }: Args<T>) {
+  const navigate = useNavigate();
+  const { handleAuthenticated } = useAuth();
+
+  const { mutate, isPending } = useCustomMutation<T, { message: string }>({
+    fetcher: fetcher,
+    onSuccess: (data) => {
+      if (data.success) {
+        // Update auth context with the successful sign-in
+        handleAuthenticated();
+        navigate({ to: '/user' });
+      } else {
+        // TODO: Show error message
+      }
+    },
+    onError: (error) => {
+      console.log('error', error);
+      // TODO: Show error message
+    },
+  });
+
   const {
     Field,
     Subscribe,
     handleSubmit: submit,
   } = useForm({
-    defaultValues,
-    onSubmit,
+    defaultValues: defaultValues,
+    onSubmit: ({ value }) => {
+      mutate({
+        ...value,
+      });
+    },
   });
 
   const handleSubmit = useCallback(
@@ -24,5 +51,5 @@ export function useAuthHook<T>({ defaultValues, onSubmit }: Args<T>) {
     [submit],
   );
 
-  return { Field, Subscribe, handleSubmit };
+  return { Field, Subscribe, handleSubmit, isPending };
 }

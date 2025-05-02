@@ -12,5 +12,5 @@ export async function signinFetcher(data: SignInData) {
       'Content-Type': 'application/json',
     },
   });
-  return response.json();
+  return response.json() as Promise<{ success: boolean; data: { message: string } }>;
 }
