@@ -1,10 +1,10 @@
 import type { IInventoryRepository } from '../../core/application/repositories/inventory.repository';
 import { InventoryNotFoundError } from '../../core/application/types/errors/inventory-error';
 import type { InventoryUnit } from '../../core/domain/inventory/inventory.entity';
-import { InventoryService } from '../inventory/inventory-service';
+import { InventoryReadService } from '../inventory/inventory-read-service';
 
-describe('InventoryService', () => {
-  let inventoryService: InventoryService;
+describe('InventoryReadService', () => {
+  let inventoryReadService: InventoryReadService;
   let mockInventoryRepository: jest.Mocked<IInventoryRepository>;
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('InventoryService', () => {
       update: jest.fn(),
     };
 
-    inventoryService = new InventoryService(mockInventoryRepository);
+    inventoryReadService = new InventoryReadService(mockInventoryRepository);
   });
 
   describe('getInventoryById', () => {
@@ -27,7 +27,7 @@ describe('InventoryService', () => {
         id: '1',
         ingredientId: 'ingredient-1',
         quantity: 10,
-        unit: 'kg' as InventoryUnit, // Use a valid unit value
+        unit: 'kg' as InventoryUnit,
         userId: 'user-1',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -35,7 +35,7 @@ describe('InventoryService', () => {
 
       mockInventoryRepository.findById.mockResolvedValue(mockInventory);
 
-      const result = await inventoryService.getInventoryById('1');
+      const result = await inventoryReadService.getInventoryById('1');
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -46,7 +46,7 @@ describe('InventoryService', () => {
     it('should return error when inventory is not found', async () => {
       mockInventoryRepository.findById.mockResolvedValue(null);
 
-      const result = await inventoryService.getInventoryById('1');
+      const result = await inventoryReadService.getInventoryById('1');
 
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -62,7 +62,7 @@ describe('InventoryService', () => {
         id: '1',
         ingredientId: 'ingredient-1',
         quantity: 10,
-        unit: 'kg' as InventoryUnit, // Use a valid unit value
+        unit: 'kg' as InventoryUnit,
         userId: 'user-1',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -70,7 +70,7 @@ describe('InventoryService', () => {
 
       mockInventoryRepository.findInventoryByName.mockResolvedValue(mockInventory);
 
-      const result = await inventoryService.getInventoryByName('user-1', 'ingredient-1');
+      const result = await inventoryReadService.getInventoryByName('user-1', 'ingredient-1');
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -81,7 +81,7 @@ describe('InventoryService', () => {
     it('should return error when inventory is not found', async () => {
       mockInventoryRepository.findInventoryByName.mockResolvedValue(null);
 
-      const result = await inventoryService.getInventoryByName('user-1', 'ingredient-1');
+      const result = await inventoryReadService.getInventoryByName('user-1', 'ingredient-1');
 
       expect(result.success).toBe(false);
       if (!result.success) {
@@ -100,7 +100,7 @@ describe('InventoryService', () => {
           id: '1',
           ingredientId: 'ingredient-1',
           quantity: 10,
-          unit: 'kg' as InventoryUnit, // Use a valid unit value
+          unit: 'kg' as InventoryUnit,
           userId: 'user-1',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -109,7 +109,7 @@ describe('InventoryService', () => {
 
       mockInventoryRepository.findInventoryByCategory.mockResolvedValue(mockInventories);
 
-      const result = await inventoryService.getInventoryByCategory('user-1', 'category-1');
+      const result = await inventoryReadService.getInventoryByCategory('user-1', 'category-1');
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -120,7 +120,7 @@ describe('InventoryService', () => {
     it('should return empty array when no inventories are found', async () => {
       mockInventoryRepository.findInventoryByCategory.mockResolvedValue([]);
 
-      const result = await inventoryService.getInventoryByCategory('user-1', 'category-1');
+      const result = await inventoryReadService.getInventoryByCategory('user-1', 'category-1');
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -136,7 +136,7 @@ describe('InventoryService', () => {
           id: '1',
           ingredientId: 'ingredient-1',
           quantity: 10,
-          unit: 'kg' as InventoryUnit, // Use a valid unit value
+          unit: 'kg' as InventoryUnit,
           userId: 'user-1',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -145,7 +145,7 @@ describe('InventoryService', () => {
 
       mockInventoryRepository.findAll.mockResolvedValue(mockInventories);
 
-      const result = await inventoryService.getAllInventories();
+      const result = await inventoryReadService.getAllInventories();
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -169,7 +169,7 @@ describe('InventoryService', () => {
       ];
       mockInventoryRepository.findInventoriesByUserId.mockResolvedValue(mockInventories);
 
-      const result = await inventoryService.getInventoriesByUserId('user-1');
+      const result = await inventoryReadService.getInventoriesByUserId('user-1');
 
       expect(result.success).toBe(true);
       if (result.success) {
@@ -180,7 +180,7 @@ describe('InventoryService', () => {
     it('should return empty array if user has no inventories', async () => {
       mockInventoryRepository.findInventoriesByUserId.mockResolvedValue([]);
 
-      const result = await inventoryService.getInventoriesByUserId('user-1');
+      const result = await inventoryReadService.getInventoriesByUserId('user-1');
 
       expect(result.success).toBe(true);
       if (result.success) {

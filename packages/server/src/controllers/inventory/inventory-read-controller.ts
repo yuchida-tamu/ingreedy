@@ -2,7 +2,7 @@ import type { IInventoryService } from '@/core/application/services/inventory.se
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
 import type { NextFunction, Response } from 'express';
 
-export class InventoryController {
+export class InventoryReadController {
   constructor(private inventoryService: IInventoryService) {}
 
   getInventoryById = async (
