@@ -1,3 +1,12 @@
+/**
+ * TODO:
+ * - Add a toggle for dark mode
+ * - Add a toggle for email notifications - (premium feature)
+ * - Add a toggle for public profile - (premium feature)
+ * - Add a toggle for push notifications - (premium feature)
+ * - Add a toggle for SMS notifications - (premium feature)
+ */
+
 export function UserSettingsSection() {
   return (
     <div className="card bg-base-100 shadow-xl">
