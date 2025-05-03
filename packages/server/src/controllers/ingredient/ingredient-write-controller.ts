@@ -1,17 +1,13 @@
-import type {
-  TAddIngredientDto,
-  TUpdateIngredientDto,
-} from '@/core/application/types/dtos/ingredient.dto';
-import type { IngredientWriteService } from '@/services/ingredient/ingredient-write-service';
+import type { IIngredientService } from '@/core/application/services/ingredient.service';
 import type { NextFunction, Request, Response } from 'express';
 
 export class IngredientWriteController {
-  constructor(private ingredientWriteService: IngredientWriteService) {}
+  constructor(private ingredientService: IIngredientService) {}
 
   createIngredient = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const ingredientData = req.body as TAddIngredientDto;
-      const result = await this.ingredientWriteService.addIngredient(ingredientData);
+      const ingredientData = req.body;
+      const result = await this.ingredientService.addIngredient(ingredientData);
       if (!result.success) {
         next(result.error);
         return;
@@ -27,8 +23,8 @@ export class IngredientWriteController {
   updateIngredient = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const updateData = req.body as TUpdateIngredientDto;
-      const result = await this.ingredientWriteService.updateIngredient(id, updateData);
+      const updateData = req.body;
+      const result = await this.ingredientService.updateIngredient(id, updateData);
       if (!result.success) {
         next(result.error);
         return;

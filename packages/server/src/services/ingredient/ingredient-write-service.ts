@@ -1,7 +1,9 @@
 import type { IIngredientRepository } from '@/core/application/repositories/ingredient.repository';
+import type { IIngredientService } from '@/core/application/services/ingredient.service';
 import type {
   TAddIngredientDto,
   TIngredientDto,
+  TIngredientListDto,
   TUpdateIngredientDto,
 } from '@/core/application/types/dtos/ingredient.dto';
 import {
@@ -11,7 +13,7 @@ import {
 import type { TResult } from '@/core/application/types/result';
 import { ResultUtil } from '@/utils/result.util';
 
-export class IngredientWriteService {
+export class IngredientWriteService implements IIngredientService {
   constructor(private ingredientRepository: IIngredientRepository) {}
 
   async addIngredient(data: TAddIngredientDto): Promise<TResult<TIngredientDto>> {
@@ -48,6 +50,26 @@ export class IngredientWriteService {
     }
     const updatedIngredient = await this.ingredientRepository.update(id, data);
     return ResultUtil.success(this.mapToIngredientDto(updatedIngredient));
+  }
+
+  async getIngredientById(): Promise<TResult<TIngredientDto>> {
+    throw new Error('getIngredientById not implemented in IngredientWriteService');
+  }
+
+  async getIngredientByName(): Promise<TResult<TIngredientDto>> {
+    throw new Error('getIngredientByName not implemented in IngredientWriteService');
+  }
+
+  async getIngredientsByCategory(): Promise<TResult<TIngredientListDto>> {
+    throw new Error('getIngredientsByCategory not implemented in IngredientWriteService');
+  }
+
+  async getAllIngredients(): Promise<TResult<TIngredientListDto>> {
+    throw new Error('getAllIngredients not implemented in IngredientWriteService');
+  }
+
+  async checkIngredientExists(): Promise<TResult<boolean>> {
+    throw new Error('checkIngredientExists not implemented in IngredientWriteService');
   }
 
   private mapToIngredientDto(ingredient: {

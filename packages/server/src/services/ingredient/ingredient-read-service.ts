@@ -1,4 +1,5 @@
 import type { IIngredientRepository } from '@/core/application/repositories/ingredient.repository';
+import type { IIngredientService } from '@/core/application/services/ingredient.service';
 import type {
   TIngredientDto,
   TIngredientListDto,
@@ -7,7 +8,7 @@ import { IngredientNotFoundError } from '@/core/application/types/errors/ingredi
 import type { TResult } from '@/core/application/types/result';
 import { ResultUtil } from '@/utils/result.util';
 
-export class IngredientReadService {
+export class IngredientReadService implements IIngredientService {
   constructor(private ingredientRepository: IIngredientRepository) {}
 
   async getIngredientById(id: string): Promise<TResult<TIngredientDto>> {
@@ -70,5 +71,17 @@ export class IngredientReadService {
       createdAt: ingredient.createdAt,
       updatedAt: ingredient.updatedAt,
     };
+  }
+
+  async addIngredient(): Promise<TResult<TIngredientDto>> {
+    throw new Error('addIngredient not implemented in IngredientReadService');
+  }
+
+  async updateIngredient(): Promise<TResult<TIngredientDto>> {
+    throw new Error('updateIngredient not implemented in IngredientReadService');
+  }
+
+  async checkIngredientExists(): Promise<TResult<boolean>> {
+    throw new Error('checkIngredientExists not implemented in IngredientReadService');
   }
 }
