@@ -1,3 +1,4 @@
+import type { IIngredientService } from '@/core/application/services/ingredient.service';
 import type { NextFunction, Request, Response } from 'express';
 import type {
   TIngredientDto,
@@ -7,13 +8,12 @@ import {
   IngredientError,
   IngredientNotFoundError,
 } from '../../core/application/types/errors/ingredient-error';
-import type { IngredientReadService } from '../../services/ingredient/ingredient-read-service';
 import { ResultUtil } from '../../utils/result.util';
 import { IngredientReadController } from '../ingredient/ingredient-read-controller';
 
 describe('IngredientReadController', () => {
   let ingredientReadController: IngredientReadController;
-  let mockIngredientReadService: jest.Mocked<IngredientReadService>;
+  let mockIngredientReadService: jest.Mocked<IIngredientService>;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let mockNext: jest.MockedFunction<NextFunction>;
@@ -37,7 +37,7 @@ describe('IngredientReadController', () => {
       getAllIngredients: jest.fn(),
       ingredientRepository: jest.fn(),
       mapToIngredientDto: jest.fn(),
-    } as unknown as jest.Mocked<IngredientReadService>;
+    } as unknown as jest.Mocked<IIngredientService>;
     ingredientReadController = new IngredientReadController(mockIngredientReadService);
   });
 

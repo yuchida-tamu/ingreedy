@@ -1,13 +1,13 @@
-import type { IngredientReadService } from '@/services/ingredient/ingredient-read-service';
+import type { IIngredientService } from '@/core/application/services/ingredient.service';
 import type { NextFunction, Request, Response } from 'express';
 
 export class IngredientReadController {
-  constructor(private ingredientReadService: IngredientReadService) {}
+  constructor(private ingredientService: IIngredientService) {}
 
   getIngredientById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const result = await this.ingredientReadService.getIngredientById(id);
+      const result = await this.ingredientService.getIngredientById(id);
       if (!result.success) {
         next(result.error);
         return;
@@ -27,7 +27,7 @@ export class IngredientReadController {
         next(new Error('Name parameter is required and must be a string'));
         return;
       }
-      const result = await this.ingredientReadService.getIngredientByName(name);
+      const result = await this.ingredientService.getIngredientByName(name);
       if (!result.success) {
         next(result.error);
         return;
@@ -51,7 +51,7 @@ export class IngredientReadController {
         next(new Error('Category parameter is required and must be a string'));
         return;
       }
-      const result = await this.ingredientReadService.getIngredientsByCategory(category);
+      const result = await this.ingredientService.getIngredientsByCategory(category);
       if (!result.success) {
         next(result.error);
         return;
@@ -66,7 +66,7 @@ export class IngredientReadController {
 
   getAllIngredients = async (_: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const result = await this.ingredientReadService.getAllIngredients();
+      const result = await this.ingredientService.getAllIngredients();
       if (!result.success) {
         next(result.error);
         return;
