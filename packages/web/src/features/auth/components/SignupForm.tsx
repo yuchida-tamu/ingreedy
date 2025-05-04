@@ -1,6 +1,6 @@
+import { signupFetcher } from '@/domains/apis/signup';
 import { HeroFormContainer } from '@/elements/forms/HeroFormContainer';
 import { LabeledTextField } from '@/elements/forms/LabeledTextField';
-import { signupFetcher } from '@/features/auth/apis/signup';
 import { useAuthForm } from '@/features/auth/hooks/useAuthForm';
 
 const DEFAULT_VALUES = {

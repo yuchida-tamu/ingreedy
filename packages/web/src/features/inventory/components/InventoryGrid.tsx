@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getUserInventoriesFetcher } from '../apis/getUserInventories';
+import { getUserInventoriesFetcher } from '../../../domains/apis/getUserInventories';
 import { InventoryCard } from './InventoryCard';
 
 export function InventoryGrid() {

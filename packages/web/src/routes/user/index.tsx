@@ -1,4 +1,4 @@
-import { UnauthorizedError } from '@/features/user/apis/getUser';
+import { UnauthorizedError } from '@/domains/apis/getUser';
 import { getUserOptions, UserInfoSection } from '@/features/user/components/UserInfoSection';
 import { UserOverviewSection } from '@/features/user/components/UserOverviewSection';
 import { UserSettingsSection } from '@/features/user/components/UserSettingsSection';

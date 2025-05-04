@@ -1,4 +1,4 @@
-import { getUserFetcher } from '@/features/user/apis/getUser';
+import { getUserFetcher } from '@/domains/apis/getUser';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
 export const getUserOptions = queryOptions({

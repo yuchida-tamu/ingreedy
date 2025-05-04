@@ -1,4 +1,4 @@
-import { signoutFetcher } from '@/features/auth/apis/signout';
+import { signoutFetcher } from '@/domains/apis/signout';
 import { useAuth } from '@/features/auth/context/AuthContext';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';

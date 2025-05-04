@@ -1,8 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query';
 
-import { getUserInventoriesFetcher } from '@/features/inventory/apis/getUserInventories';
+import { getUserInventoriesFetcher } from '@/domains/apis/getUserInventories';
 
-import { GetUserInventoriesResponse } from '@/features/inventory/apis/getUserInventories';
+import { GetUserInventoriesResponse } from '@/domains/apis/getUserInventories';
 import { useMutation } from '@tanstack/react-query';
 
 export function useRefreshInventory() {

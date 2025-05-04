@@ -1,8 +1,8 @@
-import { Inventory } from '@/domains/entities/inventory';
 import {
   CreateInventoryWithNewIngredientData,
   createInventoryWithNewIngredientFetcher,
-} from '@/features/inventory/apis/createInventory';
+} from '@/domains/apis/createInventory';
+import { Inventory } from '@/domains/entities/inventory';
 import { useCustomMutation } from '@/infra/hooks/useCustomMutation';
 import { useForm } from '@tanstack/react-form';
 

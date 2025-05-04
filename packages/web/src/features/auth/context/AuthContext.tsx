@@ -1,4 +1,4 @@
-import { statusFetcher } from '@/features/auth/apis/status';
+import { statusFetcher } from '@/domains/apis/status';
 import { useQuery } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
