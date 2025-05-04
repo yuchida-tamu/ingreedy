@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as UserIndexImport } from './routes/user/index'
+import { Route as InventoryIndexImport } from './routes/inventory/index'
 import { Route as AuthIndexImport } from './routes/auth/index'
 import { Route as AuthSignupImport } from './routes/auth/signup'
 import { Route as AuthSignoutImport } from './routes/auth/signout'
@@ -29,6 +30,12 @@ const IndexRoute = IndexImport.update({
 const UserIndexRoute = UserIndexImport.update({
   id: '/user/',
   path: '/user/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const InventoryIndexRoute = InventoryIndexImport.update({
+  id: '/inventory/',
+  path: '/inventory/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -95,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthIndexImport
       parentRoute: typeof rootRoute
     }
+    '/inventory/': {
+      id: '/inventory/'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/user/': {
       id: '/user/'
       path: '/user'
@@ -113,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/auth/signout': typeof AuthSignoutRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth': typeof AuthIndexRoute
+  '/inventory': typeof InventoryIndexRoute
   '/user': typeof UserIndexRoute
 }
 
@@ -122,6 +137,7 @@ export interface FileRoutesByTo {
   '/auth/signout': typeof AuthSignoutRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth': typeof AuthIndexRoute
+  '/inventory': typeof InventoryIndexRoute
   '/user': typeof UserIndexRoute
 }
 
@@ -132,6 +148,7 @@ export interface FileRoutesById {
   '/auth/signout': typeof AuthSignoutRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/': typeof AuthIndexRoute
+  '/inventory/': typeof InventoryIndexRoute
   '/user/': typeof UserIndexRoute
 }
 
@@ -143,6 +160,7 @@ export interface FileRouteTypes {
     | '/auth/signout'
     | '/auth/signup'
     | '/auth'
+    | '/inventory'
     | '/user'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -151,6 +169,7 @@ export interface FileRouteTypes {
     | '/auth/signout'
     | '/auth/signup'
     | '/auth'
+    | '/inventory'
     | '/user'
   id:
     | '__root__'
@@ -159,6 +178,7 @@ export interface FileRouteTypes {
     | '/auth/signout'
     | '/auth/signup'
     | '/auth/'
+    | '/inventory/'
     | '/user/'
   fileRoutesById: FileRoutesById
 }
@@ -169,6 +189,7 @@ export interface RootRouteChildren {
   AuthSignoutRoute: typeof AuthSignoutRoute
   AuthSignupRoute: typeof AuthSignupRoute
   AuthIndexRoute: typeof AuthIndexRoute
+  InventoryIndexRoute: typeof InventoryIndexRoute
   UserIndexRoute: typeof UserIndexRoute
 }
 
@@ -178,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSignoutRoute: AuthSignoutRoute,
   AuthSignupRoute: AuthSignupRoute,
   AuthIndexRoute: AuthIndexRoute,
+  InventoryIndexRoute: InventoryIndexRoute,
   UserIndexRoute: UserIndexRoute,
 }
 
@@ -196,6 +218,7 @@ export const routeTree = rootRoute
         "/auth/signout",
         "/auth/signup",
         "/auth/",
+        "/inventory/",
         "/user/"
       ]
     },
@@ -213,6 +236,9 @@ export const routeTree = rootRoute
     },
     "/auth/": {
       "filePath": "auth/index.tsx"
+    },
+    "/inventory/": {
+      "filePath": "inventory/index.tsx"
     },
     "/user/": {
       "filePath": "user/index.tsx"

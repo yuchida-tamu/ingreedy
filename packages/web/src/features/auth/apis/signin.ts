@@ -3,7 +3,19 @@ type SignInData = {
   password: string;
 };
 
-export async function signinFetcher(data: SignInData) {
+type SignInResponse =
+  | {
+      success: true;
+      data: {
+        message: string;
+      };
+    }
+  | {
+      success: false;
+      message: string;
+    };
+
+export async function signinFetcher(data: SignInData): Promise<SignInResponse> {
   const response = await fetch(`${import.meta.env.VITE_APP_API_DOMAIN}/auth/login`, {
     method: 'POST',
     credentials: 'include',
@@ -12,5 +24,5 @@ export async function signinFetcher(data: SignInData) {
       'Content-Type': 'application/json',
     },
   });
-  return response.json() as Promise<{ success: boolean; data: { message: string } }>;
+  return response.json() as Promise<SignInResponse>;
 }

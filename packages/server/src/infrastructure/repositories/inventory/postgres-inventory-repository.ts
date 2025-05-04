@@ -2,30 +2,36 @@ import type { IInventoryRepository } from '@/core/application/repositories/inven
 import type { Inventory } from '@/core/domain/inventory/inventory.entity';
 import { db } from '@/infrastructure/database/client';
 
-type DbInventory = {
+// Updated type to include ingredient fields
+// (for easier mapping from joined query)
+type DbInventoryWithIngredient = {
   id: string;
   ingredient_id: string;
   quantity: number;
   unit: string;
-  user_id: string; // Include the new userId parameter in DbInventory
+  user_id: string;
   created_at: Date;
   updated_at: Date;
+  ingredient_name: string;
+  ingredient_category: string;
+  ingredient_created_at: Date;
+  ingredient_updated_at: Date;
 };
 
 export class PostgresInventoryRepository implements IInventoryRepository {
   async findById(id: string): Promise<Inventory | null> {
     try {
-      const result = await db.query<DbInventory>(
-        `SELECT id, ingredient_id, quantity, unit, user_id, created_at, updated_at 
-         FROM inventory 
-         WHERE id = $1`,
+      const result = await db.query<DbInventoryWithIngredient>(
+        `SELECT i.id, i.ingredient_id, i.quantity, i.unit, i.user_id, i.created_at, i.updated_at,
+                ing.name as ingredient_name, ing.category as ingredient_category, ing.created_at as ingredient_created_at, ing.updated_at as ingredient_updated_at
+         FROM inventory i
+         JOIN ingredients ing ON i.ingredient_id = ing.id
+         WHERE i.id = $1`,
         [id],
       );
-
       if (result.length === 0) {
         return null;
       }
-
       return this.mapToInventory(result[0]);
     } catch (error) {
       return null;
@@ -34,17 +40,17 @@ export class PostgresInventoryRepository implements IInventoryRepository {
 
   async findInventoryByName(userId: string, name: string): Promise<Inventory | null> {
     try {
-      const result = await db.query<DbInventory>(
-        `SELECT id, ingredient_id, quantity, unit, user_id, created_at, updated_at 
-         FROM inventory 
-         WHERE user_id = $1 AND ingredient_id = (SELECT id FROM ingredients WHERE name = $2)`,
+      const result = await db.query<DbInventoryWithIngredient>(
+        `SELECT i.id, i.ingredient_id, i.quantity, i.unit, i.user_id, i.created_at, i.updated_at,
+                ing.name as ingredient_name, ing.category as ingredient_category, ing.created_at as ingredient_created_at, ing.updated_at as ingredient_updated_at
+         FROM inventory i
+         JOIN ingredients ing ON i.ingredient_id = ing.id
+         WHERE i.user_id = $1 AND ing.name = $2`,
         [userId, name],
       );
-
       if (result.length === 0) {
         return null;
       }
-
       return this.mapToInventory(result[0]);
     } catch (error) {
       return null;
@@ -53,13 +59,14 @@ export class PostgresInventoryRepository implements IInventoryRepository {
 
   async findInventoryByCategory(userId: string, category: string): Promise<Inventory[]> {
     try {
-      const result = await db.query<DbInventory>(
-        `SELECT id, ingredient_id, quantity, unit, user_id, created_at, updated_at 
-         FROM inventory 
-         WHERE user_id = $1 AND ingredient_id IN (SELECT id FROM ingredients WHERE category = $2)`,
+      const result = await db.query<DbInventoryWithIngredient>(
+        `SELECT i.id, i.ingredient_id, i.quantity, i.unit, i.user_id, i.created_at, i.updated_at,
+                ing.name as ingredient_name, ing.category as ingredient_category, ing.created_at as ingredient_created_at, ing.updated_at as ingredient_updated_at
+         FROM inventory i
+         JOIN ingredients ing ON i.ingredient_id = ing.id
+         WHERE i.user_id = $1 AND ing.category = $2`,
         [userId, category],
       );
-
       return result.map(this.mapToInventory);
     } catch (error) {
       return [];
@@ -68,12 +75,13 @@ export class PostgresInventoryRepository implements IInventoryRepository {
 
   async findAll(): Promise<Inventory[]> {
     try {
-      const result = await db.query<DbInventory>(
-        `SELECT id, ingredient_id, quantity, unit, user_id, created_at, updated_at 
-         FROM inventory 
-         ORDER BY created_at DESC`,
+      const result = await db.query<DbInventoryWithIngredient>(
+        `SELECT i.id, i.ingredient_id, i.quantity, i.unit, i.user_id, i.created_at, i.updated_at,
+                ing.name as ingredient_name, ing.category as ingredient_category, ing.created_at as ingredient_created_at, ing.updated_at as ingredient_updated_at
+         FROM inventory i
+         JOIN ingredients ing ON i.ingredient_id = ing.id
+         ORDER BY i.created_at DESC`,
       );
-
       return result.map(this.mapToInventory);
     } catch (error) {
       return [];
@@ -81,17 +89,20 @@ export class PostgresInventoryRepository implements IInventoryRepository {
   }
 
   async create(
-    inventory: Omit<Inventory, 'id' | 'createdAt' | 'updatedAt'>,
+    inventory: Omit<Inventory, 'id' | 'createdAt' | 'updatedAt' | 'ingredient'>,
+    ingredientId: string,
   ): Promise<Inventory | null> {
+    // This method will need to fetch the ingredient after insert
     try {
-      const result = await db.query<DbInventory>(
+      const result = await db.query<DbInventoryWithIngredient>(
         `INSERT INTO inventory (ingredient_id, quantity, unit, user_id)
          VALUES ($1, $2, $3, $4)
          RETURNING id, ingredient_id, quantity, unit, user_id, created_at, updated_at`,
-        [inventory.ingredientId, inventory.quantity, inventory.unit, inventory.userId],
+        [ingredientId, inventory.quantity, inventory.unit, inventory.userId],
       );
-
-      return this.mapToInventory(result[0]);
+      if (result.length === 0) return null;
+      // Fetch the joined ingredient for the new inventory
+      return await this.findById(result[0].id);
     } catch (error) {
       return null;
     }
@@ -123,19 +134,14 @@ export class PostgresInventoryRepository implements IInventoryRepository {
 
       values.push(id);
 
-      const result = await db.query<DbInventory>(
+      await db.query(
         `UPDATE inventory 
          SET ${setClause.join(', ')}, updated_at = CURRENT_TIMESTAMP
-         WHERE id = $${paramCounter}
-         RETURNING id, ingredient_id, quantity, unit, user_id, created_at, updated_at`,
+         WHERE id = $${paramCounter}`,
         values,
       );
-
-      if (result.length === 0) {
-        return null;
-      }
-
-      return this.mapToInventory(result[0]);
+      // Fetch the updated inventory with joined ingredient
+      return await this.findById(id);
     } catch (error) {
       return null;
     }
@@ -143,11 +149,13 @@ export class PostgresInventoryRepository implements IInventoryRepository {
 
   async findInventoriesByUserId(userId: string): Promise<Inventory[]> {
     try {
-      const result = await db.query<DbInventory>(
-        `SELECT id, ingredient_id, quantity, unit, user_id, created_at, updated_at 
-         FROM inventory 
-         WHERE user_id = $1
-         ORDER BY created_at DESC`,
+      const result = await db.query<DbInventoryWithIngredient>(
+        `SELECT i.id, i.ingredient_id, i.quantity, i.unit, i.user_id, i.created_at, i.updated_at,
+                ing.name as ingredient_name, ing.category as ingredient_category, ing.created_at as ingredient_created_at, ing.updated_at as ingredient_updated_at
+         FROM inventory i
+         JOIN ingredients ing ON i.ingredient_id = ing.id
+         WHERE i.user_id = $1
+         ORDER BY i.created_at DESC`,
         [userId],
       );
       return result.map(this.mapToInventory);
@@ -156,13 +164,19 @@ export class PostgresInventoryRepository implements IInventoryRepository {
     }
   }
 
-  private mapToInventory(row: DbInventory): Inventory {
+  private mapToInventory(row: DbInventoryWithIngredient): Inventory {
     return {
       id: row.id,
-      ingredientId: row.ingredient_id,
+      ingredient: {
+        id: row.ingredient_id,
+        name: row.ingredient_name,
+        category: row.ingredient_category,
+        createdAt: row.ingredient_created_at,
+        updatedAt: row.ingredient_updated_at,
+      },
       quantity: row.quantity,
       unit: row.unit as Inventory['unit'],
-      userId: row.user_id, // Include the new userId parameter
+      userId: row.user_id,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };

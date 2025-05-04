@@ -13,6 +13,14 @@ describe('InventoryReadController', () => {
   let mockResponse: Partial<Response>;
   let mockNext: jest.MockedFunction<NextFunction>;
 
+  const mockIngredient = {
+    id: 'ingredient-1',
+    name: 'Flour',
+    category: 'Baking',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
   beforeEach(() => {
     mockInventoryRepository = {
       findById: jest.fn(),
@@ -40,7 +48,7 @@ describe('InventoryReadController', () => {
     it('should return inventory when found', async () => {
       const mockInventory = {
         id: '1',
-        ingredientId: 'ingredient-1',
+        ingredient: mockIngredient,
         quantity: 10,
         unit: 'kg' as const,
         userId: 'mock-user-id',
@@ -76,7 +84,7 @@ describe('InventoryReadController', () => {
     it('should return inventory when found', async () => {
       const mockInventory = {
         id: '1',
-        ingredientId: 'ingredient-1',
+        ingredient: mockIngredient,
         quantity: 10,
         unit: 'kg' as const,
         userId: 'mock-user-id',
@@ -84,7 +92,7 @@ describe('InventoryReadController', () => {
         updatedAt: new Date(),
       };
       mockInventoryRepository.findInventoryByName.mockResolvedValue(mockInventory);
-      mockRequest.query = { name: 'ingredient-1' };
+      mockRequest.query = { name: 'Flour' };
       await inventoryReadController.getInventoryByName(
         mockRequest as AuthenticatedRequest,
         mockResponse as Response,
@@ -92,7 +100,7 @@ describe('InventoryReadController', () => {
       );
       expect(mockInventoryRepository.findInventoryByName).toHaveBeenCalledWith(
         'mock-user-id',
-        'ingredient-1',
+        'Flour',
       );
       expect(mockResponse.locals?.data).toEqual(mockInventory);
       expect(mockResponse.locals?.status).toBe(200);
@@ -100,7 +108,7 @@ describe('InventoryReadController', () => {
     });
     it('should call next with error when inventory is not found', async () => {
       mockInventoryRepository.findInventoryByName.mockResolvedValue(null);
-      mockRequest.query = { name: 'ingredient-1' };
+      mockRequest.query = { name: 'Flour' };
       await inventoryReadController.getInventoryByName(
         mockRequest as AuthenticatedRequest,
         mockResponse as Response,
@@ -108,7 +116,7 @@ describe('InventoryReadController', () => {
       );
       expect(mockInventoryRepository.findInventoryByName).toHaveBeenCalledWith(
         'mock-user-id',
-        'ingredient-1',
+        'Flour',
       );
       expect(mockNext).toHaveBeenCalledWith(expect.any(InventoryNotFoundError));
     });
@@ -119,7 +127,7 @@ describe('InventoryReadController', () => {
       const mockInventories = [
         {
           id: '1',
-          ingredientId: 'ingredient-1',
+          ingredient: mockIngredient,
           quantity: 10,
           unit: 'kg' as const,
           userId: 'mock-user-id',
@@ -128,7 +136,7 @@ describe('InventoryReadController', () => {
         },
       ];
       mockInventoryRepository.findInventoryByCategory.mockResolvedValue(mockInventories);
-      mockRequest.query = { category: 'category-1' };
+      mockRequest.query = { category: 'Baking' };
       await inventoryReadController.getInventoryByCategory(
         mockRequest as AuthenticatedRequest,
         mockResponse as Response,
@@ -136,7 +144,7 @@ describe('InventoryReadController', () => {
       );
       expect(mockInventoryRepository.findInventoryByCategory).toHaveBeenCalledWith(
         'mock-user-id',
-        'category-1',
+        'Baking',
       );
       expect(mockResponse.locals?.data).toEqual(mockInventories);
       expect(mockResponse.locals?.status).toBe(200);
@@ -144,7 +152,7 @@ describe('InventoryReadController', () => {
     });
     it('should return empty array when no inventories are found', async () => {
       mockInventoryRepository.findInventoryByCategory.mockResolvedValue([]);
-      mockRequest.query = { category: 'category-1' };
+      mockRequest.query = { category: 'Baking' };
       await inventoryReadController.getInventoryByCategory(
         mockRequest as AuthenticatedRequest,
         mockResponse as Response,
@@ -152,7 +160,7 @@ describe('InventoryReadController', () => {
       );
       expect(mockInventoryRepository.findInventoryByCategory).toHaveBeenCalledWith(
         'mock-user-id',
-        'category-1',
+        'Baking',
       );
       expect(mockResponse.locals?.data).toEqual([]);
       expect(mockResponse.locals?.status).toBe(200);
@@ -165,7 +173,7 @@ describe('InventoryReadController', () => {
       const mockInventories = [
         {
           id: '1',
-          ingredientId: 'ingredient-1',
+          ingredient: mockIngredient,
           quantity: 10,
           unit: 'kg' as const,
           userId: 'mock-user-id',
@@ -191,7 +199,7 @@ describe('InventoryReadController', () => {
       const mockInventories = [
         {
           id: '1',
-          ingredientId: 'ingredient-1',
+          ingredient: mockIngredient,
           quantity: 10,
           unit: 'kg' as const,
           userId: 'mock-user-id',

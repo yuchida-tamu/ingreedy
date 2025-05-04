@@ -7,7 +7,7 @@ type Props = {
 
 export function LabeledTextField({ label, value, type = 'text', onChange }: Props) {
   return (
-    <label className="label justify-between">
+    <label className="label flex flex-col items-start">
       <span>{label}</span>
       <input
         className="input"

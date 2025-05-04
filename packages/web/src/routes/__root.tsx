@@ -27,6 +27,9 @@ function RootComponent() {
             <Link to="/user" className="[&.active]:font-bold">
               User
             </Link>
+            <Link to="/inventory" className="[&.active]:font-bold">
+              Inventory
+            </Link>
             <Link to="/auth/signout" className="[&.active]:font-bold">
               Signout
             </Link>

@@ -10,21 +10,17 @@ export class InventoryReadController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    try {
-      const { id } = req.params;
-      const result = await this.inventoryService.getInventoryById(id);
+    const { id } = req.params;
+    const result = await this.inventoryService.getInventoryById(id);
 
-      if (!result.success) {
-        next(result.error);
-        return;
-      }
-
-      res.locals.data = result.data;
-      res.locals.status = 200;
-      next();
-    } catch (error) {
-      next(error);
+    if (!result.success) {
+      next(result.error);
+      return;
     }
+
+    res.locals.data = result.data;
+    res.locals.status = 200;
+    next();
   };
 
   getInventoryByName = async (
@@ -32,27 +28,23 @@ export class InventoryReadController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    try {
-      const { name } = req.query;
+    const { name } = req.query;
 
-      if (typeof name !== 'string') {
-        next(new Error('Name parameter is required and must be a string'));
-        return;
-      }
-
-      const result = await this.inventoryService.getInventoryByName(req.user.id, name);
-
-      if (!result.success) {
-        next(result.error);
-        return;
-      }
-
-      res.locals.data = result.data;
-      res.locals.status = 200;
-      next();
-    } catch (error) {
-      next(error);
+    if (typeof name !== 'string') {
+      next(new Error('Name parameter is required and must be a string'));
+      return;
     }
+
+    const result = await this.inventoryService.getInventoryByName(req.user.id, name);
+
+    if (!result.success) {
+      next(result.error);
+      return;
+    }
+
+    res.locals.data = result.data;
+    res.locals.status = 200;
+    next();
   };
 
   getInventoryByCategory = async (
@@ -60,27 +52,23 @@ export class InventoryReadController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    try {
-      const { category } = req.query;
+    const { category } = req.query;
 
-      if (typeof category !== 'string') {
-        next(new Error('Category parameter is required and must be a string'));
-        return;
-      }
-
-      const result = await this.inventoryService.getInventoryByCategory(req.user.id, category);
-
-      if (!result.success) {
-        next(result.error);
-        return;
-      }
-
-      res.locals.data = result.data;
-      res.locals.status = 200;
-      next();
-    } catch (error) {
-      next(error);
+    if (typeof category !== 'string') {
+      next(new Error('Category parameter is required and must be a string'));
+      return;
     }
+
+    const result = await this.inventoryService.getInventoryByCategory(req.user.id, category);
+
+    if (!result.success) {
+      next(result.error);
+      return;
+    }
+
+    res.locals.data = result.data;
+    res.locals.status = 200;
+    next();
   };
 
   getAllInventories = async (
@@ -88,20 +76,16 @@ export class InventoryReadController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    try {
-      const result = await this.inventoryService.getAllInventories();
+    const result = await this.inventoryService.getAllInventories();
 
-      if (!result.success) {
-        next(result.error);
-        return;
-      }
-
-      res.locals.data = result.data;
-      res.locals.status = 200;
-      next();
-    } catch (error) {
-      next(error);
+    if (!result.success) {
+      next(result.error);
+      return;
     }
+
+    res.locals.data = result.data;
+    res.locals.status = 200;
+    next();
   };
 
   getUserInventories = async (
@@ -109,20 +93,16 @@ export class InventoryReadController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    try {
-      const userId = req.user.id;
-      const result = await this.inventoryService.getInventoriesByUserId(userId);
+    const userId = req.user.id;
+    const result = await this.inventoryService.getInventoriesByUserId(userId);
 
-      if (!result.success) {
-        next(result.error);
-        return;
-      }
-
-      res.locals.data = result.data;
-      res.locals.status = 200;
-      next();
-    } catch (error) {
-      next(error);
+    if (!result.success) {
+      next(result.error);
+      return;
     }
+
+    res.locals.data = result.data;
+    res.locals.status = 200;
+    next();
   };
 }

@@ -6,7 +6,9 @@ import { useCallback } from 'react';
 
 type Args<T> = {
   defaultValues: T & { [key: string]: string };
-  fetcher: (data: T) => Promise<{ success: boolean; data: { message: string } }>;
+  fetcher: (
+    data: T,
+  ) => Promise<{ success: true; data: { message: string } } | { success: false; message: string }>;
 };
 
 export function useAuthForm<T>({ defaultValues, fetcher }: Args<T>) {
