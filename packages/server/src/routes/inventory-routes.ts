@@ -1,19 +1,23 @@
 import { InventoryReadController } from '@/controllers/inventory/inventory-read-controller';
+import { InventoryWriteController } from '@/controllers/inventory/inventory-write-controller';
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
+import { PostgresIngredientRepository } from '@/infrastructure/repositories/ingredient/postgres-ingredient-repository';
 import { PostgresInventoryRepository } from '@/infrastructure/repositories/inventory/postgres-inventory-repository';
 import { withAuth } from '@/middlewares/auth.middleware';
 import { JwtService } from '@/services/auth/jwt-service';
 import { InventoryReadService } from '@/services/inventory/inventory-read-service';
+import { InventoryWriteService } from '@/services/inventory/inventory-write-service';
 import { Router } from 'express';
 
 export function generateInventoryRouter(): Router {
   const router = Router();
 
   const inventoryRepository = new PostgresInventoryRepository();
+  const ingredientRepository = new PostgresIngredientRepository();
   const readService = new InventoryReadService(inventoryRepository);
-  // const writeService = new InventoryWriteService(inventoryRepository);
+  const writeService = new InventoryWriteService(inventoryRepository, ingredientRepository);
   const readController = new InventoryReadController(readService);
-  // const writeController = new InventoryWriteController(writeService);
+  const writeController = new InventoryWriteController(writeService);
   const jwtService = new JwtService();
 
   const auth = withAuth(jwtService);
@@ -39,10 +43,14 @@ export function generateInventoryRouter(): Router {
     readController.getUserInventories(req as AuthenticatedRequest, res, next),
   );
 
-  // Write routes (add here as you implement them)
-  // router.post('/createInventory', auth.authenticate, (req, res, next) =>
-  //   writeController.createInventory(req as AuthenticatedRequest, res, next),
-  // );
+  // Write routes
+  router.post('/createInventoryWithIngredientId', auth.authenticate, (req, res, next) =>
+    writeController.createInventoryWithIngredientId(req as AuthenticatedRequest, res, next),
+  );
+
+  router.post('/createInventoryWithNewIngredient', auth.authenticate, (req, res, next) =>
+    writeController.createInventoryWithNewIngredient(req as AuthenticatedRequest, res, next),
+  );
 
   return router;
 }
