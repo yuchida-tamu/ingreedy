@@ -18,7 +18,7 @@ export function useNewInventoryForm() {
     },
   });
 
-  const { Field, Subscribe, handleSubmit } = useForm({
+  const { Field, Subscribe, handleSubmit, reset } = useForm({
     defaultValues: {
       ingredientId: '',
       ingredientName: '',
@@ -38,5 +38,5 @@ export function useNewInventoryForm() {
     },
   });
 
-  return { unitOptions, quantityOptions, Field, Subscribe, handleSubmit };
+  return { unitOptions, quantityOptions, Field, Subscribe, handleSubmit, reset };
 }
