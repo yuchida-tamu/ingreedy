@@ -5,7 +5,7 @@ type SignUpData = {
 };
 
 export async function signupFetcher(data: SignUpData) {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/users/createUser`, {
+  const response = await fetch(`${import.meta.env.VITE_APP_API_DOMAIN}/users/createUser`, {
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify(data),
