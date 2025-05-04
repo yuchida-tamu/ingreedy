@@ -30,7 +30,7 @@ export function InventoryControlPanel() {
   };
 
   return (
-    <div className="mb-6 flex justify-end">
+    <div className="flex justify-end">
       <button className="btn btn-primary" onClick={open}>
         + Add Inventory
       </button>
