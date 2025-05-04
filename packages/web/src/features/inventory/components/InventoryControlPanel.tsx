@@ -4,7 +4,8 @@ import { useNewInventoryForm } from '@/features/inventory/context/useNewInventor
 import { useRefreshInventory } from '@/features/inventory/context/useRefreshInventory';
 
 export function InventoryControlPanel() {
-  const { unitOptions, quantityOptions, Field, Subscribe, handleSubmit } = useNewInventoryForm();
+  const { unitOptions, quantityOptions, Field, Subscribe, handleSubmit, reset } =
+    useNewInventoryForm();
   const { refreshInventory } = useRefreshInventory();
 
   const open = () => {
@@ -18,6 +19,8 @@ export function InventoryControlPanel() {
     if (dialog) {
       dialog.close();
     }
+
+    reset();
   };
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -30,7 +33,7 @@ export function InventoryControlPanel() {
   };
 
   return (
-    <div className="mb-6 flex justify-end">
+    <div className="flex justify-end">
       <button className="btn btn-primary" onClick={open}>
         + Add Inventory
       </button>
