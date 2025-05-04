@@ -2,7 +2,7 @@ import { Inventory } from '@/domains/entities/inventory';
 
 export async function getUserInventoriesFetcher(): Promise<Inventory[]> {
   try {
-    const response = await fetch('http://localhost:8000/api/v1/inventory/getUserInventories', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/inventory/getUserInventories`, {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',

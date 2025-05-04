@@ -1,5 +1,5 @@
 export async function statusFetcher() {
-  const res = await fetch('http://localhost:8000/api/v1/auth/status', {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/status`, {
     headers: {
       'Content-Type': 'application/json',
     },

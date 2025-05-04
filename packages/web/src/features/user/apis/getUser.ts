@@ -5,7 +5,7 @@ export class UnauthorizedError extends Error {
 }
 
 export async function getUserFetcher() {
-  const response = await fetch('http://localhost:8000/api/v1/users/getUser', {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/users/getUser`, {
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',

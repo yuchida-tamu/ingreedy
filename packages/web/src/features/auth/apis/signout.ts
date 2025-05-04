@@ -1,5 +1,5 @@
 export async function signoutFetcher() {
-  const response = await fetch('http://localhost:8000/api/v1/auth/logout', {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
     method: 'POST',
     credentials: 'include',
     headers: {
