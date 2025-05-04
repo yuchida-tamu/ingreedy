@@ -1,4 +1,18 @@
+import { getUserInventoriesFetcher } from '@/domains/apis/getUserInventories';
+import { useQuery } from '@tanstack/react-query';
+
+function useUserInventoryCount() {
+  const { data: inventories } = useQuery({
+    queryKey: ['user-inventories'],
+    queryFn: getUserInventoriesFetcher,
+  });
+
+  return inventories?.data.length ?? 0;
+}
+
 export function UserOverviewSection() {
+  const inventoryCount = useUserInventoryCount();
+
   return (
     <div className="card bg-base-100 shadow-xl">
       <div className="card-body">
@@ -8,7 +22,7 @@ export function UserOverviewSection() {
           <div className="stat">
             <div className="stat-title">Active Inventory</div>
             <div className="stat-value">
-              7 <span className="text-xs">items</span>
+              {inventoryCount} <span className="text-xs">items</span>
             </div>
             <div className="stat-desc">↗︎ milk is expiring soon</div>
           </div>
