@@ -8,29 +8,27 @@ export function InventoryGrid() {
     queryFn: getUserInventoriesFetcher,
   });
 
-  return (
+  return result && result.data.length > 0 ? (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {result && result.data.length > 0 ? (
-        result.data.map((item) => (
-          <InventoryCard
-            key={item.id}
-            name={item.ingredient.name}
-            quantity={item.quantity}
-            unit={item.unit}
-            category={item.ingredient.category}
-          />
-        ))
-      ) : (
-        <EmptyInventory />
-      )}
+      {result.data.map((item) => (
+        <InventoryCard
+          key={item.id}
+          name={item.ingredient.name}
+          quantity={item.quantity}
+          unit={item.unit}
+          category={item.ingredient.category}
+        />
+      ))}
     </div>
+  ) : (
+    <EmptyInventory />
   );
 }
 
 function EmptyInventory() {
   return (
-    <div className="flex h-full items-center justify-center">
-      <p className="text-2xl font-bold">No inventory found</p>
+    <div className="flex h-full items-center justify-center py-10">
+      <p className="text-2xl text-gray-500">No inventory found</p>
     </div>
   );
 }
