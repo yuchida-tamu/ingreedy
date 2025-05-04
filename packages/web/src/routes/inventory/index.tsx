@@ -1,7 +1,7 @@
 import { InventoryControlPanel } from '@/features/inventory/components/InventoryControlPanel';
 import { InventoryGrid } from '@/features/inventory/components/InventoryGrid';
 import { createFileRoute } from '@tanstack/react-router';
-
+import { Suspense } from 'react';
 export const Route = createFileRoute('/inventory/')({
   component: RouteComponent,
 });
@@ -15,7 +15,9 @@ function RouteComponent() {
           <InventoryControlPanel />
         </div>
         <div className="divider" />
-        <InventoryGrid />
+        <Suspense fallback={<div>Loading...</div>}>
+          <InventoryGrid />
+        </Suspense>
       </div>
     </div>
   );
