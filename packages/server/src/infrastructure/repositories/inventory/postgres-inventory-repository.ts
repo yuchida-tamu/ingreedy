@@ -89,7 +89,8 @@ export class PostgresInventoryRepository implements IInventoryRepository {
   }
 
   async create(
-    inventory: Omit<Inventory, 'id' | 'createdAt' | 'updatedAt'>,
+    inventory: Omit<Inventory, 'id' | 'createdAt' | 'updatedAt' | 'ingredient'>,
+    ingredientId: string,
   ): Promise<Inventory | null> {
     // This method will need to fetch the ingredient after insert
     try {
@@ -97,7 +98,7 @@ export class PostgresInventoryRepository implements IInventoryRepository {
         `INSERT INTO inventory (ingredient_id, quantity, unit, user_id)
          VALUES ($1, $2, $3, $4)
          RETURNING id, ingredient_id, quantity, unit, user_id, created_at, updated_at`,
-        [inventory.ingredient.id, inventory.quantity, inventory.unit, inventory.userId],
+        [ingredientId, inventory.quantity, inventory.unit, inventory.userId],
       );
       if (result.length === 0) return null;
       // Fetch the joined ingredient for the new inventory

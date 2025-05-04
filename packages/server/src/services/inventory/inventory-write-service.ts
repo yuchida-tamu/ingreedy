@@ -29,12 +29,14 @@ export class InventoryWriteService extends IInventoryWriteService {
       return ResultUtil.fail(new IngredientNotFoundError({ message: `Ingredient not found` }));
     }
     // Create inventory
-    const inventory = await this.inventoryRepository.create({
-      ingredient: ingredient,
-      quantity: data.quantity,
-      unit: data.unit,
-      userId,
-    });
+    const inventory = await this.inventoryRepository.create(
+      {
+        quantity: data.quantity,
+        unit: data.unit,
+        userId,
+      },
+      ingredient.id,
+    );
     if (!inventory) {
       return ResultUtil.fail(new InventoryCreationError({ message: 'Failed to create inventory' }));
     }
@@ -45,24 +47,21 @@ export class InventoryWriteService extends IInventoryWriteService {
     userId: string,
     data: TCreateInventoryWithNewIngredientDto,
   ): Promise<TResult<Inventory>> {
-    // Check if ingredient exists by name
-    let ingredient = await this.ingredientRepository.findByName(data.ingredient.name);
-    if (!ingredient) {
-      // Create ingredient
-      ingredient = await this.ingredientRepository.create(data.ingredient);
-    }
+    const ingredient = await this.ingredientRepository.create(data.ingredient);
     if (!ingredient) {
       return ResultUtil.fail(
         new InventoryCreationError({ message: 'Failed to create ingredient' }),
       );
     }
     // Create inventory
-    const inventory = await this.inventoryRepository.create({
-      ingredient: ingredient,
-      quantity: data.quantity,
-      unit: data.unit,
-      userId,
-    });
+    const inventory = await this.inventoryRepository.create(
+      {
+        quantity: data.quantity,
+        unit: data.unit,
+        userId,
+      },
+      ingredient.id,
+    );
     if (!inventory) {
       return ResultUtil.fail(new InventoryCreationError({ message: 'Failed to create inventory' }));
     }

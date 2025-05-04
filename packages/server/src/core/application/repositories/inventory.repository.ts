@@ -6,7 +6,8 @@ export abstract class IInventoryRepository {
   abstract findInventoryByCategory(userId: string, category: string): Promise<Inventory[]>;
   abstract findAll(): Promise<Inventory[]>;
   abstract create(
-    inventory: Omit<Inventory, 'id' | 'createdAt' | 'updatedAt'>,
+    inventory: Omit<Inventory, 'id' | 'createdAt' | 'updatedAt' | 'ingredient'>,
+    ingredientId: string,
   ): Promise<Inventory | null>;
   abstract update(
     id: string,
