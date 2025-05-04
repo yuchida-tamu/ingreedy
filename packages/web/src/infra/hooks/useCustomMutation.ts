@@ -4,8 +4,8 @@ type CustomMutationResponse<S> = { success: true; data: S } | { success: false; 
 
 type CustomMutationProps<T, S> = {
   fetcher: (data: T) => Promise<CustomMutationResponse<S>>;
-  onSuccess: (data: CustomMutationResponse<S>) => void;
-  onError: (error: Error) => void;
+  onSuccess?: (data: CustomMutationResponse<S>) => void;
+  onError?: (error: Error) => void;
 };
 
 export function useCustomMutation<T, S>({

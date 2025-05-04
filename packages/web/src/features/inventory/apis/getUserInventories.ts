@@ -1,6 +1,11 @@
 import { Inventory } from '@/domains/entities/inventory';
 
-export async function getUserInventoriesFetcher(): Promise<Inventory[]> {
+export type GetUserInventoriesResponse = {
+  success: boolean;
+  data: Inventory[];
+};
+
+export async function getUserInventoriesFetcher(): Promise<GetUserInventoriesResponse> {
   try {
     const response = await fetch(
       `${import.meta.env.VITE_APP_API_DOMAIN}/inventory/getUserInventories`,
@@ -17,17 +22,20 @@ export async function getUserInventoriesFetcher(): Promise<Inventory[]> {
       throw new Error('Failed to fetch user inventories');
     }
 
-    const data = (await response.json()) as { success: boolean; data: Inventory[] };
+    const data = (await response.json()) as GetUserInventoriesResponse;
 
     if (!data.success) {
-      throw new Error('Failed to fetch user inventories');
+      return {
+        success: false,
+        data: [],
+      };
     }
 
-    const { data: inventoryData } = data;
-
-    return inventoryData;
+    return data;
   } catch (error) {
-    console.error('Error fetching user inventories:', error);
-    throw error;
+    return {
+      success: false,
+      data: [],
+    };
   }
 }
