@@ -1,7 +1,49 @@
-// import type { IInventoryService } from '@/core/application/services/inventory.service';
+import type { IInventoryWriteService } from '@/core/application/services/inventory-write.service';
+import type { AuthenticatedRequest } from '@/core/application/types/api/request';
+import type { NextFunction, Response } from 'express';
 
-// export class InventoryWriteController {
-//   constructor(private inventoryService: IInventoryService) {}
+export class InventoryWriteController {
+  constructor(private inventoryService: IInventoryWriteService) {}
 
-//   // TODO: Move/createInventory, updateInventory, deleteInventory methods here as you add/expand write endpoints
-// }
+  async createInventoryWithIngredientId(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { ingredientId, quantity, unit } = req.body;
+    const userId = req.user.id;
+    const result = await this.inventoryService.createInventoryWithIngredientId(userId, {
+      ingredientId,
+      quantity,
+      unit,
+    });
+    if (result.success) {
+      res.locals.data = result.data;
+      res.locals.status = 201;
+      next();
+      return;
+    }
+    next(result.error);
+  }
+
+  async createInventoryWithNewIngredient(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { ingredient, quantity, unit } = req.body;
+    const userId = req.user.id;
+    const result = await this.inventoryService.createInventoryWithNewIngredient(userId, {
+      ingredient,
+      quantity,
+      unit,
+    });
+    if (result.success) {
+      res.locals.data = result.data;
+      res.locals.status = 201;
+      next();
+      return;
+    }
+    next(result.error);
+  }
+}
