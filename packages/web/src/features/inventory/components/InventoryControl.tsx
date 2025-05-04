@@ -7,21 +7,8 @@ import {
 import { useCustomMutation } from '@/infra/hooks/useCustomMutation';
 import { useForm } from '@tanstack/react-form';
 
-interface IngredientOption {
-  id: string;
-  name: string;
-  category: string;
-}
-
 interface InventoryControlProps {
   onClose: () => void;
-  onSubmit: (data: { ingredientId: string; quantity: number; unit: string }) => void;
-  ingredientOptions: IngredientOption[];
-  initialData?: {
-    ingredientId: string;
-    quantity: number;
-    unit: string;
-  };
 }
 
 const unitOptions = ['kg', 'g', 'l', 'ml', 'piece'];
