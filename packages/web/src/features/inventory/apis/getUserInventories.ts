@@ -2,13 +2,16 @@ import { Inventory } from '@/domains/entities/inventory';
 
 export async function getUserInventoriesFetcher(): Promise<Inventory[]> {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/inventory/getUserInventories`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
+    const response = await fetch(
+      `${import.meta.env.VITE_APP_API_DOMAIN}/inventory/getUserInventories`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        credentials: 'include',
       },
-      credentials: 'include',
-    });
+    );
 
     if (!response.ok) {
       throw new Error('Failed to fetch user inventories');

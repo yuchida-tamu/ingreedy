@@ -1,4 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { Inventory } from '@/domains/entities/inventory';
+import { LabeledTextField } from '@/elements/forms/LabeledTextField';
+import {
+  CreateInventoryWithNewIngredientData,
+  createInventoryWithNewIngredientFetcher,
+} from '@/features/inventory/apis/createInventory';
+import { useCustomMutation } from '@/infra/hooks/useCustomMutation';
+import { useForm } from '@tanstack/react-form';
 
 interface IngredientOption {
   id: string;
@@ -19,98 +26,118 @@ interface InventoryControlProps {
 
 const unitOptions = ['kg', 'g', 'l', 'ml', 'piece'];
 
-export function InventoryControl({
-  onClose,
-  onSubmit,
-  ingredientOptions,
-  initialData,
-}: InventoryControlProps) {
-  const [ingredientId, setIngredientId] = useState('');
-  const [quantity, setQuantity] = useState(1);
-  const [unit, setUnit] = useState(unitOptions[0]);
+export function InventoryControl({ onClose }: InventoryControlProps) {
+  const { mutate: createInventoryWithNewIngredient } = useCustomMutation<
+    CreateInventoryWithNewIngredientData,
+    Inventory
+  >({
+    fetcher: createInventoryWithNewIngredientFetcher,
+    onSuccess: () => {
+      onClose();
+    },
+    onError: () => {
+      console.error('Failed to create inventory with new ingredient');
+    },
+  });
+  const { Field, Subscribe, handleSubmit } = useForm({
+    defaultValues: {
+      ingredientId: '',
+      ingredientName: '',
+      ingredientCategory: '',
+      quantity: '1',
+      unit: unitOptions[0],
+    },
+    onSubmit: ({ value }) => {
+      console.log(value);
+      createInventoryWithNewIngredient({
+        ingredient: {
+          name: value.ingredientName,
+          category: value.ingredientCategory,
+        },
+        quantity: Number(value.quantity),
+        unit: value.unit,
+      });
+    },
+  });
 
-  useEffect(() => {
-    if (initialData) {
-      setIngredientId(initialData.ingredientId);
-      setQuantity(initialData.quantity);
-      setUnit(initialData.unit);
-    } else {
-      setIngredientId('');
-      setQuantity(1);
-      setUnit(unitOptions[0]);
-    }
-  }, [initialData]);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit({ ingredientId, quantity, unit });
+    handleSubmit();
   };
 
   return (
     <dialog id="inventory-control" className="modal">
       <div className="modal-box">
-        <h3 className="mb-4 text-lg font-bold">
-          {initialData ? 'Edit Inventory' : 'Add Inventory'}
-        </h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <h3 className="mb-4 text-lg font-bold">{'Add Inventory'}</h3>
+        <form onSubmit={submit} className="space-y-4">
           <div>
-            <label className="label">
-              <span className="label-text">Ingredient</span>
-            </label>
-            <select
-              className="select select-bordered w-full"
-              value={ingredientId}
-              onChange={(e) => setIngredientId(e.target.value)}
-              required
-              disabled={!!initialData}
-            >
-              <option value="" disabled>
-                Select ingredient
-              </option>
-              {ingredientOptions.map((opt) => (
-                <option key={opt.id} value={opt.id}>
-                  {opt.name} ({opt.category})
-                </option>
-              ))}
-            </select>
+            <Field name="ingredientName">
+              {(field) => (
+                <LabeledTextField
+                  label="Ingredient"
+                  value={field.state.value}
+                  onChange={field.handleChange}
+                />
+              )}
+            </Field>
+            <Field name="ingredientCategory">
+              {(field) => (
+                <LabeledTextField
+                  label="Ingredient Category"
+                  value={field.state.value}
+                  onChange={field.handleChange}
+                />
+              )}
+            </Field>
           </div>
           <div>
             <label className="label">
               <span className="label-text">Quantity</span>
             </label>
-            <input
-              type="number"
-              className="input input-bordered w-full"
-              min={0}
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              required
-            />
+            <Field name="quantity">
+              {(field) => (
+                <LabeledTextField
+                  label="Quantity"
+                  value={field.state.value}
+                  onChange={field.handleChange}
+                />
+              )}
+            </Field>
           </div>
           <div>
             <label className="label">
               <span className="label-text">Unit</span>
             </label>
-            <select
-              className="select select-bordered w-full"
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
-              required
-            >
-              {unitOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
+            <Field name="unit">
+              {(field) => (
+                <div>
+                  <select
+                    className="select select-bordered w-full"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    required
+                  >
+                    {unitOptions.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </Field>
           </div>
           <div className="mt-6 flex justify-end gap-2">
             <button type="button" className="btn btn-ghost" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className="btn btn-primary">
-              {initialData ? 'Save' : 'Add'}
-            </button>
+            <Subscribe selector={(state) => state.isSubmitting}>
+              {(isSubmitting) => (
+                <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                  {isSubmitting ? 'Adding...' : 'Add'}
+                </button>
+              )}
+            </Subscribe>
           </div>
         </form>
       </div>
