@@ -118,4 +118,18 @@ describe('InventoryWriteController', () => {
       expect(mockNext).toHaveBeenCalled();
     });
   });
+
+  describe('deleteInventory', () => {
+    it('should delete an inventory', async () => {
+      mockInventoryService.deleteInventory.mockResolvedValue({ success: true, data: undefined });
+      const result = await controller.deleteInventory(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext as NextFunction,
+      );
+      expect(result).not.toBeDefined();
+      expect(mockResponse.locals?.status).toBe(200);
+      expect(mockNext).toHaveBeenCalled();
+    });
+  });
 });

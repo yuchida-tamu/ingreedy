@@ -48,7 +48,7 @@ export class InventoryWriteController {
   }
 
   async deleteInventory(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-    const { id } = req.params;
+    const { id } = req.body;
     const userId = req.user.id;
     const result = await this.inventoryService.deleteInventory(userId, id);
     if (result.success) {
