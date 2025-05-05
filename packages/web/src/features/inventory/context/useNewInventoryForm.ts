@@ -26,8 +26,8 @@ export function useNewInventoryForm() {
       quantity: quantityOptions[0],
       unit: unitOptions[0],
     },
-    onSubmit: ({ value }) => {
-      mutate({
+    onSubmit: async ({ value }) => {
+      await mutate({
         ingredient: {
           name: value.ingredientName,
           category: value.ingredientCategory,

@@ -23,12 +23,12 @@ export function InventoryControlPanel() {
     reset();
   };
 
-  const submit = (e: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    handleSubmit();
-    refreshInventory();
+    await handleSubmit();
 
+    refreshInventory();
     close();
   };
 
