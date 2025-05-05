@@ -1,8 +1,15 @@
 import { InventoryControlPanel } from '@/features/inventory/components/InventoryControlPanel';
 import { InventoryGrid } from '@/features/inventory/components/InventoryGrid';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { Suspense } from 'react';
 export const Route = createFileRoute('/inventory/')({
+  beforeLoad: async ({ context }) => {
+    if (!context.auth.isAuthenticated) {
+      throw redirect({
+        to: '/auth',
+      });
+    }
+  },
   component: RouteComponent,
 });
 
