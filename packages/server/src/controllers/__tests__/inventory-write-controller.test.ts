@@ -4,6 +4,7 @@ import type { AuthenticatedRequest } from '@/core/application/types/api/request'
 import {
   InventoryDeletionError,
   InventoryNotFoundError,
+  InventoryOwnershipError,
 } from '@/core/application/types/errors/inventory-error';
 import type { Inventory } from '@/core/domain/inventory/inventory.entity';
 import type { NextFunction, Response } from 'express';
@@ -168,6 +169,20 @@ describe('InventoryWriteController', () => {
       expect(mockNext).toHaveBeenCalledWith(
         new InventoryDeletionError({ message: 'Failed to delete inventory' }),
       );
+    });
+
+    it('should fail if inventory does not belong to user', async () => {
+      mockInventoryService.deleteInventory.mockResolvedValue({
+        success: false,
+        error: new InventoryOwnershipError({ message: 'Inventory does not belong to user' }),
+      });
+      const result = await controller.deleteInventory(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext as NextFunction,
+      );
+      expect(result).not.toBeDefined();
+      expect(mockResponse.locals?.status).toBe(403);
     });
   });
 });

@@ -3,6 +3,7 @@ import type { AuthenticatedRequest } from '@/core/application/types/api/request'
 import {
   InventoryDeletionError,
   InventoryNotFoundError,
+  InventoryOwnershipError,
 } from '@/core/application/types/errors/inventory-error';
 import type { NextFunction, Response } from 'express';
 
@@ -66,6 +67,9 @@ export class InventoryWriteController {
     }
     if (result.error instanceof InventoryDeletionError) {
       res.locals.status = 500;
+    }
+    if (result.error instanceof InventoryOwnershipError) {
+      res.locals.status = 403;
     }
     next(result.error);
   }
