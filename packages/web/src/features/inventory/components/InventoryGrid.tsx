@@ -1,4 +1,5 @@
 import { Inventory } from '@/domains/entities/inventory';
+import { InventoryEditCard } from '@/features/inventory/components/InventoryEditCard';
 import { useQuery } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'motion/react';
 import { useMemo, useState } from 'react';
@@ -60,12 +61,12 @@ function FloatingInventoryCard({ item, setSelected }: FloatingInventoryCardProps
         layoutId={item.id}
         className="fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2"
       >
-        <InventoryCard
+        <InventoryEditCard
           name={item.ingredient.name}
           quantity={item.quantity}
           unit={item.unit}
           category={item.ingredient.category}
-          onClick={() => setSelected(null)} // optional close on card click
+          onDelete={() => setSelected(null)} // optional close on card click
         />
       </motion.div>
     </>
