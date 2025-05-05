@@ -1,6 +1,7 @@
 import { signinFetcher } from '@/domains/apis/signin';
 import { HeroFormContainer } from '@/elements/forms/HeroFormContainer';
 import { LabeledTextField } from '@/elements/forms/LabeledTextField';
+import { DebugSigninButton } from '@/features/auth/components/debugs/DebugSigninButton';
 import { useAuthForm } from '@/features/auth/hooks/useAuthForm';
 
 const DEFAULT_VALUES = {
@@ -53,6 +54,7 @@ export function SigninForm() {
           </button>
         )}
       </Subscribe>
+      <DebugSigninButton />
     </HeroFormContainer>
   );
 }

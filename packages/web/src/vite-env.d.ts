@@ -8,6 +8,9 @@ interface ViteTypeOptions {
 
 interface ImportMetaEnv {
   readonly VITE_APP_API_DOMAIN: string;
+  readonly VITE_DEBUG_EMAIL?: string;
+  readonly VITE_DEBUG_PASSWORD?: string;
+  readonly VITE_DEBUG_USERNAME?: string;
 }
 
 interface ImportMeta {
