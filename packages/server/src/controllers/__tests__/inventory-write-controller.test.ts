@@ -1,7 +1,10 @@
 import { InventoryWriteController } from '@/controllers/inventory/inventory-write-controller';
 import type { IInventoryWriteService } from '@/core/application/services/inventory-write.service';
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
-import { InventoryNotFoundError } from '@/core/application/types/errors/inventory-error';
+import {
+  InventoryDeletionError,
+  InventoryNotFoundError,
+} from '@/core/application/types/errors/inventory-error';
 import type { Inventory } from '@/core/domain/inventory/inventory.entity';
 import type { NextFunction, Response } from 'express';
 
@@ -147,6 +150,23 @@ describe('InventoryWriteController', () => {
       expect(mockResponse.locals?.status).toBe(404);
       expect(mockNext).toHaveBeenCalledWith(
         new InventoryNotFoundError({ message: 'Inventory not found' }),
+      );
+    });
+
+    it('should fail if inventory is not deleted', async () => {
+      mockInventoryService.deleteInventory.mockResolvedValue({
+        success: false,
+        error: new InventoryDeletionError({ message: 'Failed to delete inventory' }),
+      });
+      const result = await controller.deleteInventory(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext as NextFunction,
+      );
+      expect(result).not.toBeDefined();
+      expect(mockResponse.locals?.status).toBe(500);
+      expect(mockNext).toHaveBeenCalledWith(
+        new InventoryDeletionError({ message: 'Failed to delete inventory' }),
       );
     });
   });

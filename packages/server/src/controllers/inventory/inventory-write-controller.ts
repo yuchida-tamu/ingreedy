@@ -1,6 +1,9 @@
 import type { IInventoryWriteService } from '@/core/application/services/inventory-write.service';
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
-import { InventoryNotFoundError } from '@/core/application/types/errors/inventory-error';
+import {
+  InventoryDeletionError,
+  InventoryNotFoundError,
+} from '@/core/application/types/errors/inventory-error';
 import type { NextFunction, Response } from 'express';
 
 export class InventoryWriteController {
@@ -60,6 +63,9 @@ export class InventoryWriteController {
     }
     if (result.error instanceof InventoryNotFoundError) {
       res.locals.status = 404;
+    }
+    if (result.error instanceof InventoryDeletionError) {
+      res.locals.status = 500;
     }
     next(result.error);
   }
