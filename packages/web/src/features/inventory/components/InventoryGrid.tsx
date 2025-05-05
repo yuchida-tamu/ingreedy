@@ -1,8 +1,10 @@
+import { deleteInventoryFetcher } from '@/domains/apis/deleteInventory';
 import { Inventory } from '@/domains/entities/inventory';
 import { InventoryEditCard } from '@/features/inventory/components/InventoryEditCard';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'motion/react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { getUserInventoriesFetcher } from '../../../domains/apis/getUserInventories';
 import { InventoryCard } from './InventoryCard';
 
@@ -14,6 +16,29 @@ export function InventoryGrid() {
 
   const inventories = useMemo(() => result?.data ?? [], [result]);
   const [selected, setSelected] = useState<(typeof inventories)[0] | null>(null);
+  const { mutate: deleteInventory } = useMutation({
+    mutationFn: deleteInventoryFetcher,
+  });
+  const queryClient = useQueryClient();
+
+  const handleUnselect = useCallback(() => {
+    flushSync(() => {
+      setSelected(null);
+    });
+  }, [setSelected]);
+
+  const handleDelete = useCallback(
+    (id: string) => {
+      console.log('deleting', id);
+      deleteInventory(id, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['user-inventories'] });
+          handleUnselect();
+        },
+      });
+    },
+    [deleteInventory, queryClient, handleUnselect],
+  );
 
   return inventories.length > 0 ? (
     <>
@@ -31,7 +56,9 @@ export function InventoryGrid() {
         ))}
       </div>
       <AnimatePresence>
-        {selected && <FloatingInventoryCard item={selected} setSelected={setSelected} />}
+        {selected && (
+          <FloatingInventoryCard item={selected} onClose={handleUnselect} onDelete={handleDelete} />
+        )}
       </AnimatePresence>
     </>
   ) : (
@@ -41,10 +68,11 @@ export function InventoryGrid() {
 
 type FloatingInventoryCardProps = {
   item: Inventory;
-  setSelected: (item: Inventory | null) => void;
+  onClose: () => void;
+  onDelete: (id: string) => void;
 };
 
-function FloatingInventoryCard({ item, setSelected }: FloatingInventoryCardProps) {
+function FloatingInventoryCard({ item, onClose, onDelete }: FloatingInventoryCardProps) {
   return (
     <>
       {/* Backdrop */}
@@ -53,7 +81,7 @@ function FloatingInventoryCard({ item, setSelected }: FloatingInventoryCardProps
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={() => setSelected(null)}
+        onClick={onClose}
       />
 
       {/* Floating Card */}
@@ -66,7 +94,7 @@ function FloatingInventoryCard({ item, setSelected }: FloatingInventoryCardProps
           quantity={item.quantity}
           unit={item.unit}
           category={item.ingredient.category}
-          onDelete={() => setSelected(null)} // optional close on card click
+          onDelete={() => onDelete(item.id)}
         />
       </motion.div>
     </>

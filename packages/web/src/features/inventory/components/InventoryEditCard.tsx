@@ -18,7 +18,7 @@ export function InventoryEditCard({ name, quantity, unit, category, onDelete }: 
           <span className="font-semibold">Category:</span> {category}
         </p>
         <div className="card-actions justify-end">
-          <div className="badge badge-outline badge-error cursor-pointer" onClick={onDelete}>
+          <div className="badge badge-outline badge-error" onClick={onDelete}>
             Delete
           </div>
         </div>
