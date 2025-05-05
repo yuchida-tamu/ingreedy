@@ -1,5 +1,6 @@
 import type { IIngredientRepository } from '@/core/application/repositories/ingredient.repository';
 import type { IInventoryRepository } from '@/core/application/repositories/inventory.repository';
+import { InventoryOwnershipError } from '@/core/application/types/errors/inventory-error';
 import type { Ingredient } from '@/core/domain/inventory/ingredient.entity';
 import type { Inventory, InventoryUnit } from '@/core/domain/inventory/inventory.entity';
 import { InventoryWriteService } from '@/services/inventory/inventory-write-service';
@@ -118,8 +119,20 @@ describe('InventoryWriteService', () => {
 
   describe('deleteInventory', () => {
     it('should delete an inventory', async () => {
+      mockInventoryRepository.findById.mockResolvedValue(mockInventory);
       const result = await inventoryWriteService.deleteInventory('123', '123');
       expect(result.success).toBe(true);
+    });
+
+    it('should fail if inventory does not belong to user', async () => {
+      mockInventoryRepository.findById.mockResolvedValue(mockInventory);
+      const userId = '124';
+      const inventoryId = '123';
+      const result = await inventoryWriteService.deleteInventory(userId, inventoryId);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBeInstanceOf(InventoryOwnershipError);
+      }
     });
   });
 });

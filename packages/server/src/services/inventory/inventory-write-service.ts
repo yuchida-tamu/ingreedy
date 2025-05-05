@@ -6,7 +6,11 @@ import type {
   TCreateInventoryWithNewIngredientDto,
 } from '@/core/application/types/dtos/inventory.dto';
 import { IngredientNotFoundError } from '@/core/application/types/errors/ingredient-error';
-import { InventoryCreationError } from '@/core/application/types/errors/inventory-error';
+import {
+  InventoryCreationError,
+  InventoryNotFoundError,
+  InventoryOwnershipError,
+} from '@/core/application/types/errors/inventory-error';
 import type { TResult } from '@/core/application/types/result';
 import type { Inventory } from '@/core/domain/inventory/inventory.entity';
 import { ResultUtil } from '@/utils/result.util';
@@ -68,7 +72,16 @@ export class InventoryWriteService extends IInventoryWriteService {
     return ResultUtil.success(inventory);
   }
 
-  async deleteInventory(_: string, id: string): Promise<TResult<void>> {
+  async deleteInventory(userId: string, id: string): Promise<TResult<void>> {
+    const inventory = await this.inventoryRepository.findById(id);
+    if (!inventory) {
+      return ResultUtil.fail(new InventoryNotFoundError({ message: 'Inventory not found' }));
+    }
+    if (inventory.userId !== userId) {
+      return ResultUtil.fail(
+        new InventoryOwnershipError({ message: 'Inventory does not belong to user' }),
+      );
+    }
     await this.inventoryRepository.delete(id);
     return ResultUtil.success(undefined);
   }
