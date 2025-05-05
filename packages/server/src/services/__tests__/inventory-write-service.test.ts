@@ -42,6 +42,7 @@ describe('InventoryWriteService', () => {
       findAll: jest.fn(),
       findInventoryByName: jest.fn(),
       update: jest.fn(),
+      delete: jest.fn(),
     };
     mockIngredientRepository = {
       findById: jest.fn(),
@@ -112,6 +113,13 @@ describe('InventoryWriteService', () => {
         unit: 'kg' as InventoryUnit,
       });
       expect(inventory.success).toBe(true);
+    });
+  });
+
+  describe('deleteInventory', () => {
+    it('should delete an inventory', async () => {
+      const result = await inventoryWriteService.deleteInventory('123', '123');
+      expect(result.success).toBe(true);
     });
   });
 });

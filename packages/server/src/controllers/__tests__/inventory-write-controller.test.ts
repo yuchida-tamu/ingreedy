@@ -15,6 +15,7 @@ describe('InventoryWriteController', () => {
     mockInventoryService = {
       createInventoryWithIngredientId: jest.fn(),
       createInventoryWithNewIngredient: jest.fn(),
+      deleteInventory: jest.fn(),
     };
     controller = new InventoryWriteController(mockInventoryService);
     mockRequest = {

@@ -15,4 +15,6 @@ export abstract class IInventoryWriteService {
     userId: string,
     data: TCreateInventoryWithNewIngredientDto,
   ): Promise<TResult<Inventory>>;
+
+  abstract deleteInventory(userId: string, id: string): Promise<TResult<void>>;
 }

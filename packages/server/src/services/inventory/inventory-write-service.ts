@@ -67,4 +67,9 @@ export class InventoryWriteService extends IInventoryWriteService {
     }
     return ResultUtil.success(inventory);
   }
+
+  async deleteInventory(_: string, id: string): Promise<TResult<void>> {
+    await this.inventoryRepository.delete(id);
+    return ResultUtil.success(undefined);
+  }
 }

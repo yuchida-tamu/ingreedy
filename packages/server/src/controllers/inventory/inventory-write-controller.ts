@@ -46,4 +46,17 @@ export class InventoryWriteController {
     }
     next(result.error);
   }
+
+  async deleteInventory(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const result = await this.inventoryService.deleteInventory(userId, id);
+    if (result.success) {
+      res.locals.data = result.data;
+      res.locals.status = 200;
+      next();
+      return;
+    }
+    next(result.error);
+  }
 }
