@@ -1,6 +1,7 @@
 import type { IIngredientRepository } from '@/core/application/repositories/ingredient.repository';
 import type { IInventoryRepository } from '@/core/application/repositories/inventory.repository';
 import {
+  InventoryDeletionError,
   InventoryNotFoundError,
   InventoryOwnershipError,
 } from '@/core/application/types/errors/inventory-error';
@@ -123,6 +124,7 @@ describe('InventoryWriteService', () => {
   describe('deleteInventory', () => {
     it('should delete an inventory', async () => {
       mockInventoryRepository.findById.mockResolvedValue(mockInventory);
+      mockInventoryRepository.delete.mockResolvedValue(true);
       const result = await inventoryWriteService.deleteInventory('123', '123');
       expect(result.success).toBe(true);
     });
@@ -144,6 +146,16 @@ describe('InventoryWriteService', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error).toBeInstanceOf(InventoryNotFoundError);
+      }
+    });
+
+    it('should fail if inventory is not deleted', async () => {
+      mockInventoryRepository.findById.mockResolvedValue(mockInventory);
+      mockInventoryRepository.delete.mockResolvedValue(false);
+      const result = await inventoryWriteService.deleteInventory('123', '123');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBeInstanceOf(InventoryDeletionError);
       }
     });
   });

@@ -8,6 +8,7 @@ import type {
 import { IngredientNotFoundError } from '@/core/application/types/errors/ingredient-error';
 import {
   InventoryCreationError,
+  InventoryDeletionError,
   InventoryNotFoundError,
   InventoryOwnershipError,
 } from '@/core/application/types/errors/inventory-error';
@@ -82,7 +83,10 @@ export class InventoryWriteService extends IInventoryWriteService {
         new InventoryOwnershipError({ message: 'Inventory does not belong to user' }),
       );
     }
-    await this.inventoryRepository.delete(id);
+    const result = await this.inventoryRepository.delete(id);
+    if (!result) {
+      return ResultUtil.fail(new InventoryDeletionError({ message: 'Failed to delete inventory' }));
+    }
     return ResultUtil.success(undefined);
   }
 }
