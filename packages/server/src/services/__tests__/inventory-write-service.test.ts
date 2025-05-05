@@ -1,5 +1,10 @@
 import type { IIngredientRepository } from '@/core/application/repositories/ingredient.repository';
 import type { IInventoryRepository } from '@/core/application/repositories/inventory.repository';
+import {
+  InventoryDeletionError,
+  InventoryNotFoundError,
+  InventoryOwnershipError,
+} from '@/core/application/types/errors/inventory-error';
 import type { Ingredient } from '@/core/domain/inventory/ingredient.entity';
 import type { Inventory, InventoryUnit } from '@/core/domain/inventory/inventory.entity';
 import { InventoryWriteService } from '@/services/inventory/inventory-write-service';
@@ -42,6 +47,7 @@ describe('InventoryWriteService', () => {
       findAll: jest.fn(),
       findInventoryByName: jest.fn(),
       update: jest.fn(),
+      delete: jest.fn(),
     };
     mockIngredientRepository = {
       findById: jest.fn(),
@@ -112,6 +118,45 @@ describe('InventoryWriteService', () => {
         unit: 'kg' as InventoryUnit,
       });
       expect(inventory.success).toBe(true);
+    });
+  });
+
+  describe('deleteInventory', () => {
+    it('should delete an inventory', async () => {
+      mockInventoryRepository.findById.mockResolvedValue(mockInventory);
+      mockInventoryRepository.delete.mockResolvedValue(true);
+      const result = await inventoryWriteService.deleteInventory('123', '123');
+      expect(result.success).toBe(true);
+    });
+
+    it('should fail if inventory does not belong to user', async () => {
+      mockInventoryRepository.findById.mockResolvedValue(mockInventory);
+      const userId = '124';
+      const inventoryId = '123';
+      const result = await inventoryWriteService.deleteInventory(userId, inventoryId);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBeInstanceOf(InventoryOwnershipError);
+      }
+    });
+
+    it('should fail if inventory is not found', async () => {
+      mockInventoryRepository.findById.mockResolvedValue(null);
+      const result = await inventoryWriteService.deleteInventory('123', '123');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBeInstanceOf(InventoryNotFoundError);
+      }
+    });
+
+    it('should fail if inventory is not deleted', async () => {
+      mockInventoryRepository.findById.mockResolvedValue(mockInventory);
+      mockInventoryRepository.delete.mockResolvedValue(false);
+      const result = await inventoryWriteService.deleteInventory('123', '123');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBeInstanceOf(InventoryDeletionError);
+      }
     });
   });
 });

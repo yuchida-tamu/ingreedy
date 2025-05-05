@@ -164,6 +164,15 @@ export class PostgresInventoryRepository implements IInventoryRepository {
     }
   }
 
+  async delete(id: string): Promise<boolean> {
+    try {
+      await db.query(`DELETE FROM inventory WHERE id = $1`, [id]);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   private mapToInventory(row: DbInventoryWithIngredient): Inventory {
     return {
       id: row.id,

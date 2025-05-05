@@ -1,6 +1,11 @@
 import { InventoryWriteController } from '@/controllers/inventory/inventory-write-controller';
 import type { IInventoryWriteService } from '@/core/application/services/inventory-write.service';
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
+import {
+  InventoryDeletionError,
+  InventoryNotFoundError,
+  InventoryOwnershipError,
+} from '@/core/application/types/errors/inventory-error';
 import type { Inventory } from '@/core/domain/inventory/inventory.entity';
 import type { NextFunction, Response } from 'express';
 
@@ -15,6 +20,7 @@ describe('InventoryWriteController', () => {
     mockInventoryService = {
       createInventoryWithIngredientId: jest.fn(),
       createInventoryWithNewIngredient: jest.fn(),
+      deleteInventory: jest.fn(),
     };
     controller = new InventoryWriteController(mockInventoryService);
     mockRequest = {
@@ -115,6 +121,68 @@ describe('InventoryWriteController', () => {
       expect(mockResponse.locals?.data).toEqual(mockInventory);
       expect(mockResponse.locals?.status).toBe(201);
       expect(mockNext).toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteInventory', () => {
+    it('should delete an inventory', async () => {
+      mockInventoryService.deleteInventory.mockResolvedValue({ success: true, data: undefined });
+      const result = await controller.deleteInventory(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext as NextFunction,
+      );
+      expect(result).not.toBeDefined();
+      expect(mockResponse.locals?.status).toBe(200);
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should fail if inventory is not found', async () => {
+      mockInventoryService.deleteInventory.mockResolvedValue({
+        success: false,
+        error: new InventoryNotFoundError({ message: 'Inventory not found' }),
+      });
+      const result = await controller.deleteInventory(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext as NextFunction,
+      );
+      expect(result).not.toBeDefined();
+      expect(mockResponse.locals?.status).toBe(404);
+      expect(mockNext).toHaveBeenCalledWith(
+        new InventoryNotFoundError({ message: 'Inventory not found' }),
+      );
+    });
+
+    it('should fail if inventory is not deleted', async () => {
+      mockInventoryService.deleteInventory.mockResolvedValue({
+        success: false,
+        error: new InventoryDeletionError({ message: 'Failed to delete inventory' }),
+      });
+      const result = await controller.deleteInventory(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext as NextFunction,
+      );
+      expect(result).not.toBeDefined();
+      expect(mockResponse.locals?.status).toBe(500);
+      expect(mockNext).toHaveBeenCalledWith(
+        new InventoryDeletionError({ message: 'Failed to delete inventory' }),
+      );
+    });
+
+    it('should fail if inventory does not belong to user', async () => {
+      mockInventoryService.deleteInventory.mockResolvedValue({
+        success: false,
+        error: new InventoryOwnershipError({ message: 'Inventory does not belong to user' }),
+      });
+      const result = await controller.deleteInventory(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response,
+        mockNext as NextFunction,
+      );
+      expect(result).not.toBeDefined();
+      expect(mockResponse.locals?.status).toBe(403);
     });
   });
 });

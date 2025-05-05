@@ -11,3 +11,15 @@ export class InventoryCreationError extends ApplicationError {
     super(details.message, 'INVENTORY_CREATION_FAILED', details);
   }
 }
+
+export class InventoryOwnershipError extends ApplicationError {
+  constructor(details: { message: string }) {
+    super(details.message, 'INVENTORY_OWNERSHIP_ERROR', details);
+  }
+}
+
+export class InventoryDeletionError extends ApplicationError {
+  constructor(details: { message: string }) {
+    super(details.message, 'INVENTORY_DELETION_FAILED', details);
+  }
+}

@@ -30,6 +30,7 @@ describe('InventoryReadController', () => {
       findAll: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
+      delete: jest.fn(),
     };
     inventoryReadService = new InventoryReadService(mockInventoryRepository);
     inventoryReadController = new InventoryReadController(inventoryReadService);

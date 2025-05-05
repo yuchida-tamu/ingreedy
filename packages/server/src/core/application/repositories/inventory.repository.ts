@@ -14,4 +14,5 @@ export abstract class IInventoryRepository {
     data: Partial<Omit<Inventory, 'id' | 'createdAt' | 'updatedAt'>>,
   ): Promise<Inventory | null>;
   abstract findInventoriesByUserId(userId: string): Promise<Inventory[]>;
+  abstract delete(id: string): Promise<boolean>;
 }

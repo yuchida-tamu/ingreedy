@@ -1,5 +1,10 @@
 import type { IInventoryWriteService } from '@/core/application/services/inventory-write.service';
 import type { AuthenticatedRequest } from '@/core/application/types/api/request';
+import {
+  InventoryDeletionError,
+  InventoryNotFoundError,
+  InventoryOwnershipError,
+} from '@/core/application/types/errors/inventory-error';
 import type { NextFunction, Response } from 'express';
 
 export class InventoryWriteController {
@@ -43,6 +48,28 @@ export class InventoryWriteController {
       res.locals.status = 201;
       next();
       return;
+    }
+    next(result.error);
+  }
+
+  async deleteInventory(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    const { id } = req.body;
+    const userId = req.user.id;
+    const result = await this.inventoryService.deleteInventory(userId, id);
+    if (result.success) {
+      res.locals.data = result.data;
+      res.locals.status = 200;
+      next();
+      return;
+    }
+    if (result.error instanceof InventoryNotFoundError) {
+      res.locals.status = 404;
+    }
+    if (result.error instanceof InventoryDeletionError) {
+      res.locals.status = 500;
+    }
+    if (result.error instanceof InventoryOwnershipError) {
+      res.locals.status = 403;
     }
     next(result.error);
   }

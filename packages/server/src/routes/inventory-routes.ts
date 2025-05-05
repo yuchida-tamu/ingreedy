@@ -52,5 +52,9 @@ export function generateInventoryRouter(): Router {
     writeController.createInventoryWithNewIngredient(req as AuthenticatedRequest, res, next),
   );
 
+  router.delete('/deleteInventory', auth.authenticate, (req, res, next) =>
+    writeController.deleteInventory(req as AuthenticatedRequest, res, next),
+  );
+
   return router;
 }

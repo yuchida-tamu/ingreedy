@@ -1,17 +1,14 @@
-interface InventoryCardProps {
+type Props = {
   name: string;
   quantity: number;
   unit: string;
   category: string;
-  onClick: () => void;
-}
+  onDelete: () => void;
+};
 
-export function InventoryCard({ name, quantity, unit, category, onClick }: InventoryCardProps) {
+export function InventoryEditCard({ name, quantity, unit, category, onDelete }: Props) {
   return (
-    <div
-      className="card bg-base-100 border-base-200 cursor-pointer border shadow-md transition-shadow duration-300 hover:shadow-lg"
-      onClick={onClick}
-    >
+    <div className="card bg-base-100 border-base-200 cursor-pointer border shadow-md transition-shadow duration-300 hover:shadow-lg">
       <div className="card-body p-4">
         <h2 className="card-title mb-2 text-lg font-bold">{name}</h2>
         <p className="mb-1 text-sm">
@@ -20,6 +17,11 @@ export function InventoryCard({ name, quantity, unit, category, onClick }: Inven
         <p className="text-base-content/70 text-xs">
           <span className="font-semibold">Category:</span> {category}
         </p>
+        <div className="card-actions justify-end">
+          <div className="badge badge-outline badge-error" onClick={onDelete}>
+            Delete
+          </div>
+        </div>
       </div>
     </div>
   );
